@@ -7,6 +7,8 @@
 
 namespace Aline {
 
+EditorFactoryManager EditorFactoryManager::GlobalEditorFactoryManager;
+
 EditorFactoryManager::EditorFactoryManager(QObject *parent) :
 	QAbstractListModel(parent)
 {
