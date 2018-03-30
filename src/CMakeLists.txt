@@ -3,6 +3,10 @@ list(APPEND LIB_SRC
 		mainwindow.cpp
 		aline_global.h
 		editor.cpp
+		editorfactory.cpp
+		editableitem.cpp
+		editableitemeditor.cpp
+		editorfactorymanager.cpp
 		mainwindow.ui
 		)
 

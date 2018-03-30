@@ -17,4 +17,12 @@ QString Editor::title() const
 	return _title;
 }
 
+QStringList Editor::editableTypes() const {
+	return QStringList();
+}
+
+void Editor::setEditedItem(EditableItem* item) {
+	Q_UNUSED(item);
+}
+
 } // namespace Aline
