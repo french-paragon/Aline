@@ -43,6 +43,16 @@ void MainWindow::closeEditor(Editor* editor) {
 
 }
 
+void MainWindow::saveCurrentEditor() {
+
+	Editor* editor = qobject_cast<Editor*>(ui->tabWidget->currentWidget());
+
+	if (editor != nullptr) {
+		editor->saveAction();
+	}
+
+}
+
 void MainWindow::updateTitle(Editor* editor, QString newTitle) {
 
 	int index = ui->tabWidget->indexOf(editor);

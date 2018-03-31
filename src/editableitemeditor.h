@@ -19,6 +19,8 @@ public:
 	 */
 	virtual void setEditedItem(EditableItem* item);
 
+	virtual void saveAction();
+
 signals:
 
 	void editedItemChanged(EditableItem* new_edited_item);
@@ -29,6 +31,7 @@ protected:
 
 	virtual bool effectivelySetEditedItem(EditableItem* item) = 0;
 
+	EditableItem* _editedItem;
 };
 
 } // namespace Aline

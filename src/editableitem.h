@@ -26,6 +26,8 @@ public:
 signals:
 
 public slots:
+
+	virtual bool save() = 0;
 };
 
 } // namespace Aline

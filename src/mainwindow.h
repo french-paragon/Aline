@@ -30,6 +30,8 @@ public slots:
 	void closeEditor(int index);
 	void closeEditor(Editor* editor);
 
+	void saveCurrentEditor();
+
 protected:
 
 	void updateTitle(Editor* editor, QString newTitle);

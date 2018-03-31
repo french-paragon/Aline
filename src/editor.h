@@ -51,6 +51,8 @@ public slots:
 
 	void setTitle(QString title);
 
+	virtual void saveAction() = 0;
+
 protected:
 
 	QString _title;
