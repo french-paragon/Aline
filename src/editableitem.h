@@ -23,7 +23,11 @@ public:
 	 */
 	virtual QString getTypeName() const = 0;
 
+	virtual bool getHasUnsavedChanged() const = 0;
+
 signals:
+
+	void unsavedStateChanged(bool saveState);
 
 public slots:
 

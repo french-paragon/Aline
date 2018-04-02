@@ -9,7 +9,16 @@ Editor::Editor(QWidget *parent) : QWidget(parent)
 
 void Editor::setTitle(QString title) {
 	_title = title;
-	emit titleChanged(this, _title);
+	updateEffectiveTitle();
+}
+
+void Editor::setHasUnsavedChanges(bool saveState) {
+	_saveState = saveState;
+	updateEffectiveTitle();
+}
+
+void Editor::updateEffectiveTitle() {
+	emit titleChanged(this, _title + ((_saveState) ? " *" : ""));
 }
 
 QString Editor::title() const

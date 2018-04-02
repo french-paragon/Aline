@@ -50,12 +50,16 @@ signals:
 public slots:
 
 	void setTitle(QString title);
+	void setHasUnsavedChanges(bool saveState);
 
 	virtual void saveAction() = 0;
 
 protected:
 
+	void updateEffectiveTitle();
+
 	QString _title;
+	bool _saveState;
 };
 
 } // namespace Aline
