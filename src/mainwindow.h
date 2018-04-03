@@ -27,6 +27,8 @@ public slots:
 
 	void addEditor(Editor* editor);
 
+	void switchToEditor(Editor* editor);
+
 	void closeEditor(int index);
 	void closeEditor(Editor* editor);
 

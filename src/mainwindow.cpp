@@ -22,6 +22,16 @@ MainWindow::~MainWindow()
 void MainWindow::addEditor(Editor* editor) {
 	ui->tabWidget->addTab(editor, editor->title());
 	connect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
+
+	switchToEditor(editor);
+}
+
+void MainWindow::switchToEditor(Editor* editor) {
+	int index = ui->tabWidget->indexOf(editor);
+
+	if (index >= 0) {
+		ui->tabWidget->setCurrentIndex(index);
+	}
 }
 
 void MainWindow::closeEditor(int index) {

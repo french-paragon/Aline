@@ -25,6 +25,8 @@ public:
 
 	virtual bool getHasUnsavedChanged() const = 0;
 
+	virtual bool autoSave() const;
+
 signals:
 
 	void unsavedStateChanged(bool saveState);
