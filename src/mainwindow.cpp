@@ -12,11 +12,24 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+
+	connect(ui->tabWidget, &QTabWidget::tabCloseRequested,
+			this, static_cast<void (MainWindow::*)(int)>(&MainWindow::closeEditor));
 }
 
 MainWindow::~MainWindow()
 {
 	delete ui;
+}
+
+Editor* MainWindow::editorAt(int index) {
+
+	QWidget* widget = ui->tabWidget->widget(index);
+
+	Editor* editor = qobject_cast<Editor*>(widget);
+
+	return editor;
+
 }
 
 void MainWindow::addEditor(Editor* editor) {
@@ -44,11 +57,13 @@ void MainWindow::closeEditor(int index) {
 		disconnect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 	}
 
+	emit editorAboutToBeRemoved(editor);
 	ui->tabWidget->removeTab(index);
 }
 
 void MainWindow::closeEditor(Editor* editor) {
 
+	emit editorAboutToBeRemoved(editor);
 	ui->tabWidget->removeTab(ui->tabWidget->indexOf(editor));
 
 }

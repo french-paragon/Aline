@@ -21,7 +21,11 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+	Editor* editorAt(int index);
+
 signals:
+
+	void editorAboutToBeRemoved(Editor* editor);
 
 public slots:
 
