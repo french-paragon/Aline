@@ -45,6 +45,14 @@ bool EditorFactoryManager::hasFactoryInstalled(QString type_id) const {
 
 }
 
+bool EditorFactoryManager::hasFactoryInstalledForItem(QString type_id) const {
+
+	QString factoryRef = _editableTypes.value(type_id, "");
+
+	return hasFactoryInstalled(factoryRef);
+
+}
+
 Editor* EditorFactoryManager::createItem(QString type_id, QWidget *parent) const {
 
 	const EditorFactory* f = _installedFactories.value(type_id, nullptr);
