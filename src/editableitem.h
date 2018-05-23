@@ -3,9 +3,11 @@
 
 #include <QObject>
 
+#include "aline_global.h"
+
 namespace Aline {
 
-class EditableItem : public QObject
+class ALINE_EXPORT EditableItem : public QObject
 {
 	Q_OBJECT
 public:
