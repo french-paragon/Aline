@@ -1,6 +1,6 @@
 #include "editableitemeditor.h"
 
-#include "editableitem.h"
+#include "model/editableitem.h"
 
 namespace Aline {
 

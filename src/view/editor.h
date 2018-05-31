@@ -1,7 +1,7 @@
 #ifndef EDITOR_H
 #define EDITOR_H
 
-#include "aline_global.h"
+#include "../aline_global.h"
 
 #include <QWidget>
 #include <QString>

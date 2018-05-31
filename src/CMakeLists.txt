@@ -1,13 +1,16 @@
 list(APPEND LIB_SRC
-		app.cpp
-		mainwindow.cpp
-		aline_global.h
-		editor.cpp
-		editorfactory.cpp
-		editableitem.cpp
-		editableitemeditor.cpp
-		editorfactorymanager.cpp
-		mainwindow.ui
+	    aline_global.h
+		model/editableitem.cpp
+		model/editableitemmanager.cpp
+		model/editableitemfactory.cpp
+		view/mainwindow.cpp
+		view/editor.cpp
+		view/editorfactory.cpp
+		view/editableitemeditor.cpp
+		view/editorfactorymanager.cpp
+		view/mainwindow.ui
+		utils/stringutils.cpp
+		control/app.cpp
 		)
 
 add_library(${PROJECT_NAME} ${LIB_SRC})

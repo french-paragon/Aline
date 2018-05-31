@@ -1,7 +1,7 @@
 #ifndef EDITORFACTORYMANAGER_H
 #define EDITORFACTORYMANAGER_H
 
-#include "aline_global.h"
+#include "../aline_global.h"
 
 #include <QAbstractListModel>
 

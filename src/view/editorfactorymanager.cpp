@@ -3,7 +3,7 @@
 #include "editor.h"
 #include "editableitemeditor.h"
 #include "editorfactory.h"
-#include "editableitem.h"
+#include "model/editableitem.h"
 
 namespace Aline {
 

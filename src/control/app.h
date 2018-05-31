@@ -1,7 +1,7 @@
 #ifndef ALINE_APP_H
 #define ALINE_APP_H
 
-#include "aline_global.h"
+#include "../aline_global.h"
 
 #include <QApplication>
 

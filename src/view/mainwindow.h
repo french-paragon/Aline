@@ -1,7 +1,7 @@
 #ifndef ALINE_MAINWINDOW_H
 #define ALINE_MAINWINDOW_H
 
-#include "aline_global.h"
+#include "../aline_global.h"
 
 #include <QMainWindow>
 
