@@ -102,6 +102,14 @@ public:
 	virtual void insertSubItem(EditableItem* item);
 	virtual QList<EditableItem *> getSubItems() const;
 
+	/*!
+	 * \brief getFileReferencePropertiesName get the name of the properties which refer to a file.
+	 * \return the list of names (by default nothing).
+	 *
+	 * Some managers might want to synchronize files over some network, this list is the list of properties which represent a reference to a file.
+	 */
+	virtual QStringList getFileReferencePropertiesName() const;
+
 signals:
 
 	void parentChanged(QString newRef);

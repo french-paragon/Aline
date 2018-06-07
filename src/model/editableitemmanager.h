@@ -71,6 +71,25 @@ public:
 
 	bool makeRefUniq(QString &ref) const;
 
+	/*!
+	 * \brief isNetworkExtended indicate if the manager is shared on some network
+	 * \return true if it's shared. false otherwise.
+	 *
+	 * Some item may have to refer to external datas, usually local files,
+	 * by knowing their datas will have to be shared along with they might propose a special mechanism
+	 * to store those files using some serialization mechanism of the item manager (yet to be implemented).
+	 */
+	virtual bool isNetworkShared() const = 0;
+
+	virtual bool hasDistantFile(QString fileName);
+	/*!
+	 * \brief loadFile get a distant file from the manager
+	 * \param fileName the distant file name
+	 * \return the local path of the loaded file.
+	 */
+	virtual QString loadFile(QString fileName);
+	virtual bool storeProjectFile(QString localFile);
+
 signals:
 
 	void loadingItemSucessFull(QString ref);

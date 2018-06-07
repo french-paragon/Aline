@@ -185,6 +185,10 @@ QList<Aline::EditableItem*> EditableItem::getSubItems() const {
 
 }
 
+QStringList EditableItem::getFileReferencePropertiesName() const {
+	return {};
+}
+
 void EditableItem::setParentItem(EditableItem* parent) {
 
 	if (_parentItem != nullptr) {

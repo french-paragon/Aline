@@ -471,6 +471,22 @@ bool EditableItemManager::makeRefUniq(QString &ref) const {
 
 }
 
+bool EditableItemManager::hasDistantFile(QString fileName) {
+	return false; //distant files are not supported by defaults.
+}
+
+QString EditableItemManager::loadFile(QString fileName) {
+	Q_UNUSED(fileName);
+
+	return QString(); //by default remote file storing is not supported.
+}
+
+bool EditableItemManager::storeProjectFile(QString localFile) {
+	Q_UNUSED(localFile);
+
+	return false; //by default storing project files is not supported.
+}
+
 void EditableItemManager::closeAll() {
 
 	for (QString ref : _loadedItems.keys()) {
