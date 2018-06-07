@@ -23,6 +23,17 @@ EditableItemManager::EditableItemManager(QObject *parent) :
 	cleanTreeStruct();
 }
 
+QModelIndex EditableItemManager::indexFromRef(const QString &ref) const {
+
+	treeStruct* leaf = _treeIndex.value(ref, nullptr);
+
+	if (leaf == nullptr) {
+		return QModelIndex();
+	}
+
+	return indexFromLeaf(leaf);
+}
+
 QModelIndex EditableItemManager::index(int row, int column, const QModelIndex &parent) const {
 
 	if (column > 0) {

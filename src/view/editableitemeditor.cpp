@@ -20,6 +20,8 @@ void EditableItemEditor::setEditedItem(EditableItem* item) {
 
 		connect(item, &EditableItem::objectNameChanged, this, &EditableItemEditor::setTitle);
 		connect(item, &EditableItem::unsavedStateChanged, this, &EditableItemEditor::setHasUnsavedChanges);
+		connect(item, &QObject::destroyed,
+				this, &QObject::deleteLater);
 
 		emit editedItemChanged(item);
 		_editedItem = item;

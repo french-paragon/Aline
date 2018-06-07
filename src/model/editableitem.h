@@ -2,6 +2,7 @@
 #define ALINE_EDITABLEITEM_H
 
 #include <QObject>
+#include <QSet>
 
 #include "../aline_global.h"
 
@@ -24,7 +25,29 @@ public:
 
 	static const QString CHILDREN_PROP_NAME;
 
+	/*!
+	 * \brief EditableItem constructor for item that belongs to a project.
+	 * \param ref The ref of the item.
+	 * \param parent The parent manager of the item.
+	 *
+	 * EditableItems can be root items in a project or subitems for another item. This constructor is for the root items.
+	 *
+	 * When you subclass EditableItem you can enforce that the subclass has to be used as root item or subitem
+	 * by providing only constructors that call the associated constructor of the parent class.
+	 */
 	explicit EditableItem(QString ref, EditableItemManager *parent = nullptr);
+
+	/*!
+	 * \brief EditableItem constructor for item that is a subitem for another item.
+	 * \param ref The ref of the item.
+	 * \param parent The parent item of the item.
+	 *
+	 * EditableItems can be root items in a project or subitems for another item. This constructor is for the root items.
+	 *
+	 * When you subclass EditableItem you can enforce that the subclass has to be used as root item or subitem
+	 * by providing only constructors that call the associated constructor of the parent class.
+	 */
+	explicit EditableItem(QString ref, EditableItem *parent = nullptr);
 
 	Q_PROPERTY(QString ref READ getRef WRITE changeRef NOTIFY refChanged)
 	Q_PROPERTY(QString parentRef MEMBER _p_ref NOTIFY parentChanged)
@@ -62,12 +85,30 @@ public:
 
 	virtual QString iconInternalUrl() const = 0;
 
+	EditableItem *getParentItem() const;
+	EditableItemManager *getManager() const;
+
+	/*!
+	 * \brief insertSubItem tell the item that a subitem has been created.
+	 * \param item the item that have been inserted
+	 *
+	 * The subitems are managed using Qt parent/children system. Most of the time externally instanced subitem will just be used as a storage,
+	 * so there's nothing to worry about. But when instanciating some objects one might need to reset some internal subitems.
+	 * For those kinds of usage it might be usefull to do a bit more of processing.
+	 * Child classes can do so by subclassing this method.
+	 *
+	 * Default implementation ensure the item has the correct parent and register the ref after making it uniq. Call it in your overhides.
+	 */
+	virtual void insertSubItem(EditableItem* item);
+	virtual QList<EditableItem *> getSubItems() const;
+
 signals:
 
 	void parentChanged(QString newRef);
 
 	void visibleStateChanged(QString ref);
 
+	void refSwap(QString oldRef, QString newRef);
 	void refChanged(QString newRef);
 	void unsavedStateChanged(bool saveState);
 
@@ -90,9 +131,19 @@ protected:
 
 	QString _p_ref;
 
-	EditableItemManager* _manager;
-
 	bool _hasUnsavedChanged;
+
+	QString makeSubItemRefUniq(QString const& subItemRef) const;
+	QSet<QString> _usedRef;
+
+	void removeSubItemRef(EditableItem* item);
+
+private:
+
+	void setParentItem(EditableItem* parent);
+
+	EditableItemManager* _manager;
+	EditableItem* _parentItem;
 };
 
 } // namespace Aline

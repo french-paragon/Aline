@@ -31,6 +31,8 @@ public:
 
 	virtual bool hasDataSource() const = 0;
 
+	QModelIndex indexFromRef(QString const& ref) const;
+
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 	virtual QModelIndex parent(const QModelIndex &index) const;
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;

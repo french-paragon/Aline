@@ -34,6 +34,7 @@ Editor* MainWindow::editorAt(int index) {
 
 void MainWindow::addEditor(Editor* editor) {
 	ui->tabWidget->addTab(editor, editor->title());
+
 	connect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 
 	switchToEditor(editor);

@@ -23,7 +23,21 @@ QString EditableItem::simplifyRef(QString ref) {
 EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	QObject(parent),
 	_ref(ref),
-	_manager(parent)
+	_manager(parent),
+	_parentItem(nullptr)
+{
+
+	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::newUnsavedChanges);
+	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::onVisibleStateChanged);
+	connect(this, &EditableItem::unsavedStateChanged, this, &EditableItem::onVisibleStateChanged);
+
+}
+
+EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
+	QObject(parent),
+	_ref(ref),
+	_manager(nullptr),
+	_parentItem(parent)
 {
 
 	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::newUnsavedChanges);
@@ -78,7 +92,9 @@ bool EditableItem::acceptChildrens() const {
 void EditableItem::changeRef(QString const& newRef) {
 
 	if (newRef != _ref) {
+		QString oldRef = _ref;
 		_ref = newRef;
+		emit refSwap(oldRef, _ref);
 		emit refChanged(_ref);
 	}
 
@@ -109,6 +125,75 @@ void EditableItem::clearHasUnsavedChanges() {
 		_hasUnsavedChanged = false;
 		emit unsavedStateChanged(false);
 	}
+}
+
+QString EditableItem::makeSubItemRefUniq(QString const& subItemRef) const {
+
+	if (!_usedRef.contains(subItemRef)) {
+		return subItemRef;
+	}
+
+	QString model("%1%2");
+	model = model.arg(subItemRef);
+	QString proposed_ref;
+
+	int i = 1;
+
+	do {
+		proposed_ref = model.arg(i);
+	} while (_usedRef.contains(proposed_ref));
+
+	return proposed_ref;
+
+}
+
+void EditableItem::removeSubItemRef(EditableItem* item) {
+	_usedRef.remove(item->getRef());
+}
+
+EditableItemManager *EditableItem::getManager() const
+{
+	return _manager;
+}
+
+EditableItem *EditableItem::getParentItem() const
+{
+	return _parentItem;
+}
+
+void EditableItem::insertSubItem(EditableItem* item) {
+
+	if (item == nullptr) {
+		return;
+	}
+
+	if (item->getParentItem() != nullptr) {
+		if (item->getParentItem() != this) {
+
+			item->setParentItem(this);
+
+		}
+	}
+
+	_usedRef.insert(item->getRef());
+
+}
+
+QList<Aline::EditableItem*> EditableItem::getSubItems() const {
+
+	return QObject::findChildren<Aline::EditableItem*>(QString(), Qt::FindDirectChildrenOnly);
+
+}
+
+void EditableItem::setParentItem(EditableItem* parent) {
+
+	if (_parentItem != nullptr) {
+		if (_parentItem != parent) {
+			_parentItem = parent;
+			setParent(parent);
+		}
+	}
+
 }
 
 } // namespace Aline
