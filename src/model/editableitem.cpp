@@ -23,6 +23,7 @@ QString EditableItem::simplifyRef(QString ref) {
 EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	QObject(parent),
 	_ref(ref),
+	_hasUnsavedChanged(false),
 	_manager(parent),
 	_parentItem(nullptr)
 {
@@ -36,6 +37,7 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
 	QObject(parent),
 	_ref(ref),
+	_hasUnsavedChanged(false),
 	_manager(nullptr),
 	_parentItem(parent)
 {
@@ -60,6 +62,11 @@ bool EditableItem::save() {
 		bool status = _manager->saveItem(getRef());
 
 		if (status && _hasUnsavedChanged) {
+
+			for (EditableItem* sit : getSubItems()) {
+				sit->_hasUnsavedChanged = false;
+			}
+
 			_hasUnsavedChanged = false;
 			emit unsavedStateChanged(false);
 		}
@@ -122,6 +129,11 @@ void EditableItem::newUnsavedChanges() {
 
 void EditableItem::clearHasUnsavedChanges() {
 	if (_hasUnsavedChanged) {
+
+		for (EditableItem* sit : getSubItems()) {
+			sit->_hasUnsavedChanged = false;
+		}
+
 		_hasUnsavedChanged = false;
 		emit unsavedStateChanged(false);
 	}
@@ -141,6 +153,7 @@ QString EditableItem::makeSubItemRefUniq(QString const& subItemRef) const {
 
 	do {
 		proposed_ref = model.arg(i);
+		i++;
 	} while (_usedRef.contains(proposed_ref));
 
 	return proposed_ref;
@@ -176,6 +189,10 @@ void EditableItem::insertSubItem(EditableItem* item) {
 	}
 
 	_usedRef.insert(item->getRef());
+
+	connect(item, &EditableItem::unsavedStateChanged, [this] (bool state) {
+		if (state == true) newUnsavedChanges();
+	});
 
 }
 
