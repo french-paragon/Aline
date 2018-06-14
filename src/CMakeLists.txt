@@ -23,6 +23,6 @@ add_library(${PROJECT_NAME} ${LIB_SRC})
 target_compile_definitions(${PROJECT_NAME}
   PRIVATE ALINE_LIBRARY)
 
-QT5_USE_MODULES(${PROJECT_NAME} Core)
-QT5_USE_MODULES(${PROJECT_NAME} Widgets)
-QT5_USE_MODULES(${PROJECT_NAME} Gui)
+target_link_libraries(${PROJECT_NAME} Qt5::Core)
+target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
+target_link_libraries(${PROJECT_NAME} Qt5::Gui)
