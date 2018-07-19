@@ -54,6 +54,7 @@ public:
 	bool containItem(const QString & ref) const;
 
 	bool createItem(QString typeRef, QString ref);
+	bool createItem(QString typeRef, QString ref, QString* createdItemRef);
 	bool clearItem(QString itemRef);
 	bool clearItems(QStringList itemRefs);
 

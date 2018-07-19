@@ -328,6 +328,10 @@ bool EditableItemManager::containItem(const QString & ref) const {
 }
 
 bool EditableItemManager::createItem(QString typeRef, QString pref) {
+	return createItem(typeRef, pref, nullptr);
+}
+
+bool EditableItemManager::createItem(QString typeRef, QString pref, QString *createdItemRef) {
 
 	QString ref = pref;
 
@@ -345,6 +349,11 @@ bool EditableItemManager::createItem(QString typeRef, QString pref) {
 
 		if (insertItem(item) ) {
 			connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
+
+			if (createdItemRef != nullptr) {
+				*createdItemRef = ref;
+			}
+
 			return true;
 		} else {
 			return false;
