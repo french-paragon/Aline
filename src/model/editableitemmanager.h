@@ -9,6 +9,7 @@ namespace Aline {
 
 class EditableItem;
 class EditableItemFactoryManager;
+class LabelsTree;
 
 class ALINE_EXPORT EditableItemManager : public QAbstractItemModel
 {
@@ -85,6 +86,10 @@ public:
 	virtual QString loadFile(QString fileName);
 	virtual bool storeProjectFile(QString localFile);
 
+	EditableItem* activeItem() const;
+
+	LabelsTree* labelsTree();
+
 signals:
 
 	void loadingItemSucessFull(QString ref);
@@ -92,10 +97,14 @@ signals:
 	void itemAboutToBeUnloaded(QString ref);
 	void itemUnloaded(QString ref);
 
+	void activeItemChanged();
+
 public slots:
 
 	virtual void reset() = 0;
 	virtual void closeAll();
+
+	void setActiveItem(QString ref);
 
 protected:
 
@@ -136,6 +145,15 @@ protected:
 	 * \param item the item to insert
 	 */
 	virtual bool insertItem(EditableItem* item);
+
+	/*!
+	 * \brief effectivelyLoadLabels load the labels from the datasource.
+	 */
+	virtual void effectivelyLoadLabels() = 0;
+
+	LabelsTree* _labels;
+
+	EditableItem* _activeItem;
 
 	QMap<QString, treeStruct*> _treeIndex; //build an index of the tree.
 	QMap<QString, QVector<treeStruct*>> _itemsByTypes;

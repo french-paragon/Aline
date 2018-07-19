@@ -5,6 +5,8 @@
 
 #include "view/editorfactorymanager.h"
 
+#include "model/labels/labelstree.h"
+
 #include <QSet>
 #include <QIcon>
 #include <QMimeData>
@@ -18,7 +20,9 @@ const QString EditableItemManager::RefMimeType = "text/editableitemref";
 
 EditableItemManager::EditableItemManager(QObject *parent) :
 	QAbstractItemModel(parent),
-	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager)
+	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
+	_labels(nullptr),
+	_activeItem(nullptr)
 {
 	cleanTreeStruct();
 }
@@ -459,6 +463,24 @@ bool EditableItemManager::storeProjectFile(QString localFile) {
 	return false; //by default storing project files is not supported.
 }
 
+EditableItem* EditableItemManager::activeItem() const {
+	return _activeItem;
+}
+
+LabelsTree* EditableItemManager::labelsTree() {
+
+	if (!hasDataSource()) {
+		return nullptr;
+	}
+
+	if (_labels == nullptr) {
+		effectivelyLoadLabels();
+	}
+
+	return _labels;
+
+}
+
 void EditableItemManager::closeAll() {
 
 	for (QString ref : _loadedItems.keys()) {
@@ -468,6 +490,19 @@ void EditableItemManager::closeAll() {
 		_loadedItems.remove(ref);
 
 		emit itemUnloaded(ref);
+
+	}
+
+}
+
+void EditableItemManager::setActiveItem(QString ref) {
+
+	if (_activeItem == nullptr || _activeItem->getRef() != ref) {
+
+		EditableItem* potential = qobject_cast<EditableItem*>(loadItem(ref));
+
+		_activeItem = potential;
+		emit activeItemChanged();
 
 	}
 

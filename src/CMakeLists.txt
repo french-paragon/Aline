@@ -3,6 +3,10 @@ list(APPEND LIB_SRC
 		model/editableitem.cpp
 		model/editableitemmanager.cpp
 		model/editableitemfactory.cpp
+		model/labels/label.cpp
+		model/labels/labelselectionforitemproxymodel.cpp
+		model/labels/labelstree.cpp
+		model/labels/projectfilterbylabelproxymodel.cpp
 		view/mainwindow.cpp
 		view/editor.cpp
 		view/editorfactory.cpp
