@@ -80,13 +80,6 @@ QString EditableItem::getRef() const
 	return _ref;
 }
 
-QVector<QString> EditableItem::getChildrenItemsRefs() const {
-	if (_manager != nullptr) {
-		return _manager->listChildren(getRef());
-	}
-	return QVector<QString>();
-}
-
 bool EditableItem::getHasUnsavedChanged() const
 {
 	return _hasUnsavedChanged;
@@ -204,6 +197,27 @@ QList<Aline::EditableItem*> EditableItem::getSubItems() const {
 
 QStringList EditableItem::getFileReferencePropertiesName() const {
 	return {};
+}
+
+bool EditableItem::setProperty(const char *name, const QVariant &value, bool noStatesChanges) {
+
+	if (noStatesChanges) {
+		return QObject::setProperty(name, value);
+	}
+
+	QVariant val = property(name);
+
+	if (val.isValid()) {
+		if (val == value) {
+			return QObject::setProperty(name, value);
+		}
+	}
+
+	bool ret = QObject::setProperty(name, value);
+	newUnsavedChanges();
+
+	return ret;
+
 }
 
 void EditableItem::setParentItem(EditableItem* parent) {

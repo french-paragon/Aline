@@ -42,7 +42,7 @@ public:
 	 * \param ref The ref of the item.
 	 * \param parent The parent item of the item.
 	 *
-	 * EditableItems can be root items in a project or subitems for another item. This constructor is for the root items.
+	 * EditableItems can be root items in a project or subitems for another item. This constructor is for the subitems.
 	 *
 	 * When you subclass EditableItem you can enforce that the subclass has to be used as root item or subitem
 	 * by providing only constructors that call the associated constructor of the parent class.
@@ -67,12 +67,6 @@ public:
 
 	QString getRef() const;
 
-	/*!
-	 * \brief getChildrenItemsRefs is a function to fetch all children item of that item.
-	 * \return a list of children items.
-	 */
-	QVector<QString> getChildrenItemsRefs() const;
-
 	virtual bool getHasUnsavedChanged() const;
 
 	/*!
@@ -92,7 +86,7 @@ public:
 	 * \brief insertSubItem tell the item that a subitem has been created.
 	 * \param item the item that have been inserted
 	 *
-	 * The subitems are managed using Qt parent/children system. Most of the time externally instanced subitem will just be used as a storage,
+	 * The subitems are managed using Qt parent/children system. Most of the time externally instanced subitems will just be used as a storage,
 	 * so there's nothing to worry about. But when instanciating some objects one might need to reset some internal subitems.
 	 * For those kinds of usage it might be usefull to do a bit more of processing.
 	 * Child classes can do so by subclassing this method.
@@ -109,6 +103,8 @@ public:
 	 * Some managers might want to synchronize files over some network, this list is the list of properties which represent a reference to a file.
 	 */
 	virtual QStringList getFileReferencePropertiesName() const;
+
+	bool setProperty(const char *name, const QVariant &value, bool noStatesChanges = false);
 
 signals:
 
