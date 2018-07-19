@@ -229,6 +229,15 @@ QString EditableItemFactoryManager::itemIconUrl(QString type_ref) {
 	return _installedItemFactories.value(type_ref)->getItemTypeIconUrl();
 }
 
+QString EditableItemFactoryManager::itemTypeName(QString type_ref) {
+
+	if (!hasFactoryInstalled(type_ref)) {
+		return "";
+	}
+
+	return _installedItemFactories.value(type_ref)->getItemTypeName();
+}
+
 QString EditableItemFactoryManager::subItemIconUrl(QString type_ref) {
 
 	if (!hasSubItemFactoryInstalled(type_ref)) {
@@ -237,6 +246,11 @@ QString EditableItemFactoryManager::subItemIconUrl(QString type_ref) {
 
 	return _installedSubItemFactories.value(type_ref)->getItemTypeIconUrl();
 
+}
+
+const QVector<QString> &EditableItemFactoryManager::installedFactoriesKeys() const
+{
+    return _installedFactoriesKeys;
 }
 
 } // namespace Cathia

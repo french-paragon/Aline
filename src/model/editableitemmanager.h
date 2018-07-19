@@ -45,9 +45,6 @@ public:
 
 	virtual QStringList mimeTypes() const;
 	virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
-	virtual bool dropMimeData(const QMimeData *data, Qt::DropAction action, int row, int column, const QModelIndex &parent);
-
-	virtual Qt::DropActions supportedDropActions() const;
 
 	EditableItem* loadItem(QString const& ref);
 	QStringList loadedItems() const;
@@ -55,7 +52,7 @@ public:
 	bool isItemLoaded(const QString &ref) const;
 	bool containItem(const QString & ref) const;
 
-	bool createItem(QString typeRef, QString ref, QString parent_ref = "");
+	bool createItem(QString typeRef, QString ref);
 	bool clearItem(QString itemRef);
 	bool clearItems(QStringList itemRefs);
 
@@ -64,8 +61,6 @@ public:
 	virtual bool saveStruct() = 0;
 	virtual bool saveLabels() = 0;
 	virtual bool loadStruct() = 0;
-
-	QVector<QString> listChildren(QString ref);
 
 	EditableItemFactoryManager *factoryManager() const;
 
@@ -110,11 +105,9 @@ protected:
 	 * \brief The treeStruct struct allow for the EditableItemManager to store the structure of loadable items in tree.
 	 */
 	struct treeStruct {
-		treeStruct* _parent;
 		QString _ref;
 		QString _name;
 		QString _type_ref;
-		QVector<treeStruct*> _childrens;
 		bool _acceptChildrens;
 	};
 
@@ -124,13 +117,7 @@ protected:
 	};
 
 	QModelIndex indexFromLeaf(treeStruct* leaf) const;
-
-	treeStruct* _root; //the root of the tree.
-	QMap<QString, treeStruct*> _treeIndex; //build an index of the tree.
-
-
-	bool moveItemsToParent(QStringList items, QModelIndex const& index);
-	void moveItemToParent(QString item, Aline::EditableItemManager::treeStruct* leaf);
+	QModelIndex indexFromType(QString typeRef) const;
 
 	void itemVisibleStateChanged(QString ref);
 
@@ -148,8 +135,10 @@ protected:
 	 * \brief insertItem insert an item in the manager, the manager take ownership of the item.
 	 * \param item the item to insert
 	 */
-	virtual bool insertItem(EditableItem* item, treeStruct *parent_branch);
+	virtual bool insertItem(EditableItem* item);
 
+	QMap<QString, treeStruct*> _treeIndex; //build an index of the tree.
+	QMap<QString, QVector<treeStruct*>> _itemsByTypes;
 	QMap<QString, loadedItem> _loadedItems;
 
 	EditableItemFactoryManager* _factoryManager;
