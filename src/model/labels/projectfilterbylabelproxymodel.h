@@ -21,7 +21,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include <QAbstractProxyModel>
 
-#include "aline_global.h"
+#include "../../aline_global.h"
 
 namespace Aline {
 
