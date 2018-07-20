@@ -106,6 +106,22 @@ public:
 
 	bool setProperty(const char *name, const QVariant &value, bool noStatesChanges = false);
 
+	QStringList getLabels() const;
+	/*!
+	 * \brief setLabels change all the labels at once
+	 * \param labels the labels to set
+	 *
+	 * this function will first remove all the labels one by one using removeLabel then add the new ones.
+	 * This is meant to ensure signals are triggered properly and the item stay in a valid state.
+	 * There is an exception, when signals are blocked, it will just replace the list.
+	 * Usually this function is meant to be called at initialization, when signals are blocked.
+	 */
+	void setLabels(const QStringList &labels);
+
+	bool hasLabel(QString const& labelRef) const;
+	bool addLabel(QString const& labelRef);
+	bool removeLabel(QString const& labelRef);
+
 signals:
 
 	void parentChanged(QString newRef);
@@ -115,6 +131,9 @@ signals:
 	void refSwap(QString oldRef, QString newRef);
 	void refChanged(QString newRef);
 	void unsavedStateChanged(bool saveState);
+
+	void labelAdded(QString const& label);
+	void labelRemoved(QString const& label);
 
 public slots:
 
@@ -148,6 +167,9 @@ private:
 
 	EditableItemManager* _manager;
 	EditableItem* _parentItem;
+
+	QStringList _labels;
+
 };
 
 } // namespace Aline

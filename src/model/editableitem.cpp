@@ -231,4 +231,53 @@ void EditableItem::setParentItem(EditableItem* parent) {
 
 }
 
+QStringList EditableItem::getLabels() const
+{
+    return _labels;
+}
+
+void EditableItem::setLabels(const QStringList &labels)
+{
+	if (signalsBlocked()) {
+		_labels = labels;
+	} else {
+
+		while (!_labels.empty()) {
+			QString label = _labels.back();
+			_labels.pop_back();
+			emit labelRemoved(label);
+		}
+
+		for (QString label : labels) {
+			addLabel(label);
+		}
+	}
+}
+
+bool EditableItem::hasLabel(QString const& labelRef) const {
+	return _labels.contains(labelRef);
+}
+
+bool EditableItem::addLabel(QString const& labelRef) {
+
+	if (!hasLabel(labelRef)) {
+		_labels.push_back(labelRef);
+		emit labelAdded(labelRef);
+		return true;
+	}
+	return false;
+
+}
+
+bool EditableItem::removeLabel(QString const& labelRef) {
+
+	if (hasLabel(labelRef)) {
+		_labels.removeOne(labelRef);
+		emit labelRemoved(labelRef);
+		return true;
+	}
+	return false;
+
+}
+
 } // namespace Aline

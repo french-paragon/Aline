@@ -161,16 +161,9 @@ bool Label::markItem(Aline::EditableItem* item) {
 		_itemsRefs.push_back(item->getRef());
 	}
 
-	QStringList labels;
+	bool added = item->addLabel(getRef());
 
-	QVariant prop = item->property(PROP_LABELS);
-	if (prop.isValid()) {
-		if (prop.canConvert(qMetaTypeId<QStringList>())) {
-			labels = prop.toStringList();
-		}
-	}
-
-	if (labels.indexOf(getRef()) >= 0) {
+	if (!added) {
 
 		if (hasItem) {
 			return false;
@@ -185,10 +178,6 @@ bool Label::markItem(Aline::EditableItem* item) {
 		ok = false;
 		qDebug() << "Inserted unmarked label: " << getRef() << " in item: " << item->getRef() << " while item was registered in label.";
 	}
-
-	labels.push_back(getRef());
-
-	item->setProperty(PROP_LABELS, labels);
 
 	if (ok) {
 		emit itemRefAdded(item->getRef());
@@ -213,18 +202,9 @@ bool Label::unmarkItem(Aline::EditableItem* item) {
 		_itemsRefs.removeAt(index);
 	}
 
-	QStringList labels;
+	bool removed = item->removeLabel(getRef());
 
-	QVariant prop = item->property(PROP_LABELS);
-	if (prop.isValid()) {
-		if (prop.canConvert(qMetaTypeId<QStringList>())) {
-			labels = prop.toStringList();
-		}
-	}
-
-	int lindex = labels.indexOf(getRef());
-
-	if (lindex < 0) {
+	if (!removed) {
 
 		if (!hasItem) {
 			return false; //try to unmark an item that is not present.
@@ -239,10 +219,6 @@ bool Label::unmarkItem(Aline::EditableItem* item) {
 		ok = false;
 		qDebug() << "Removed marked label: " << getRef() << " in item: " << item->getRef() << " while item was unregistered in label.";
 	}
-
-	labels.removeAt(lindex);
-
-	item->setProperty(PROP_LABELS, labels);
 
 	if (ok) {
 		emit itemRefRemoved(item->getRef());
