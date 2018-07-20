@@ -14,6 +14,7 @@ list(APPEND LIB_SRC
 		view/editorfactorymanager.cpp
 		view/mainwindow.ui
 		utils/stringutils.cpp
+		utils/jsonutils.cpp
 		control/app.cpp
 		)
 
