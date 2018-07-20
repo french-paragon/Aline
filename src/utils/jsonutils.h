@@ -27,6 +27,7 @@ extern const QString LABEL_ITEMS_REFS_ID;
 extern const QString LABEL_SUBLABELS_ID;
 
 extern const QString ITEM_SUBITEM_ID;
+extern const QString ITEM_SUBITEM_LIST;
 
 class ALINE_EXPORT JsonUtilsException : public QException
 {
@@ -50,7 +51,11 @@ protected:
 	std::string _what;
 };
 
-ALINE_EXPORT void extractItemData(Aline::EditableItem* item, QJsonObject const& obj, EditableItemFactoryManager* subItemFactory, QStringList const& specialSkippedProperties = {}, bool blockSignals = true);
+ALINE_EXPORT void extractItemData(Aline::EditableItem* item,
+								  QJsonObject const& obj,
+								  EditableItemFactoryManager* subItemFactory,
+								  QStringList const& specialSkippedProperties = {},
+								  bool blockSignals = true);
 ALINE_EXPORT QJsonObject encapsulateItemToJson(Aline::EditableItem* item);
 
 ALINE_EXPORT QJsonValue encodeVariantToJson(QVariant var);

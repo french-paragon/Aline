@@ -27,6 +27,7 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	_manager(parent),
 	_parentItem(nullptr)
 {
+	qRegisterMetaType<Aline::EditableItem*>();
 
 	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::newUnsavedChanges);
 	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::onVisibleStateChanged);
@@ -41,6 +42,7 @@ EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
 	_manager(nullptr),
 	_parentItem(parent)
 {
+	qRegisterMetaType<Aline::EditableItem*>();
 
 	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::newUnsavedChanges);
 	connect(this, &EditableItem::objectNameChanged, this, &EditableItem::onVisibleStateChanged);

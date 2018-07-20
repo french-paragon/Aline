@@ -174,4 +174,7 @@ private:
 
 } // namespace Aline
 
+Q_DECLARE_METATYPE(Aline::EditableItem*)
+Q_DECLARE_METATYPE(QList<Aline::EditableItem*>)
+
 #endif // ALINE_EDITABLEITEM_H
