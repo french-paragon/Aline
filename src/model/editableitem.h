@@ -52,6 +52,7 @@ public:
 	Q_PROPERTY(QString ref READ getRef WRITE changeRef NOTIFY refChanged)
 	Q_PROPERTY(QString parentRef MEMBER _p_ref NOTIFY parentChanged)
 	Q_PROPERTY(QString type_id READ getTypeId)
+	Q_PROPERTY(QStringList labels READ getLabels WRITE setLabels)
 
 	/*!
 	 * \brief getTypeId allow to get info on the type of the editable item.
