@@ -413,6 +413,8 @@ bool EditableItemManager::saveItem(QString ref) {
 		if (status) {
 			EditableItem* item = loadItem(ref);
 			item->clearHasUnsavedChanges();
+
+			return true;
 		}
 	}
 	return false;

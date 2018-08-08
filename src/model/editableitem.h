@@ -20,6 +20,8 @@ public:
 
 	static QString simplifyRef(QString ref);
 
+	static const QList<int> AllowedPropertiesTypeId;
+
 	static const QString REF_PROP_NAME;
 	static const QString TYPE_ID_NAME;
 

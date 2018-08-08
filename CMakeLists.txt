@@ -15,6 +15,7 @@ set(CMAKE_CXX_FLAGS "-std=c++11 ${CMAKE_CXX_FLAGS}")
 
 find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
+find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
@@ -22,3 +23,4 @@ set(CMAKE_AUTOMOC ON)
 SET(CMAKE_AUTOUIC ON)
 
 add_subdirectory(src)
+add_subdirectory(tests)

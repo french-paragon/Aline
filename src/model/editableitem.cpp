@@ -8,6 +8,21 @@
 
 namespace Aline {
 
+const QList<int> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bool,
+														  QMetaType::Int,
+														  QMetaType::UInt,
+														  QMetaType::QReal,
+														  QMetaType::QString,
+														  QMetaType::QStringList,
+														  QMetaType::QPoint,
+														  QMetaType::QPointF,
+														  QMetaType::QSize,
+														  QMetaType::QSizeF,
+														  QMetaType::QColor,
+														  qMetaTypeId<Aline::EditableItem*>(),
+														  qMetaTypeId<QList<Aline::EditableItem*>>()
+														 };
+
 const QString EditableItem::REF_PROP_NAME = "ref";
 const QString EditableItem::TYPE_ID_NAME = "type_id";
 
@@ -63,15 +78,7 @@ bool EditableItem::save() {
 	if (_manager != nullptr) {
 		bool status = _manager->saveItem(getRef());
 
-		if (status && _hasUnsavedChanged) {
-
-			for (EditableItem* sit : getSubItems()) {
-				sit->_hasUnsavedChanged = false;
-			}
-
-			_hasUnsavedChanged = false;
-			emit unsavedStateChanged(false);
-		}
+		return status;
 	}
 
 	return false;
@@ -126,7 +133,7 @@ void EditableItem::clearHasUnsavedChanges() {
 	if (_hasUnsavedChanged) {
 
 		for (EditableItem* sit : getSubItems()) {
-			sit->_hasUnsavedChanged = false;
+			sit->clearHasUnsavedChanges();
 		}
 
 		_hasUnsavedChanged = false;

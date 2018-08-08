@@ -1,0 +1,10 @@
+#ifndef ALINE_TEST_GLOBAL_H
+#define ALINE_TEST_GLOBAL_H
+
+#if defined(ALINE_TEST_LIBRARY)
+#  define ALINE_TEST_EXPORT Q_DECL_EXPORT
+#else
+#  define ALINE_TEST_EXPORT Q_DECL_IMPORT
+#endif
+
+#endif // ALINE_TEST_GLOBAL_H
