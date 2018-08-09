@@ -64,11 +64,11 @@ void EditableItemTestModel::recursivelyTestSubItemsStaticPropertiesTypes(Editabl
 		const char* prop = mobj->property(i).name();
 		const char* msg = QString("Property named [%1] is stored but its type is not supported in Aline framework now !").toStdString().c_str();
 
-		int type_id = mobj->property(i).type();
+		int type_id = mobj->property(i).userType();
 
 		QVERIFY2(EditableItem::AllowedPropertiesTypeId.contains(type_id), msg);
 
-		if (mobj->property(i).type() == qMetaTypeId<Aline::EditableItem*>()) {
+		if (mobj->property(i).userType() == qMetaTypeId<Aline::EditableItem*>()) {
 
 			QVariant val = subItem->property(prop);
 
@@ -78,7 +78,7 @@ void EditableItemTestModel::recursivelyTestSubItemsStaticPropertiesTypes(Editabl
 
 			continue;
 
-		} else if (mobj->property(i).type() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
+		} else if (mobj->property(i).userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
 
 			QVariant val = subItem->property(prop);
 
@@ -124,7 +124,7 @@ void EditableItemTestModel::recursivelyTestSubItemsPropertiesChanges(EditableIte
 
 		QVariant val = subItem->property(prop);
 
-		if (mobj->property(i).type() == qMetaTypeId<Aline::EditableItem*>()) {
+		if (mobj->property(i).userType() == qMetaTypeId<Aline::EditableItem*>()) {
 
 			Aline::EditableItem* subItem = val.value<Aline::EditableItem*>();
 
@@ -132,7 +132,7 @@ void EditableItemTestModel::recursivelyTestSubItemsPropertiesChanges(EditableIte
 
 			continue;
 
-		} else if (mobj->property(i).type() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
+		} else if (mobj->property(i).userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
 
 			QList<Aline::EditableItem*> list = val.value<QList<Aline::EditableItem*>>();
 
@@ -175,7 +175,7 @@ void EditableItemTestModel::recursivelyTestSubItemsPropertiesChanges(EditableIte
 
 QVariant EditableItemTestModel::updateValue(QVariant old) {
 
-	switch (old.type()) {
+	switch (old.userType()) {
 	case QMetaType::Bool :
 		return !old.toBool();
 	case QMetaType::Int :

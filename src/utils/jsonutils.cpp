@@ -43,10 +43,6 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 			continue;
 		}
 
-		if (prop == ITEM_SUBITEM_ID) {
-			continue;
-		}
-
 		if (specialSkippedProperties.contains(prop)) {
 			continue;
 		}
@@ -77,7 +73,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 								if (subItemFactory->hasSubItemFactoryInstalled(type)) {
 									Aline::EditableItem* subItem = subItemFactory->createSubItem(type, ref, item);
 
-									extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals);
+									extractItemData(subItem, listedObj, subItemFactory, specialSkippedProperties, blockSignals);
 
 									if (subItem != nullptr) {
 										itemList.push_back(subItem);
@@ -121,45 +117,6 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 		item->setProperty(prop.toStdString().c_str(), var, true); //set all the properties.
 	}
 
-	if (obj.contains(ITEM_SUBITEM_ID)) {
-
-		QJsonValue subItems_val = obj.value(ITEM_SUBITEM_ID);
-
-		if (subItems_val.isArray()) {
-			QJsonArray arr = subItems_val.toArray();
-
-			for (QJsonValue v : arr) {
-
-				if (v.isObject()) {
-					QJsonObject subObj = v.toObject();
-
-					QString ref;
-					QString type;
-
-					if (subObj.contains(EditableItem::REF_PROP_NAME) &&
-							subObj.contains(EditableItem::TYPE_ID_NAME)) {
-
-						ref = subObj.value(EditableItem::REF_PROP_NAME).toString();
-						type = subObj.value(EditableItem::TYPE_ID_NAME).toString();
-
-						if (subItemFactory->hasSubItemFactoryInstalled(type)) {
-							Aline::EditableItem* subItem = subItemFactory->createSubItem(type, ref, item);
-
-							extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals);
-
-							if (subItem != nullptr) {
-								item->insertSubItem(subItem);
-							}
-						}
-
-					}
-				}
-
-			}
-		}
-
-	}
-
 	if (blockSignals) {
 		item->blockSignals(false);
 	}
@@ -173,13 +130,13 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 	const QMetaObject* meta = item->metaObject();
 	int prop_index = meta->indexOfProperty(prop);
 
-	if (meta->property(prop_index).type() == qMetaTypeId<Aline::EditableItem*>()) {
+	if (meta->property(prop_index).userType() == qMetaTypeId<Aline::EditableItem*>()) {
 
 		Aline::EditableItem* subitem = qvariant_cast<Aline::EditableItem*>(item->property(prop));
 
 		obj.insert(sprop, Aline::JsonUtils::encapsulateItemToJson(subitem));
 
-	} else if (meta->property(prop_index).type() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
+	} else if (meta->property(prop_index).userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
 
 		QList<Aline::EditableItem*> list = qvariant_cast<QList<Aline::EditableItem*>>(item->property(prop));
 
@@ -226,19 +183,6 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 		addPropToObject(obj, item, cpropName.toStdString().c_str());
 
-	}
-
-	QJsonArray internal_items_array;
-
-	for (Aline::EditableItem* internal_item : item->getSubItems()) {
-		QJsonObject sub_obj = encapsulateItemToJson(internal_item);
-
-		internal_items_array.append(sub_obj);
-
-	}
-
-	if (internal_items_array.size() > 0) {
-		obj.insert(ITEM_SUBITEM_ID, internal_items_array);
 	}
 
 	return obj;

@@ -182,12 +182,10 @@ void EditableItem::insertSubItem(EditableItem* item) {
 		return;
 	}
 
-	if (item->getParentItem() != nullptr) {
-		if (item->getParentItem() != this) {
+	if (item->getParentItem() != this) {
 
-			item->setParentItem(this);
+		item->setParentItem(this);
 
-		}
 	}
 
 	_usedRef.insert(item->getRef());
