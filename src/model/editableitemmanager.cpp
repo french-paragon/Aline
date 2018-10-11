@@ -619,4 +619,13 @@ bool EditableItemManager::insertItem(EditableItem* item) {
 
 }
 
+void EditableItemManager::setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership)
+{
+	_factoryManager = factoryManager;
+
+	if (takeOwnership) {
+		_factoryManager->setParent(this);
+	}
+}
+
 } // namespace Aline

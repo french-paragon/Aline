@@ -21,9 +21,9 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "view/mainwindow.h"
 #include "model/editableitemmanager.h"
-#include "aline/src/model/editableitemfactory.h"
-#include "aline/src/model/labels/labelstree.h"
-#include "aline/src/model/labels/labelselectionforitemproxymodel.h"
+#include "../model/editableitemfactory.h"
+#include "../model/labels/labelstree.h"
+#include "../model/labels/labelselectionforitemproxymodel.h"
 
 #include "editableitemtypespecializedaction.h"
 

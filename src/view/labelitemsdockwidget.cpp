@@ -20,7 +20,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #include "ui_labelitemsdockwidget.h"
 
 #include "view/mainwindow.h"
-#include "aline/src/model/labels/projectfilterbylabelproxymodel.h"
+#include "../model/labels/projectfilterbylabelproxymodel.h"
 #include "model/editableitemmanager.h"
 
 namespace Aline {

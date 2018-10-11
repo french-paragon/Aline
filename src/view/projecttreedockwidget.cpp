@@ -24,8 +24,8 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 #include "editableitemtypespecializedaction.h"
 
-#include <aline/src/model/editableitemfactory.h>
-#include <aline/src/view/editorfactorymanager.h>
+#include "../model/editableitemfactory.h"
+#include "editorfactorymanager.h"
 
 namespace Aline {
 

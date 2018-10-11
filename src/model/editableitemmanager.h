@@ -91,6 +91,8 @@ public:
 
 	LabelsTree* labelsTree();
 
+	void setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership = false);
+
 signals:
 
 	void loadingItemSucessFull(QString ref);

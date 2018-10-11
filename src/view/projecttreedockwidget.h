@@ -19,10 +19,10 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "gui/gui_global.h"
+#include "../aline_global.h"
 #include <QDockWidget>
 
-#include "gui/mainwindows.h"
+#include "mainwindow.h"
 #include "model/editableitemmanager.h"
 #include <QSortFilterProxyModel>
 
@@ -34,7 +34,7 @@ namespace Ui {
 class ProjectTreeDockWidget;
 }
 
-class CATHIA_GUI_EXPORT ProjectTreeDockWidget : public QDockWidget
+class ALINE_EXPORT ProjectTreeDockWidget : public QDockWidget
 {
 	Q_OBJECT
 
