@@ -8,11 +8,18 @@ list(APPEND LIB_SRC
 		model/labels/labelstree.cpp
 		model/labels/projectfilterbylabelproxymodel.cpp
 		view/mainwindow.cpp
+		view/labelitemsdockwidget.cpp
+		view/projectlabelsdockwidget.cpp
+		view/projecttreedockwidget.cpp
 		view/editor.cpp
 		view/editorfactory.cpp
 		view/editableitemeditor.cpp
 		view/editorfactorymanager.cpp
+		view/editableitemtypespecializedaction.cpp
 		view/mainwindow.ui
+		view/labelitemsdockwidget.ui
+		view/projectlabelsdockwidget.ui
+		view/projecttreedockwidget.ui
 		utils/stringutils.cpp
 		utils/jsonutils.cpp
 		control/app.cpp
