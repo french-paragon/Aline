@@ -76,7 +76,7 @@ void ProjectTreeDockWidget::selectionChanged() {
 
 	QModelIndexList selection = ui->treeView->selectionModel()->selectedIndexes();
 
-	if (selection.size() > 0) {
+	if (selection.size() > 0 && !_mw_parent->isEditingAnItem()) {
 
 		QString ref = ui->treeView->model()->data(selection.first(), EditableItemManager::ItemRefRole).toString();
 

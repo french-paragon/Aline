@@ -35,4 +35,8 @@ void EditableItemEditor::saveAction() {
 	}
 }
 
+QString EditableItemEditor::getEditedItemRef() const {
+	return _editedItem->getRef();
+}
+
 } // namespace Aline

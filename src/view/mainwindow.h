@@ -37,10 +37,14 @@ public:
 	void addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget);
 	void addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget, Qt::Orientation orientation);
 
+	bool isEditingAnItem() const;
+
 signals:
 
 	void editorAboutToBeRemoved(Editor* editor);
 	void currentProjectChanged(EditableItemManager*);
+
+	void editedItemChanged(QString ref);
 
 public slots:
 
@@ -59,6 +63,8 @@ public slots:
 protected:
 
 	void updateTitle(Editor* editor, QString newTitle);
+
+	void onCurrentEditorChanged();
 
 	EditableItemManager* _currentProject;
 

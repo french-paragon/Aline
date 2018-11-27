@@ -3,6 +3,7 @@
 
 #include "editor.h"
 #include "editorfactorymanager.h"
+#include "editableitemeditor.h"
 #include "model/editableitem.h"
 #include "model/editableitemmanager.h"
 #include "model/editableitemfactory.h"
@@ -34,6 +35,9 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	connect(ui->tabWidget, &QTabWidget::tabCloseRequested,
 			this, static_cast<void (MainWindow::*)(int)>(&MainWindow::closeEditor));
+
+	connect(ui->tabWidget, &QTabWidget::currentChanged,
+			this, &MainWindow::onCurrentEditorChanged);
 }
 
 MainWindow::~MainWindow()
@@ -60,7 +64,18 @@ EditableItemManager *MainWindow::currentProject() const
 void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 {
 	if (currentProject != _currentProject) {
+
+		if (_currentProject != nullptr) {
+			disconnect(this, &Aline::MainWindow::editedItemChanged,
+					   _currentProject, &EditableItemManager::setActiveItem);
+		}
+
 		_currentProject = currentProject;
+
+
+		connect(this, &Aline::MainWindow::editedItemChanged,
+				_currentProject, &EditableItemManager::setActiveItem);
+
 		emit currentProjectChanged(_currentProject);
 	}
 }
@@ -95,6 +110,23 @@ void MainWindow::addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget
 
 	QMainWindow::addDockWidget(area, dockwidget, orientation);
 
+}
+
+bool MainWindow::isEditingAnItem() const {
+
+	if (ui->tabWidget->count() == 0) {
+		return false;
+	}
+
+	QWidget* w = ui->tabWidget->currentWidget();
+
+	Aline::EditableItemEditor* eie = qobject_cast<Aline::EditableItemEditor*>(w);
+
+	if (eie != nullptr) {
+		return true;
+	}
+
+	return false;
 }
 
 void MainWindow::addEditor(Editor* editor) {
@@ -197,6 +229,18 @@ void MainWindow::updateTitle(Editor* editor, QString newTitle) {
 	int index = ui->tabWidget->indexOf(editor);
 
 	ui->tabWidget->setTabText(index, newTitle);
+
+}
+
+void MainWindow::onCurrentEditorChanged() {
+
+	QWidget* w = ui->tabWidget->currentWidget();
+
+	Aline::EditableItemEditor* eie = qobject_cast<Aline::EditableItemEditor*>(w);
+
+	if (eie != nullptr) {
+		emit editedItemChanged(eie->getEditedItemRef());
+	}
 
 }
 

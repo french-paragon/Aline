@@ -21,6 +21,8 @@ public:
 
 	virtual void saveAction();
 
+	QString getEditedItemRef() const;
+
 signals:
 
 	void editedItemChanged(EditableItem* new_edited_item);
