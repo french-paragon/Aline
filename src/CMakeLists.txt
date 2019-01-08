@@ -14,6 +14,8 @@ list(APPEND LIB_SRC
 		view/editor.cpp
 		view/editorfactory.cpp
 		view/editableitemeditor.cpp
+		view/editableitemqmleditor.cpp
+		view/editableitemqmleditor.ui
 		view/editorfactorymanager.cpp
 		view/editableitemtypespecializedaction.cpp
 		view/mainwindow.ui
@@ -38,3 +40,5 @@ target_compile_definitions(${PROJECT_NAME}
 target_link_libraries(${PROJECT_NAME} Qt5::Core)
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
+target_link_libraries(${PROJECT_NAME} Qt5::Qml)
+target_link_libraries(${PROJECT_NAME} Qt5::QuickWidgets)
