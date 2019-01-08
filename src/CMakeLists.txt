@@ -3,10 +3,13 @@ list(APPEND LIB_SRC
 		model/editableitem.cpp
 		model/editableitemmanager.cpp
 		model/editableitemfactory.cpp
+		model/editableitemmanagerfactory.cpp
 		model/labels/label.cpp
 		model/labels/labelselectionforitemproxymodel.cpp
 		model/labels/labelstree.cpp
 		model/labels/projectfilterbylabelproxymodel.cpp
+		model/exceptions/itemioexception.cpp
+		model/exceptions/datasourcebusyexception.cpp
 		view/mainwindow.cpp
 		view/labelitemsdockwidget.cpp
 		view/projectlabelsdockwidget.cpp

@@ -23,6 +23,12 @@ const QString Aline::JsonUtils::LABEL_SUBLABELS_ID = "sublabels";
 const QString Aline::JsonUtils::ITEM_SUBITEM_ID = "item_internalsubitems";
 const QString Aline::JsonUtils::ITEM_SUBITEM_LIST = "subitemslist";
 
+const QString Aline::JsonUtils::TREE_REF_ID = "reference";
+const QString Aline::JsonUtils::TREE_TYPE_ID = "type";
+const QString Aline::JsonUtils::TREE_NAME_ID = "name";
+const QString Aline::JsonUtils::TREE_CHILDRENS_ID = "childrens";
+const QString Aline::JsonUtils::TREE_ACCEPT_CHILDRENS_ID = "accept_childrens";
+
 void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject const& obj, EditableItemFactoryManager* subItemFactory, QStringList const& specialSkippedProperties, bool blockSignals) {
 
 	if (blockSignals) {
@@ -404,6 +410,132 @@ void Aline::JsonUtils::extractJsonLabelDatas(QJsonValue const& val, Aline::Label
 			}
 
 		}
+	}
+
+}
+
+void Aline::JsonUtils::encapsulateTreeLeafsToJson(QJsonObject & obj,
+												  QMap<QString, QVector<EditableItemManager::treeStruct*>> const& itemsByTypes) {
+
+	QJsonArray arrTypes;
+
+	for (QString typeRef : itemsByTypes.keys()) {
+
+		QJsonObject collection;
+		collection.insert(TREE_TYPE_ID, typeRef);
+
+		QJsonArray items;
+
+		for (EditableItemManager::treeStruct* branch : itemsByTypes.value(typeRef)) {
+
+			QJsonObject treeLeaf;
+
+			treeLeaf.insert(TREE_REF_ID, branch->_ref);
+			treeLeaf.insert(TREE_NAME_ID, branch->_name);
+			treeLeaf.insert(TREE_ACCEPT_CHILDRENS_ID, branch->_acceptChildrens);
+
+			items.push_back(treeLeaf);
+
+		}
+
+		collection.insert(TREE_CHILDRENS_ID, items);
+
+		arrTypes.push_back(collection);
+
+	}
+
+	obj.insert(TREE_CHILDRENS_ID, arrTypes);
+
+}
+
+void Aline::JsonUtils::extractTreeLeafs(QJsonObject &obj,
+										QMap<QString, QVector<EditableItemManager::treeStruct*>> & itemsByTypes,
+										QMap<QString, EditableItemManager::treeStruct*> & treeIndex) {
+
+	if (!obj.contains(TREE_CHILDRENS_ID)) {
+
+		throw JsonUtilsException("", QString("Error while parsing JSON data, missing reference for childrens."));
+
+	}
+
+	QJsonValue val = obj.value(TREE_CHILDRENS_ID);
+
+	if (!val.isArray()) {
+		throw JsonUtilsException("", QString("Error while parsing JSON data, childrens reference point to a non array."));
+	}
+
+	QJsonArray arr = val.toArray();
+
+	for (QJsonValue v : arr) {
+
+		if (v.isObject()) {
+
+			QJsonObject o = v.toObject();
+
+			if (o.contains(TREE_TYPE_ID) && o.contains(TREE_CHILDRENS_ID)) {
+
+				QJsonValue typeV = o.value(TREE_TYPE_ID);
+
+				if (!typeV.isString()) {
+					continue;
+				}
+
+				QString typeId = typeV.toString();
+
+				if (!itemsByTypes.contains(typeId)) {
+					itemsByTypes.insert(typeId, QVector<EditableItemManager::treeStruct*>());
+				}
+
+				QJsonValue childrensV = o.value(TREE_CHILDRENS_ID);
+
+				if (!childrensV.isArray()) {
+					continue;
+				}
+
+				for (QJsonValue c : childrensV.toArray()) {
+
+					if (c.isObject()) {
+						QJsonObject leafO = c.toObject();
+
+						if (leafO.contains(TREE_REF_ID) && leafO.contains(TREE_NAME_ID)) {
+
+							QJsonValue refV = leafO.value(TREE_REF_ID);
+							QJsonValue nameV = leafO.value(TREE_NAME_ID);
+
+							if (refV.isString() && nameV.isString()) {
+
+								EditableItemManager::treeStruct* leaf = new EditableItemManager::treeStruct();
+
+								leaf->_ref = refV.toString();
+								leaf->_name = nameV.toString();
+
+								if (leafO.contains(TREE_ACCEPT_CHILDRENS_ID)) {
+									QJsonValue ac = leafO.value(TREE_ACCEPT_CHILDRENS_ID);
+
+									if (ac.isBool()) {
+										leaf->_acceptChildrens = ac.toBool();
+									} else {
+										leaf->_acceptChildrens = false;
+									}
+								} else {
+									leaf->_acceptChildrens = false;
+								}
+
+								leaf->_type_ref = typeId;
+
+								treeIndex.insert(leaf->_ref, leaf);
+								itemsByTypes[typeId].push_back(leaf);
+
+							}
+						}
+					}
+
+				}
+
+			}
+
+		}
+
 	}
 
 }

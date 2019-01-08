@@ -28,6 +28,21 @@ public:
 		EditableItemManagerUserRole = Qt::UserRole + 4,
 	};
 
+	/*!
+	 * \brief The treeStruct struct allow for the EditableItemManager to store the structure of loadable items in tree.
+	 */
+	struct treeStruct {
+		QString _ref;
+		QString _name;
+		QString _type_ref;
+		bool _acceptChildrens;
+	};
+
+	struct loadedItem {
+		treeStruct* _treeStruct;
+		EditableItem* _item;
+	};
+
 	explicit EditableItemManager(QObject *parent = nullptr);
 
 	virtual bool hasDataSource() const = 0;
@@ -112,21 +127,6 @@ public slots:
 protected:
 
 	void cleanTreeStruct();
-
-	/*!
-	 * \brief The treeStruct struct allow for the EditableItemManager to store the structure of loadable items in tree.
-	 */
-	struct treeStruct {
-		QString _ref;
-		QString _name;
-		QString _type_ref;
-		bool _acceptChildrens;
-	};
-
-	struct loadedItem {
-		treeStruct* _treeStruct;
-		EditableItem* _item;
-	};
 
 	QModelIndex indexFromLeaf(treeStruct* leaf) const;
 	QModelIndex indexFromType(QString typeRef) const;

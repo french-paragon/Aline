@@ -5,11 +5,13 @@
 
 #include <QMainWindow>
 #include <QMap>
+#include <functional>
 
 namespace Aline {
 
 class Editor;
 class EditableItemManager;
+class EditableItemManagerFactory;
 
 namespace Ui {
 class MainWindow;
@@ -39,10 +41,28 @@ public:
 
 	bool isEditingAnItem() const;
 
+	void registerCreateProjectFunction(QString const& fName,
+									   QString const& projectType,
+									   QString const& longDescr,
+									   std::function<EditableItemManager*(QObject*, MainWindow*)> const& func);
+
+	void registerOpenProjectFunction(QString const& fName,
+									 QString const& projectType,
+									 QString const& longDescr,
+									 std::function<EditableItemManager*(QObject*, MainWindow*)> const& func);
+
+	void setDefaultProjectCreator(const QString &defaultProjectCreator);
+
+	QString defaultProjectCreator() const;
+
+	QString defaultProjectOpener() const;
+	void setDefaultProjectOpener(const QString &defaultProjectOpener);
+
 signals:
 
 	void editorAboutToBeRemoved(Editor* editor);
 	void currentProjectChanged(EditableItemManager*);
+	void projectLoaded(EditableItemManager*);
 
 	void editedItemChanged(QString ref);
 
@@ -62,6 +82,8 @@ public slots:
 
 protected:
 
+	void setWindowProjectFromFunc(const QString &fName);
+
 	void updateTitle(Editor* editor, QString newTitle);
 
 	void onCurrentEditorChanged();
@@ -71,6 +93,18 @@ protected:
 	QMap<QString, Aline::Editor*> _openedEditors;
 
 	QMenu* _submenuDock;
+
+	void registerProjectFunction(QString const& fName,
+								 QString const& projectType,
+								 QString const& longDescr,
+								 std::function<EditableItemManager*(QObject*, MainWindow*)> const& func,
+								 QMenu* target);
+
+	QMenu* _submenuCreateProject;
+	QMenu* _submenuOpenProject;
+	QString _defaultProjectCreator;
+	QString _defaultProjectOpener;
+	EditableItemManagerFactory* _editableItemManagerFactory;
 
 private:
 	Ui::MainWindow *ui;

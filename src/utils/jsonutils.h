@@ -2,6 +2,7 @@
 #define JSONUTILS_H
 
 #include "../aline_global.h"
+#include "../model/editableitemmanager.h"
 
 #include <QVariant>
 #include <QJsonObject>
@@ -28,6 +29,12 @@ extern const QString LABEL_SUBLABELS_ID;
 
 extern const QString ITEM_SUBITEM_ID;
 extern const QString ITEM_SUBITEM_LIST;
+
+extern const QString TREE_REF_ID;
+extern const QString TREE_TYPE_ID;
+extern const QString TREE_NAME_ID;
+extern const QString TREE_CHILDRENS_ID;
+extern const QString TREE_ACCEPT_CHILDRENS_ID;
 
 class ALINE_EXPORT JsonUtilsException : public QException
 {
@@ -66,6 +73,9 @@ ALINE_EXPORT QJsonObject encodeLabelAsJson(LabelsTree const* tree, QModelIndex c
 ALINE_EXPORT Aline::Label* extractJsonLabel(QJsonValue const& val, Aline::LabelsTree* parent);
 ALINE_EXPORT Aline::Label* extractJsonLabel(QJsonValue const& val, Aline::Label* parent);
 ALINE_EXPORT void extractJsonLabelDatas(QJsonValue const& val, Aline::Label* label);
+
+ALINE_EXPORT void encapsulateTreeLeafsToJson(QJsonObject & obj, QMap<QString, QVector<EditableItemManager::treeStruct*>> const& itemsByTypes);
+ALINE_EXPORT void extractTreeLeafs(QJsonObject &obj, QMap<QString, QVector<EditableItemManager::treeStruct*>> & itemsByTypes, QMap<QString, EditableItemManager::treeStruct*> & treeIndex);
 
 }
 

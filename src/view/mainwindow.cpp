@@ -7,6 +7,7 @@
 #include "model/editableitem.h"
 #include "model/editableitemmanager.h"
 #include "model/editableitemfactory.h"
+#include "model/editableitemmanagerfactory.h"
 
 #include <QTabWidget>
 #include <QDockWidget>
@@ -32,12 +33,16 @@ MainWindow::MainWindow(QWidget *parent) :
 	viewMenu->setObjectName(MENU_DISPLAY_NAME);
 
 	_submenuDock = viewMenu->addMenu(tr("docks"));
+	_submenuCreateProject = fileMenu->addMenu(tr("create project"));
+	_submenuOpenProject = fileMenu->addMenu(tr("open project"));
 
 	connect(ui->tabWidget, &QTabWidget::tabCloseRequested,
 			this, static_cast<void (MainWindow::*)(int)>(&MainWindow::closeEditor));
 
 	connect(ui->tabWidget, &QTabWidget::currentChanged,
 			this, &MainWindow::onCurrentEditorChanged);
+
+	_editableItemManagerFactory = new Aline::EditableItemManagerFactory(this);
 }
 
 MainWindow::~MainWindow()
@@ -72,9 +77,10 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 
 		_currentProject = currentProject;
 
-
-		connect(this, &Aline::MainWindow::editedItemChanged,
+		if (_currentProject != nullptr) {
+			connect(this, &Aline::MainWindow::editedItemChanged,
 				_currentProject, &EditableItemManager::setActiveItem);
+		}
 
 		emit currentProjectChanged(_currentProject);
 	}
@@ -127,6 +133,47 @@ bool MainWindow::isEditingAnItem() const {
 	}
 
 	return false;
+}
+
+void MainWindow::registerCreateProjectFunction(QString const& fName,
+											   QString const& projectType,
+											   QString const& longDescr,
+											   std::function<EditableItemManager*(QObject*, MainWindow*)> const& func) {
+
+	registerProjectFunction(fName, projectType, longDescr, func, _submenuCreateProject);
+
+}
+
+void MainWindow::registerOpenProjectFunction(QString const& fName,
+											 QString const& projectType,
+											 QString const& longDescr,
+											 std::function<EditableItemManager*(QObject*, MainWindow*)> const& func) {
+
+	registerProjectFunction(fName, projectType, longDescr, func, _submenuOpenProject);
+
+}
+
+void MainWindow::registerProjectFunction(QString const& fName,
+										 QString const& projectType,
+										 QString const& longDescr,
+										 std::function<EditableItemManager*(QObject*, MainWindow*)> const& func,
+										 QMenu* target) {
+
+	EditableItemManagerFactory::funcDescr d;
+	d._projectDescr = projectType;
+	d._longDescr = longDescr;
+
+	_editableItemManagerFactory->registerGuiAwareFunction(fName, d, func);
+
+	QAction* openProjectAction = new QAction(projectType, this);
+	openProjectAction->setToolTip(longDescr);
+
+	connect(openProjectAction, &QAction::triggered, [fName, this] () {
+		setWindowProjectFromFunc(fName);
+	});
+
+	target->addAction(openProjectAction);
+
 }
 
 void MainWindow::addEditor(Editor* editor) {
@@ -223,6 +270,17 @@ void MainWindow::saveAll() {
 
 }
 
+void MainWindow::setWindowProjectFromFunc(QString const& fName) {
+
+	//TODO: look if it is possible to open a new main windows.
+	EditableItemManager* manager = _editableItemManagerFactory->createManagerWithRegistredFunctionAndGuiContext(fName, this, this);
+
+	if (manager != nullptr) {
+		emit projectLoaded(manager);
+		setCurrentProject(manager);
+	}
+}
+
 
 void MainWindow::updateTitle(Editor* editor, QString newTitle) {
 
@@ -242,6 +300,26 @@ void MainWindow::onCurrentEditorChanged() {
 		emit editedItemChanged(eie->getEditedItemRef());
 	}
 
+}
+
+QString MainWindow::defaultProjectOpener() const
+{
+	return _defaultProjectOpener;
+}
+
+void MainWindow::setDefaultProjectOpener(const QString &defaultProjectOpener)
+{
+	_defaultProjectOpener = defaultProjectOpener;
+}
+
+QString MainWindow::defaultProjectCreator() const
+{
+	return _defaultProjectCreator;
+}
+
+void MainWindow::setDefaultProjectCreator(const QString &defaultProjectCreator)
+{
+	_defaultProjectCreator = defaultProjectCreator;
 }
 
 } // namespace Aline
