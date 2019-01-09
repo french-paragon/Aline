@@ -35,6 +35,8 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 		item->blockSignals(true);
 	}
 
+	item->blockChangeDetection(true);
+
 	for (QString prop : obj.keys()) {
 
 		if (prop == Aline::EditableItem::TYPE_ID_NAME) {
@@ -90,7 +92,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 
 					}
 
-					item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(itemList), true);
+					item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(itemList));
 					continue;
 				}
 
@@ -106,7 +108,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 					extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals);
 
 					if (subItem != nullptr) {
-						item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(subItem), true);
+						item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(subItem));
 						continue;
 					}
 				}
@@ -120,12 +122,14 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 			var.convert(meta->property(prop_index).type());
 		}
 
-		item->setProperty(prop.toStdString().c_str(), var, true); //set all the properties.
+		item->setProperty(prop.toStdString().c_str(), var); //set all the properties.
 	}
 
 	if (blockSignals) {
 		item->blockSignals(false);
 	}
+
+	item->blockChangeDetection(false);
 
 }
 

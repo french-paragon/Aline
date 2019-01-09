@@ -50,6 +50,7 @@ QStringList EditorFactory::editableTypes() const {
 	if (!_hasEditableTypesCached) {
 
 		Editor* temp = createItem(nullptr);
+		_hasEditableTypesCached = true;
 		_editableTypes = temp->editableTypes();
 
 		delete temp;

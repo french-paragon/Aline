@@ -12,6 +12,7 @@ namespace Aline {
 class Editor;
 class EditableItemManager;
 class EditableItemManagerFactory;
+class EditorFactoryManager;
 
 namespace Ui {
 class MainWindow;
@@ -57,6 +58,8 @@ public:
 
 	QString defaultProjectOpener() const;
 	void setDefaultProjectOpener(const QString &defaultProjectOpener);
+
+	void setEditorFactoryManager(EditorFactoryManager *editorFactoryManager);
 
 signals:
 
@@ -105,6 +108,7 @@ protected:
 	QString _defaultProjectCreator;
 	QString _defaultProjectOpener;
 	EditableItemManagerFactory* _editableItemManagerFactory;
+	EditorFactoryManager* _editorFactoryManager;
 
 private:
 	Ui::MainWindow *ui;

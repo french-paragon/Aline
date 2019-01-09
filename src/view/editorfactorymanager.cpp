@@ -4,6 +4,7 @@
 #include "editableitemeditor.h"
 #include "editorfactory.h"
 #include "model/editableitem.h"
+#include "qmleditorfactory.h"
 
 namespace Aline {
 
@@ -34,6 +35,21 @@ void EditorFactoryManager::installFactory(EditorFactory* factory, bool takeOwner
 	for (QString ref : factory->editableTypes()) {
 
 		_editableTypes.insert(ref, factory->getItemTypeId()); //insert the editable types.
+
+	}
+
+}
+
+void EditorFactoryManager::installQmlEditorFactory(QString const& shadowTypeEditor,
+												   QString const& shadowNameEditor,
+												   QString const& qmlSource,
+												   QStringList const& editableTypes) {
+
+	if (!hasFactoryInstalled(shadowTypeEditor)) {
+
+		QmlEditorFactory* factory = new QmlEditorFactory(shadowTypeEditor, shadowNameEditor, qmlSource, editableTypes, this);
+
+		installFactory(factory);
 
 	}
 

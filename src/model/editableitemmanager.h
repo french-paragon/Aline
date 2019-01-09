@@ -10,6 +10,7 @@ namespace Aline {
 class EditableItem;
 class EditableItemFactoryManager;
 class LabelsTree;
+class EditorFactoryManager;
 
 class ALINE_EXPORT EditableItemManager : public QAbstractItemModel
 {
@@ -108,6 +109,12 @@ public:
 
 	void setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership = false);
 
+	/*!
+	 * \brief setEditorManager indicate to the model that a gui might want to edit the items and will want to use this editor factory manager.
+	 * \param editorManager the factory manager.
+	 */
+	void setEditorManager(EditorFactoryManager *editorManager);
+
 signals:
 
 	void loadingItemSucessFull(QString ref);
@@ -163,6 +170,7 @@ protected:
 	QMap<QString, loadedItem> _loadedItems;
 
 	EditableItemFactoryManager* _factoryManager;
+	EditorFactoryManager* _editorManager;
 };
 
 } // namespace Aline

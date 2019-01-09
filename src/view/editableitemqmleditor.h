@@ -10,15 +10,26 @@ class EditableItemQmlEditor;
 }
 
 class EditableItemQmlEditorProxy;
+class QmlEditorFactory;
 
 class EditableItemQmlEditor : public EditableItemEditor
 {
 	Q_OBJECT
 
 public:
+
+	static const QString GENERIC_QMLBASED_EDITOR_TYPE;
+
+	friend class QmlEditorFactory;
+
 	explicit EditableItemQmlEditor(QWidget *parent = nullptr);
 	explicit EditableItemQmlEditor(QUrl const& source, QWidget *parent = nullptr);
 	~EditableItemQmlEditor();
+
+	virtual QString getTypeId() const;
+	virtual QString getTypeName() const;
+
+	virtual QStringList editableTypes() const;
 
 	void setQmlSource(QUrl const& source);
 
@@ -30,6 +41,14 @@ protected:
 	virtual bool effectivelySetEditedItem(EditableItem* item);
 
 	EditableItemQmlEditorProxy* _proxy;
+
+	QString _shadowEditorType;
+	QString _shadowEditorName;
+	QStringList _editableTypes;
+
+private:
+
+	static int registerEditableItemCode;
 };
 
 class EditableItemQmlEditorProxy : public QObject {
@@ -40,11 +59,11 @@ public:
 	explicit EditableItemQmlEditorProxy(EditableItemQmlEditor* parent);
 	~EditableItemQmlEditorProxy();
 
-	Q_PROPERTY(QObject* editedItem READ editedItem NOTIFY editedItemChanged)
+	Q_PROPERTY(Aline::EditableItem* editedItem READ editedItem NOTIFY editedItemChanged)
 
 	bool setEditedItem(EditableItem *editedItem);
 
-	QObject* editedItem() const;
+	EditableItem* editedItem() const;
 
 signals:
 

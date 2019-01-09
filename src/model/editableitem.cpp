@@ -5,6 +5,7 @@
 #include "utils/stringutils.h"
 
 #include <QMetaObject>
+#include <QEvent>
 
 namespace Aline {
 
@@ -40,7 +41,8 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	_ref(ref),
 	_hasUnsavedChanged(false),
 	_manager(parent),
-	_parentItem(nullptr)
+	_parentItem(nullptr),
+	_block_change_detection(false)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -114,6 +116,10 @@ void EditableItem::onVisibleStateChanged() {
 }
 
 void EditableItem::newUnsavedChanges() {
+
+	if (_block_change_detection) {
+		return;
+	}
 
 	if (autoSave()) {
 		save();
@@ -206,27 +212,6 @@ QStringList EditableItem::getFileReferencePropertiesName() const {
 	return {};
 }
 
-bool EditableItem::setProperty(const char *name, const QVariant &value, bool noStatesChanges) {
-
-	if (noStatesChanges) {
-		return QObject::setProperty(name, value);
-	}
-
-	QVariant val = property(name);
-
-	if (val.isValid()) {
-		if (val == value) {
-			return QObject::setProperty(name, value);
-		}
-	}
-
-	bool ret = QObject::setProperty(name, value);
-	newUnsavedChanges();
-
-	return ret;
-
-}
-
 void EditableItem::setParentItem(EditableItem* parent) {
 
 	if (_parentItem != nullptr) {
@@ -238,9 +223,14 @@ void EditableItem::setParentItem(EditableItem* parent) {
 
 }
 
+void EditableItem::blockChangeDetection(bool block_change_detection)
+{
+	_block_change_detection = block_change_detection;
+}
+
 QStringList EditableItem::getLabels() const
 {
-    return _labels;
+	return _labels;
 }
 
 void EditableItem::setLabels(const QStringList &labels)
@@ -285,6 +275,16 @@ bool EditableItem::removeLabel(QString const& labelRef) {
 	}
 	return false;
 
+}
+
+bool EditableItem::event(QEvent *e) {
+
+	if (e->type() == QEvent::DynamicPropertyChange) {
+		newUnsavedChanges();
+		return true;
+	}
+
+	return QObject::event(e);
 }
 
 } // namespace Aline

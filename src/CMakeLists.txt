@@ -18,6 +18,7 @@ list(APPEND LIB_SRC
 		view/editorfactory.cpp
 		view/editableitemeditor.cpp
 		view/editableitemqmleditor.cpp
+		view/qmleditorfactory.cpp
 		view/editableitemqmleditor.ui
 		view/editorfactorymanager.cpp
 		view/editableitemtypespecializedaction.cpp

@@ -22,7 +22,8 @@ EditableItemManager::EditableItemManager(QObject *parent) :
 	QAbstractItemModel(parent),
 	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
 	_labels(nullptr),
-	_activeItem(nullptr)
+	_activeItem(nullptr),
+	_editorManager(nullptr)
 {
 	cleanTreeStruct();
 }
@@ -223,7 +224,15 @@ Qt::ItemFlags EditableItemManager::flags(const QModelIndex &index) const {
 
 		QString itemTypeRef = index.data(ItemTypeRefRole).toString();
 
-		if (!Aline::EditorFactoryManager::GlobalEditorFactoryManager.hasFactoryInstalledForItem(itemTypeRef)) {
+		bool hasEditor = false;
+
+		if (_editorManager != nullptr) {
+			hasEditor = _editorManager->hasFactoryInstalledForItem(itemTypeRef);
+		} else {
+			hasEditor = Aline::EditorFactoryManager::GlobalEditorFactoryManager.hasFactoryInstalledForItem(itemTypeRef);
+		}
+
+		if (!hasEditor) {
 			f |= Qt::ItemIsEditable;
 		}
 
@@ -617,6 +626,11 @@ bool EditableItemManager::insertItem(EditableItem* item) {
 
 	return true;
 
+}
+
+void EditableItemManager::setEditorManager(EditorFactoryManager *editorManager)
+{
+	_editorManager = editorManager;
 }
 
 void EditableItemManager::setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership)

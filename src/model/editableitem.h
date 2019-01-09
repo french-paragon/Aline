@@ -53,7 +53,7 @@ public:
 
 	Q_PROPERTY(QString ref READ getRef WRITE changeRef NOTIFY refChanged)
 	Q_PROPERTY(QString parentRef MEMBER _p_ref NOTIFY parentChanged)
-	Q_PROPERTY(QString type_id READ getTypeId)
+	Q_PROPERTY(QString type_id READ getTypeId CONSTANT)
 	Q_PROPERTY(QStringList labels READ getLabels WRITE setLabels)
 
 	/*!
@@ -107,8 +107,6 @@ public:
 	 */
 	virtual QStringList getFileReferencePropertiesName() const;
 
-	bool setProperty(const char *name, const QVariant &value, bool noStatesChanges = false);
-
 	QStringList getLabels() const;
 	/*!
 	 * \brief setLabels change all the labels at once
@@ -124,6 +122,10 @@ public:
 	bool hasLabel(QString const& labelRef) const;
 	bool addLabel(QString const& labelRef);
 	bool removeLabel(QString const& labelRef);
+
+	virtual bool event(QEvent *e);
+
+	void blockChangeDetection(bool block_change_detection);
 
 signals:
 
@@ -172,6 +174,8 @@ private:
 	EditableItem* _parentItem;
 
 	QStringList _labels;
+
+	bool _block_change_detection;
 
 };
 

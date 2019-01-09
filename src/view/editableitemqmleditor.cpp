@@ -3,17 +3,25 @@
 
 #include "model/editableitem.h"
 #include <QtQml/QQmlContext>
+#include <QQmlEngine>
 
 namespace Aline {
 
+int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::EditableItem*>("Aline::EditableItem*") + qmlRegisterType<Aline::EditableItem>();
+
+const QString EditableItemQmlEditor::GENERIC_QMLBASED_EDITOR_TYPE = "aline_qml_generic";
+
 EditableItemQmlEditor::EditableItemQmlEditor(QWidget *parent) :
 	EditableItemEditor(parent),
-	ui(new Ui::EditableItemQmlEditor)
+	ui(new Ui::EditableItemQmlEditor),
+	_shadowEditorType(GENERIC_QMLBASED_EDITOR_TYPE),
+	_shadowEditorName(tr("QML based generic editor"))
 {
 	ui->setupUi(this);
 
 	_proxy = new EditableItemQmlEditorProxy(this);
 
+	ui->quickWidget->setResizeMode(QQuickWidget::SizeRootObjectToView);
 	ui->quickWidget->rootContext()->setContextProperty("proxy", _proxy);
 }
 
@@ -26,6 +34,17 @@ EditableItemQmlEditor::EditableItemQmlEditor(QUrl const& source, QWidget *parent
 EditableItemQmlEditor::~EditableItemQmlEditor()
 {
 	delete ui;
+}
+
+QString EditableItemQmlEditor::getTypeId() const {
+	return _shadowEditorType;
+}
+QString EditableItemQmlEditor::getTypeName() const {
+	return _shadowEditorName;
+}
+
+QStringList EditableItemQmlEditor::editableTypes() const {
+	return _editableTypes;
 }
 
 void EditableItemQmlEditor::setQmlSource(const QUrl &source) {
@@ -62,9 +81,9 @@ bool EditableItemQmlEditorProxy::setEditedItem(EditableItem *editedItem)
 	return false;
 }
 
-QObject *EditableItemQmlEditorProxy::editedItem() const
+EditableItem *EditableItemQmlEditorProxy::editedItem() const
 {
-	return qobject_cast<QObject*>(_editedItem);
+	return _editedItem;
 }
 
 } // namespace Aline

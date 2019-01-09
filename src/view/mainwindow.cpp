@@ -20,7 +20,8 @@ const QString MainWindow::MENU_DISPLAY_NAME = "display_menu";
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	ui(new Ui::MainWindow),
-	_currentProject(nullptr)
+	_currentProject(nullptr),
+	_editorFactoryManager(nullptr)
 {
 	ui->setupUi(this);
 
@@ -73,6 +74,8 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 		if (_currentProject != nullptr) {
 			disconnect(this, &Aline::MainWindow::editedItemChanged,
 					   _currentProject, &EditableItemManager::setActiveItem);
+
+			_currentProject->setEditorManager(nullptr);
 		}
 
 		_currentProject = currentProject;
@@ -80,6 +83,8 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 		if (_currentProject != nullptr) {
 			connect(this, &Aline::MainWindow::editedItemChanged,
 				_currentProject, &EditableItemManager::setActiveItem);
+
+			_currentProject->setEditorManager(_editorFactoryManager);
 		}
 
 		emit currentProjectChanged(_currentProject);
@@ -176,6 +181,11 @@ void MainWindow::registerProjectFunction(QString const& fName,
 
 }
 
+void MainWindow::setEditorFactoryManager(EditorFactoryManager *editorFactoryManager)
+{
+	_editorFactoryManager = editorFactoryManager;
+}
+
 void MainWindow::addEditor(Editor* editor) {
 	ui->tabWidget->addTab(editor, editor->title());
 
@@ -252,13 +262,22 @@ void MainWindow::editItem(QString const& itemRef) {
 
 	EditableItem* item = _currentProject->loadItem(itemRef);
 
-	Editor* editor = EditorFactoryManager::GlobalEditorFactoryManager.createItemForEditableItem(item, this);
+	if (item == nullptr) {
+		return;
+	}
+
+	Editor* editor = nullptr;
+
+	if (_editorFactoryManager != nullptr) {
+		editor = _editorFactoryManager->createItemForEditableItem(item, this);
+	} else {
+		editor = EditorFactoryManager::GlobalEditorFactoryManager.createItemForEditableItem(item, this);
+	}
 
 	if (editor != nullptr) {
 		addEditor(editor);
+		_openedEditors.insert(itemRef, editor);
 	}
-
-	_openedEditors.insert(itemRef, editor);
 
 }
 
