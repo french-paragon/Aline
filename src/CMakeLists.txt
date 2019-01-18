@@ -29,6 +29,7 @@ list(APPEND LIB_SRC
 		utils/stringutils.cpp
 		utils/jsonutils.cpp
 		control/app.cpp
+		ressources/ressources.qrc
 		)
 
 add_library(${PROJECT_NAME} ${LIB_SRC})
