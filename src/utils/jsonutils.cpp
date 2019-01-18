@@ -119,7 +119,15 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 		QVariant var = decodeVariantFromJson(obj.value(prop), meta->property(prop_index).type());
 
 		if (var.type() != meta->property(prop_index).type() && meta->property(prop_index).type() != QVariant::Invalid) {
-			var.convert(meta->property(prop_index).type());
+			if (meta->property(prop_index).isEnumType()) {
+				bool ok;
+				int val = meta->property(prop_index).enumerator().keyToValue(var.toString().toStdString().c_str(), &ok);
+				if (ok) {
+					var = QVariant::fromValue(val);
+				}
+			} else {
+				var.convert(meta->property(prop_index).type());
+			}
 		}
 
 		item->setProperty(prop.toStdString().c_str(), var); //set all the properties.
