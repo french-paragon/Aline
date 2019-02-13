@@ -49,3 +49,5 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Qml)
 target_link_libraries(${PROJECT_NAME} Qt5::QuickWidgets)
+
+install (TARGETS ${PROJECT_NAME} DESTINATION usr/lib)
