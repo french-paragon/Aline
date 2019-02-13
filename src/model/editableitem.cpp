@@ -42,7 +42,8 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	_hasUnsavedChanged(false),
 	_manager(parent),
 	_parentItem(nullptr),
-	_block_change_detection(false)
+	_changeDetectionIsBlocked(false),
+	_hasBeenLoadedFromDisk(false)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -57,7 +58,9 @@ EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
 	_ref(ref),
 	_hasUnsavedChanged(false),
 	_manager(nullptr),
-	_parentItem(parent)
+	_parentItem(parent),
+	_changeDetectionIsBlocked(false),
+	_hasBeenLoadedFromDisk(false)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -105,10 +108,36 @@ void EditableItem::changeRef(QString const& newRef) {
 	if (newRef != _ref) {
 		QString oldRef = _ref;
 		_ref = newRef;
+
+		for (QString referentRef : _referentItems) {
+			EditableItem* referent = _manager->loadItem(referentRef);
+
+			if (referent != nullptr) {
+				referent->warnReferedRefChanges(oldRef, _ref);
+			}
+		}
+
 		emit refSwap(oldRef, _ref);
 		emit refChanged(_ref);
 	}
 
+}
+
+void EditableItem::warnRefering(QString referentItemRef) {
+	_referentItems.insert(referentItemRef);
+}
+
+void EditableItem::warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef) {
+	warnUnrefering(referentItemOldRef);
+	warnRefering(referentItemRef);
+}
+
+void EditableItem::warnUnrefering(QString referentItemRef) {
+	_referentItems.remove(referentItemRef);
+}
+
+void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
+	return;
 }
 
 void EditableItem::onVisibleStateChanged() {
@@ -117,7 +146,7 @@ void EditableItem::onVisibleStateChanged() {
 
 void EditableItem::newUnsavedChanges() {
 
-	if (_block_change_detection) {
+	if (_changeDetectionIsBlocked) {
 		return;
 	}
 
@@ -223,9 +252,19 @@ void EditableItem::setParentItem(EditableItem* parent) {
 
 }
 
+bool EditableItem::hasBeenLoadedFromDisk() const
+{
+	return _hasBeenLoadedFromDisk;
+}
+
+bool EditableItem::changeDetectionIsBlocked() const
+{
+	return _changeDetectionIsBlocked;
+}
+
 void EditableItem::blockChangeDetection(bool block_change_detection)
 {
-	_block_change_detection = block_change_detection;
+	_changeDetectionIsBlocked = block_change_detection;
 }
 
 QStringList EditableItem::getLabels() const

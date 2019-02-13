@@ -56,6 +56,8 @@ public:
 	Q_PROPERTY(QString type_id READ getTypeId CONSTANT)
 	Q_PROPERTY(QStringList labels READ getLabels WRITE setLabels)
 
+	Q_PROPERTY(EditableItemManager* manager READ getManager CONSTANT STORED false)
+
 	/*!
 	 * \brief getTypeId allow to get info on the type of the editable item.
 	 * \return a type id as a string.
@@ -125,7 +127,29 @@ public:
 
 	virtual bool event(QEvent *e);
 
+	/*!
+	 * \brief blockChangeDetection block changes detection, effectivly setting the item in loading mode
+	 * \param block_change_detection
+	 */
 	void blockChangeDetection(bool block_change_detection);
+
+	/*!
+	 * \brief managerIsConfiguring indicate if doing changes on the item will trigger an unsaved state or not.
+	 * \return true if the item won't become unsaved, false otherwise.
+	 *
+	 * In standard operational mode, the editableitem will track changes to its properties, subitems, ...
+	 * But sometimes, such behavior is imporductive. So the EditableItemManager can disable it by telling the item it's in configuration mode.
+	 * Devellopers might want to check this state before changing the unsaved state.
+	 */
+	bool changeDetectionIsBlocked() const;
+
+	/*!
+	 * \brief getHasBeenLoadedFromDisk indicate if the item is loading from the disk or not
+	 * \return true if the item is ready to use, false otherwise.
+	 *
+	 * By default it's false, but the editableitem manager change this behaviour after loading the item.
+	 */
+	bool hasBeenLoadedFromDisk() const;
 
 signals:
 
@@ -148,7 +172,20 @@ public slots:
 
 	virtual void changeRef(QString const& newRef);
 
+	void warnRefering(QString referentItemRef);
+	void warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef);
+	void warnUnrefering(QString referentItemRef);
+
 protected:
+
+	/*!
+	 * \brief warnReferedRefChanges warn an item refering another item that this other item is about to change ref.
+	 * \param oldRef The old ref of the refered item.
+	 * \param newRef The new ref of the refered item.
+	 * By default, editableItem don't refer to other items, so this function do nothing.
+	 * A subclass of editable item which refer to other items needs to reimplement this function to be warned about references changes.
+	 */
+	virtual void warnReferedRefChanges(QString oldRef, QString newRef);
 
 	void onVisibleStateChanged();
 
@@ -175,7 +212,13 @@ private:
 
 	QStringList _labels;
 
-	bool _block_change_detection;
+	bool _changeDetectionIsBlocked;
+	bool _hasBeenLoadedFromDisk;
+
+	/*!
+	 * \brief _referentItems Items may refer to other item. They have to warn them that they are refered, so that refered items can forward ref changes to referent items.
+	 */
+	QSet<QString> _referentItems;
 
 };
 

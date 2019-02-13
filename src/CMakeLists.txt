@@ -10,6 +10,7 @@ list(APPEND LIB_SRC
 		model/labels/projectfilterbylabelproxymodel.cpp
 		model/exceptions/itemioexception.cpp
 		model/exceptions/datasourcebusyexception.cpp
+		model/viewmodel/externalitemreferencelistmodel.cpp
 		view/mainwindow.cpp
 		view/labelitemsdockwidget.cpp
 		view/projectlabelsdockwidget.cpp
@@ -28,6 +29,7 @@ list(APPEND LIB_SRC
 		view/projecttreedockwidget.ui
 		utils/stringutils.cpp
 		utils/jsonutils.cpp
+		utils/view_model/indexrebasedproxymodel.cpp
 		control/app.cpp
 		ressources/aline_ressources.qrc
 		)

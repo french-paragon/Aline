@@ -6,6 +6,7 @@
 #include "view/editorfactorymanager.h"
 
 #include "model/labels/labelstree.h"
+#include "../utils/view_model/indexrebasedproxymodel.h"
 
 #include <QSet>
 #include <QIcon>
@@ -296,6 +297,8 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 	EditableItem* item = effectivelyLoadItem(ref);
 
 	connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
+
+	item->_hasBeenLoadedFromDisk = true;
 
 	treeStruct* node = _treeIndex.value(ref, nullptr);
 
@@ -631,6 +634,22 @@ bool EditableItemManager::insertItem(EditableItem* item) {
 void EditableItemManager::setEditorManager(EditorFactoryManager *editorManager)
 {
 	_editorManager = editorManager;
+}
+
+QAbstractItemModel* EditableItemManager::getSubTreeFromItemType(QString typeRef, QObject* modelParent) {
+
+	QModelIndex typeIndex = indexFromType(typeRef);
+
+	if (typeIndex == QModelIndex()) {
+		return nullptr;
+	}
+
+	ModelViewUtils::IndexRebasedProxyModel* model = new ModelViewUtils::IndexRebasedProxyModel(modelParent);
+
+	model->setSourceModel(this, typeIndex);
+
+	return model;
+
 }
 
 void EditableItemManager::setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership)

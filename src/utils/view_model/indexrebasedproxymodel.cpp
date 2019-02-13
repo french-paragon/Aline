@@ -257,6 +257,16 @@ QVariant IndexRebasedProxyModel::data(const QModelIndex &index, int role) const 
 
 }
 
+QHash<int, QByteArray> IndexRebasedProxyModel::roleNames() const {
+
+	if (_sourceModel != nullptr) {
+		return _sourceModel->roleNames();
+	}
+
+	return QAbstractItemModel::roleNames();
+
+}
+
 void IndexRebasedProxyModel::checkSourceTarget() {
 
 	if (!_sourceTarget.isValid() && _sourceWasValid) {

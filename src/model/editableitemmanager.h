@@ -115,6 +115,8 @@ public:
 	 */
 	void setEditorManager(EditorFactoryManager *editorManager);
 
+	Q_INVOKABLE QAbstractItemModel* getSubTreeFromItemType(QString typeRef, QObject* modelParent = nullptr);
+
 signals:
 
 	void loadingItemSucessFull(QString ref);
