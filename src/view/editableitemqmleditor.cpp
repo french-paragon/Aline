@@ -2,12 +2,13 @@
 #include "ui_editableitemqmleditor.h"
 
 #include "model/editableitem.h"
+#include "model/editableitemmanager.h"
 #include <QtQml/QQmlContext>
 #include <QQmlEngine>
 
 namespace Aline {
 
-int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::EditableItem*>("Aline::EditableItem*") + qmlRegisterType<Aline::EditableItem>();
+int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::EditableItem*>("Aline::EditableItem*") + qmlRegisterType<Aline::EditableItem>() + qRegisterMetaType<Aline::EditableItemManager*>("Aline::EditableItemManager*") + qmlRegisterType<Aline::EditableItemManager>();
 
 const QString EditableItemQmlEditor::GENERIC_QMLBASED_EDITOR_TYPE = "aline_qml_generic";
 

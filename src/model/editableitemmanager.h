@@ -117,6 +117,8 @@ public:
 
 	Q_INVOKABLE QAbstractItemModel* getSubTreeFromItemType(QString typeRef, QObject* modelParent = nullptr);
 
+	virtual QHash<int, QByteArray> roleNames() const;
+
 signals:
 
 	void loadingItemSucessFull(QString ref);

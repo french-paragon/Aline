@@ -11,6 +11,7 @@ list(APPEND LIB_SRC
 		model/exceptions/itemioexception.cpp
 		model/exceptions/datasourcebusyexception.cpp
 		model/viewmodel/externalitemreferencelistmodel.cpp
+		model/viewmodel/editableitemfilteredconnectionproxymodel.cpp
 		view/mainwindow.cpp
 		view/labelitemsdockwidget.cpp
 		view/projectlabelsdockwidget.cpp

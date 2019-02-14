@@ -652,6 +652,17 @@ QAbstractItemModel* EditableItemManager::getSubTreeFromItemType(QString typeRef,
 
 }
 
+QHash<int, QByteArray> EditableItemManager::roleNames() const {
+
+	QHash<int, QByteArray> ret = QAbstractItemModel::roleNames();
+
+	ret.insert(ItemRefRole, "itemRef");
+	ret.insert(ItemTypeRefRole, "itemTypeRef");
+
+	return ret;
+
+}
+
 void EditableItemManager::setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership)
 {
 	_factoryManager = factoryManager;

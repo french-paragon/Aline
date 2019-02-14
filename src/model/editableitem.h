@@ -56,7 +56,7 @@ public:
 	Q_PROPERTY(QString type_id READ getTypeId CONSTANT)
 	Q_PROPERTY(QStringList labels READ getLabels WRITE setLabels)
 
-	Q_PROPERTY(EditableItemManager* manager READ getManager CONSTANT STORED false)
+	Q_PROPERTY(Aline::EditableItemManager* manager READ getManager CONSTANT STORED false)
 
 	/*!
 	 * \brief getTypeId allow to get info on the type of the editable item.
