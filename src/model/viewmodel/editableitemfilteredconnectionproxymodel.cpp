@@ -38,6 +38,8 @@ EditableItemFilteredConnectionProxyModel::EditableItemFilteredConnectionProxyMod
 
 				_connection = connect(_trackedItem, signal, this, slot);
 
+				_forbidenItemRefs = item->property(_watchedPropertyName).toStringList();
+
 			} else {
 				_watchedPropertyIndex = -1;
 			}
@@ -58,8 +60,14 @@ void EditableItemFilteredConnectionProxyModel::checkForbidenItemRefs() {
 
 bool EditableItemFilteredConnectionProxyModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent) const {
 
-	if (_forbidenItemRefs.contains(source_parent.data(_refRole).toString())) {
-		return false;
+	if (source_parent == QModelIndex()) {
+
+		QModelIndex idR = sourceModel()->index(source_row, 0);
+
+		if (_forbidenItemRefs.contains(idR.data(_refRole).toString())) {
+			return false;
+		}
+
 	}
 
 	return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
@@ -69,9 +77,8 @@ bool EditableItemFilteredConnectionProxyModel::filterAcceptsRow(int source_row, 
 void EditableItemFilteredConnectionProxyModel::setForbidenItemRefs(const QStringList &forbidenItemRefs)
 {
 	if (forbidenItemRefs != _forbidenItemRefs) {
-		beginResetModel();
 		_forbidenItemRefs = forbidenItemRefs;
-		endResetModel();
+		invalidateFilter();
 	}
 }
 

@@ -5,104 +5,79 @@
 
 #include <QMetaProperty>
 
+#include <QDebug>
+
 namespace Aline {
 
-ExternalItemReferenceListModel::ExternalItemReferenceListModel(EditableItem *parent, QString watchPropertyName) :
-	QAbstractListModel(parent),
-	_parentItem(parent)
+ExternalItemReferenceListProxyModel::ExternalItemReferenceListProxyModel(EditableItem *item, QString watchPropertyName, int refRole, QObject *parent) :
+	QSortFilterProxyModel(parent),
+	_trackedItem(item),
+	_refRole(refRole)
 {
 
-	_watchedPropertyName = new char[watchPropertyName.length() + 1];
-	strcpy(_watchedPropertyName, watchPropertyName.toStdString().c_str());
+	if (item == nullptr) {
+		_trackedItem = nullptr;
+	} else {
 
-	_watchedPropertyIndex = parent->metaObject()->indexOfProperty(_watchedPropertyName);
+		_trackedItem = item;
 
-	if (_watchedPropertyIndex >= 0) {
+		_watchedPropertyName = new char[watchPropertyName.length() + 1];
+		strcpy(_watchedPropertyName, watchPropertyName.toStdString().c_str());
 
-		QMetaProperty p = parent->metaObject()->property(_watchedPropertyIndex);
+		_watchedPropertyIndex = item->metaObject()->indexOfProperty(_watchedPropertyName);
 
-		if (p.type() == QVariant::StringList && p.hasNotifySignal()) {
+		if (_watchedPropertyIndex >= 0) {
 
-			QMetaMethod signal = p.notifySignal();
-			int index_of_slot = metaObject()->indexOfSlot("reset()");
-			QMetaMethod slot = metaObject()->method(index_of_slot);
+			QMetaProperty p = _trackedItem->metaObject()->property(_watchedPropertyIndex);
 
-			_connection = connect(_parentItem, signal, this, slot);
+			if (p.type() == QVariant::StringList && p.hasNotifySignal()) {
 
-		} else {
-			_watchedPropertyIndex = -1;
+				QMetaMethod signal = p.notifySignal();
+				int index_of_slot = metaObject()->indexOfSlot("reset()");
+				QMetaMethod slot = metaObject()->method(index_of_slot);
+
+				_connection = connect(_trackedItem, signal, this, slot);
+
+			} else {
+				_watchedPropertyIndex = -1;
+			}
+
 		}
 
 	}
 }
 
-ExternalItemReferenceListModel::~ExternalItemReferenceListModel() {
+ExternalItemReferenceListProxyModel::~ExternalItemReferenceListProxyModel() {
 	delete _watchedPropertyName;
 }
 
-int ExternalItemReferenceListModel::rowCount(const QModelIndex &parent) const {
-
-	Q_UNUSED(parent)
-
-	if (_watchedPropertyIndex < 0) {
-		return 0;
-	}
-
-	return _parentItem->property(_watchedPropertyName).toStringList().length();
-
+void ExternalItemReferenceListProxyModel::reset() {
+	invalidateFilter();
 }
 
-QVariant ExternalItemReferenceListModel::data(const QModelIndex &index, int role) const {
+QStringList ExternalItemReferenceListProxyModel::list() const {
 
-	if (_watchedPropertyIndex < 0) {
-		return QVariant();
+	if (_trackedItem == nullptr || _watchedPropertyIndex < 0) {
+		return QStringList();
 	}
 
-	QStringList refs = _parentItem->property(_watchedPropertyName).toStringList();
+	return _trackedItem->property(_watchedPropertyName).toStringList();
+}
 
-	if (index.row() >= refs.length()) {
-		return QVariant();
-	}
+bool ExternalItemReferenceListProxyModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent) const {
 
-	QString ref = refs.at(index.row());
+	if (source_parent == QModelIndex()) {
 
-	switch (role) {
-	case Qt::DisplayRole:
-	case ItemNameRole:
-	{
-		EditableItem* item = _parentItem->getManager()->loadItem(ref);
+		QModelIndex idR = sourceModel()->index(source_row, 0);
 
-		if (item != nullptr) {
+		QString ref = idR.data(_refRole).toString();
 
-			return item->objectName();
+		if (!list().contains(ref)) {
+			return false;
 		}
 	}
-	case ItemRefRole:
-		return ref;
-	case ItemRole:
-		return QVariant(QMetaType::QObjectStar, _parentItem->getManager()->loadItem(ref) );
-	default:
-		break;
-	}
 
-	return QVariant();
-
-}
-
-QHash<int, QByteArray> ExternalItemReferenceListModel::roleNames() const {
-
-	QHash<int, QByteArray> names = QAbstractListModel::roleNames();
-
-	names.insert(ItemNameRole, "name");
-	names.insert(ItemRefRole, "ref");
-	names.insert(ItemRole, "item");
-
-	return names;
-}
-
-void ExternalItemReferenceListModel::reset() {
-	beginResetModel();
-	endResetModel();
+	return QSortFilterProxyModel::filterAcceptsRow(source_row, source_parent);
 }
 
 } // namespace Aline

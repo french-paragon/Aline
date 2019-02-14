@@ -1,7 +1,7 @@
 #ifndef ALINE_EXTERNALITEMREFERENCELISTMODEL_H
 #define ALINE_EXTERNALITEMREFERENCELISTMODEL_H
 
-#include <QAbstractListModel>
+#include <QSortFilterProxyModel>
 #include <QStringList>
 
 namespace Aline {
@@ -14,25 +14,15 @@ class EditableItem;
  * This model, given an editableitem with a property that represent a list of ref to other item (as a QStringList) allow to display it in widgets that uses Qt's model/view paradigm. Just provide the item and the name of the property.
  * Pay attention ! A change in the string list reset the model, so it's recommanded to use this solution only for items with small list of reference.
  */
-class ExternalItemReferenceListModel : public QAbstractListModel
+class ExternalItemReferenceListProxyModel : public QSortFilterProxyModel
 {
 	Q_OBJECT
 public:
 
-	enum roles{
-		ItemRefRole = Qt::UserRole,
-		ItemNameRole = Qt::UserRole + 1,
-		ItemRole = Qt::UserRole + 2
-	};
+	explicit ExternalItemReferenceListProxyModel(EditableItem *item, QString watchPropertyName, int refRole, QObject* parent = nullptr);
+	virtual ~ExternalItemReferenceListProxyModel();
 
-	explicit ExternalItemReferenceListModel(EditableItem *parent, QString watchPropertyName);
-	virtual ~ExternalItemReferenceListModel();
-
-	virtual int rowCount(const QModelIndex &parent) const;
-
-	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
-
-	virtual QHash<int, QByteArray> roleNames() const;
+	int refRole() const;
 
 
 signals:
@@ -42,15 +32,18 @@ public slots:
 	void reset();
 
 protected:
+	virtual bool filterAcceptsRow(int source_row, const QModelIndex & source_parent) const;
 
 	QStringList list() const;
 
-	EditableItem * _parentItem;
+	EditableItem * _trackedItem;
 
 	char* _watchedPropertyName;
 	int _watchedPropertyIndex;
 
 	QMetaObject::Connection _connection;
+
+	int _refRole;
 };
 
 } // namespace Aline
