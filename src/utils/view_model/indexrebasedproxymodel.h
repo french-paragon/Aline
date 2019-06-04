@@ -33,9 +33,9 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

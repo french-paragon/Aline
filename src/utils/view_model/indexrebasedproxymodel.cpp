@@ -485,7 +485,7 @@ void IndexRebasedProxyModel::onSourceModelDataChanged(QModelIndex const& topLeft
 
 	if (mappedTopLeft.parent() == mappedBottomRight.parent()) {
 		if (mappedTopLeft != QModelIndex() && mappedBottomRight != QModelIndex()) {
-			emit dataChanged(mappedTopLeft, mappedBottomRight, roles);
+			Q_EMIT dataChanged(mappedTopLeft, mappedBottomRight, roles);
 		}
 	}
 

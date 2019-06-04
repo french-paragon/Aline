@@ -13,13 +13,13 @@ public:
 							  QString const& shadowNameEditor,
 							  QString const& qmlSource,
 							  QStringList const& editableTypes,
-							  QObject *parent = 0);
+							  QObject *parent = nullptr);
 
 	virtual Editor* createItem(QWidget* parent) const;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

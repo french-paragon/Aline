@@ -151,7 +151,7 @@ public:
 	 */
 	bool hasBeenLoadedFromDisk() const;
 
-signals:
+Q_SIGNALS:
 
 	void parentChanged(QString newRef);
 
@@ -164,7 +164,7 @@ signals:
 	void labelAdded(QString const& label);
 	void labelRemoved(QString const& label);
 
-public slots:
+public Q_SLOTS:
 
 	virtual void suppress();
 

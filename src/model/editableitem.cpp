@@ -117,8 +117,8 @@ void EditableItem::changeRef(QString const& newRef) {
 			}
 		}
 
-		emit refSwap(oldRef, _ref);
-		emit refChanged(_ref);
+		Q_EMIT refSwap(oldRef, _ref);
+		Q_EMIT refChanged(_ref);
 	}
 
 }
@@ -141,7 +141,7 @@ void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
 }
 
 void EditableItem::onVisibleStateChanged() {
-	emit visibleStateChanged(_ref);
+	Q_EMIT visibleStateChanged(_ref);
 }
 
 void EditableItem::newUnsavedChanges() {
@@ -160,7 +160,7 @@ void EditableItem::newUnsavedChanges() {
 	_hasUnsavedChanged = true;
 
 	if (previous != _hasUnsavedChanged) {
-		emit unsavedStateChanged(_hasUnsavedChanged);
+		Q_EMIT unsavedStateChanged(_hasUnsavedChanged);
 	}
 }
 
@@ -172,7 +172,7 @@ void EditableItem::clearHasUnsavedChanges() {
 		}
 
 		_hasUnsavedChanged = false;
-		emit unsavedStateChanged(false);
+		Q_EMIT unsavedStateChanged(false);
 	}
 }
 
@@ -281,7 +281,7 @@ void EditableItem::setLabels(const QStringList &labels)
 		while (!_labels.empty()) {
 			QString label = _labels.back();
 			_labels.pop_back();
-			emit labelRemoved(label);
+			Q_EMIT labelRemoved(label);
 		}
 
 		for (QString label : labels) {
@@ -298,7 +298,7 @@ bool EditableItem::addLabel(QString const& labelRef) {
 
 	if (!hasLabel(labelRef)) {
 		_labels.push_back(labelRef);
-		emit labelAdded(labelRef);
+		Q_EMIT labelAdded(labelRef);
 		return true;
 	}
 	return false;
@@ -309,7 +309,7 @@ bool EditableItem::removeLabel(QString const& labelRef) {
 
 	if (hasLabel(labelRef)) {
 		_labels.removeOne(labelRef);
-		emit labelRemoved(labelRef);
+		Q_EMIT labelRemoved(labelRef);
 		return true;
 	}
 	return false;

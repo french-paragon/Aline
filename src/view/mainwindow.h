@@ -61,7 +61,7 @@ public:
 
 	void setEditorFactoryManager(EditorFactoryManager *editorFactoryManager);
 
-signals:
+Q_SIGNALS:
 
 	void editorAboutToBeRemoved(Editor* editor);
 	void currentProjectChanged(EditableItemManager*);
@@ -69,7 +69,7 @@ signals:
 
 	void editedItemChanged(QString ref);
 
-public slots:
+public Q_SLOTS:
 
 	void addEditor(Editor* editor);
 

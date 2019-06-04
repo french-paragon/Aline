@@ -43,11 +43,11 @@ public:
 	 */
 	virtual void setEditedItem(EditableItem* item);
 
-signals:
+Q_SIGNALS:
 
 	void titleChanged(Editor* himself, QString title);
 
-public slots:
+public Q_SLOTS:
 
 	void setTitle(QString title);
 	void setHasUnsavedChanges(bool saveState);

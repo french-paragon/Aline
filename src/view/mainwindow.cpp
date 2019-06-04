@@ -87,7 +87,7 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 			_currentProject->setEditorManager(_editorFactoryManager);
 		}
 
-		emit currentProjectChanged(_currentProject);
+		Q_EMIT currentProjectChanged(_currentProject);
 	}
 }
 
@@ -212,7 +212,7 @@ void MainWindow::closeEditor(int index) {
 		disconnect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 	}
 
-	emit editorAboutToBeRemoved(editor);
+	Q_EMIT editorAboutToBeRemoved(editor);
 
 	if (_openedEditors.values().contains(editor)) {
 
@@ -229,7 +229,7 @@ void MainWindow::closeEditor(Editor* editor) {
 
 	disconnect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 
-	emit editorAboutToBeRemoved(editor);
+	Q_EMIT editorAboutToBeRemoved(editor);
 
 	if (_openedEditors.values().contains(editor)) {
 
@@ -295,7 +295,7 @@ void MainWindow::setWindowProjectFromFunc(QString const& fName) {
 	EditableItemManager* manager = _editableItemManagerFactory->createManagerWithRegistredFunctionAndGuiContext(fName, this, this);
 
 	if (manager != nullptr) {
-		emit projectLoaded(manager);
+		Q_EMIT projectLoaded(manager);
 		setCurrentProject(manager);
 	}
 }
@@ -316,7 +316,7 @@ void MainWindow::onCurrentEditorChanged() {
 	Aline::EditableItemEditor* eie = qobject_cast<Aline::EditableItemEditor*>(w);
 
 	if (eie != nullptr) {
-		emit editedItemChanged(eie->getEditedItemRef());
+		Q_EMIT editedItemChanged(eie->getEditedItemRef());
 	}
 
 }

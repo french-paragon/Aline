@@ -120,7 +120,7 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const;
 
-signals:
+Q_SIGNALS:
 
 	void loadingItemSucessFull(QString ref);
 
@@ -129,7 +129,7 @@ signals:
 
 	void activeItemChanged();
 
-public slots:
+public Q_SLOTS:
 
 	virtual void reset() = 0;
 	virtual void closeAll();

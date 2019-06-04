@@ -100,7 +100,7 @@ void LabelItemsDockWidget::receiveDoubleClick(const QModelIndex &index) {
 
 	if (data.isValid()) {
 
-		emit itemDoubleClicked(data.toString());
+		Q_EMIT itemDoubleClicked(data.toString());
 
 	}
 

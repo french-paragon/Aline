@@ -65,7 +65,7 @@ public:
 
 	EditableItem* editedItem() const;
 
-signals:
+Q_SIGNALS:
 
 	void editedItemChanged();
 

@@ -52,7 +52,7 @@ EditableItemTypeSpecializedAction::EditableItemTypeSpecializedAction(const QStri
 
 void EditableItemTypeSpecializedAction::transferTrigger(bool checked) {
 
-	emit triggered(_type_id, checked);
+	Q_EMIT triggered(_type_id, checked);
 
 }
 

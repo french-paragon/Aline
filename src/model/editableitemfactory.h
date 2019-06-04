@@ -23,9 +23,9 @@ public:
 	QString getItemTypeIconUrl() const;
 	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const = 0;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 
@@ -45,9 +45,9 @@ public:
 	QString getItemTypeIconUrl() const;
 	virtual EditableItem* createItem(QString ref, EditableItem* parent) const = 0;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

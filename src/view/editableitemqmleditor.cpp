@@ -74,7 +74,7 @@ bool EditableItemQmlEditorProxy::setEditedItem(EditableItem *editedItem)
 {
 	if (editedItem != _editedItem) {
 		_editedItem = editedItem;
-		emit editedItemChanged();
+		Q_EMIT editedItemChanged();
 		//TODO: look if we want to react from qml, this should come here.
 		return true;
 	}

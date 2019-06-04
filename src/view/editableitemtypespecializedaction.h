@@ -43,7 +43,7 @@ public:
 											   const QString &text,
 											   QObject *parent = nullptr);
 
-signals:
+Q_SIGNALS:
 
 	void triggered(QString type_id, bool checked = false);
 

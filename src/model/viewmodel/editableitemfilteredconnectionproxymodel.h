@@ -19,9 +19,9 @@ public:
 
 	int refRole() const;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 	void checkForbidenItemRefs();
 

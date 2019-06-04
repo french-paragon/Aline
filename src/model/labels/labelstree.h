@@ -73,13 +73,13 @@ public:
 
 	QStringList activeLabelFilter() const;
 
-signals:
+Q_SIGNALS:
 
 	void activeLabelFilterChanged(QStringList labelFilter);
 	void activeLabelFilterExtend(QString newRef);
 	void activeLabelFilterReduce(QString oldRef);
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

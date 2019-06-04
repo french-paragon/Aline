@@ -17,7 +17,7 @@ class ALINE_TEST_EXPORT EditableItemTestModel : public QObject
 	Q_OBJECT
 public:
 
-protected slots:
+protected Q_SLOTS:
 
 	void initTestCase();
 

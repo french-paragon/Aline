@@ -200,7 +200,7 @@ bool EditableItemManager::setData(const QModelIndex &index, const QVariant &valu
 		if (item != nullptr) {
 			item->setObjectName(value.toString());
 			data->_name = value.toString();
-			emit dataChanged(index, index, {Qt::DisplayRole});
+			Q_EMIT dataChanged(index, index, {Qt::DisplayRole});
 			return true;
 		}
 	}
@@ -345,13 +345,13 @@ void EditableItemManager::forceUnloadItem(QString ref) {
 		return; //no need to unload a not present item.
 	}
 
-	emit itemAboutToBeUnloaded(ref);
+	Q_EMIT itemAboutToBeUnloaded(ref);
 
 	EditableItem* item = _loadedItems.value(ref)._item;
 	_loadedItems.remove(ref);
 	delete item; //effectively delete item.
 
-	emit itemUnloaded(ref);
+	Q_EMIT itemUnloaded(ref);
 
 }
 
@@ -532,11 +532,11 @@ void EditableItemManager::closeAll() {
 
 	for (QString ref : _loadedItems.keys()) {
 
-		emit itemAboutToBeUnloaded(ref); //at that point the items can still be saved or other operations can be carried on by the watchers.
+		Q_EMIT itemAboutToBeUnloaded(ref); //at that point the items can still be saved or other operations can be carried on by the watchers.
 
 		_loadedItems.remove(ref);
 
-		emit itemUnloaded(ref);
+		Q_EMIT itemUnloaded(ref);
 
 	}
 
@@ -549,7 +549,7 @@ void EditableItemManager::setActiveItem(QString ref) {
 		EditableItem* potential = qobject_cast<EditableItem*>(loadItem(ref));
 
 		_activeItem = potential;
-		emit activeItemChanged();
+		Q_EMIT activeItemChanged();
 
 	}
 
@@ -591,7 +591,7 @@ void EditableItemManager::itemVisibleStateChanged(QString ref) {
 
 		QModelIndex index = indexFromLeaf(leaf);
 
-		emit dataChanged(index, index, {Qt::DisplayRole});
+		Q_EMIT dataChanged(index, index, {Qt::DisplayRole});
 
 	}
 

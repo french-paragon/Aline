@@ -23,7 +23,7 @@ void EditableItemEditor::setEditedItem(EditableItem* item) {
 		connect(item, &QObject::destroyed,
 				this, &QObject::deleteLater);
 
-		emit editedItemChanged(item);
+		Q_EMIT editedItemChanged(item);
 		_editedItem = item;
 	}
 

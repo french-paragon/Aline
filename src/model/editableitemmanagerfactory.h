@@ -45,9 +45,9 @@ public:
 
 	bool containFunc(QString const& fname, int type) const;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 
