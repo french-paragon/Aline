@@ -312,8 +312,25 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 
 }
 
-QStringList EditableItemManager::loadedItems() const{
-	return _loadedItems.keys();
+QStringList EditableItemManager::loadedItems(const QString &type) const{
+	if (type == "") {
+		return _loadedItems.keys();
+	}
+
+	if (_itemsByTypes.contains(type)) {
+
+		QVector<treeStruct*> const& ref = _itemsByTypes[type];
+		QStringList list;
+		list.reserve(ref.size());
+
+		for (treeStruct* s : ref) {
+			list.push_back(s->_ref);
+		}
+
+		return list;
+	}
+
+	return {};
 }
 void EditableItemManager::forceUnloadItem(QString ref) {
 

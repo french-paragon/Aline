@@ -64,7 +64,7 @@ public:
 	virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
 
 	EditableItem* loadItem(QString const& ref);
-	QStringList loadedItems() const;
+	QStringList loadedItems(QString const& type = "") const;
 	void forceUnloadItem(QString ref);
 	bool isItemLoaded(const QString &ref) const;
 	bool containItem(const QString & ref) const;
