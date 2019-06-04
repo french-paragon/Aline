@@ -65,6 +65,7 @@ public:
 
 	EditableItem* loadItem(QString const& ref);
 	QStringList loadedItems(QString const& type = "") const;
+	QStringList loadedItemsTypes() const;
 	void forceUnloadItem(QString ref);
 	bool isItemLoaded(const QString &ref) const;
 	bool containItem(const QString & ref) const;

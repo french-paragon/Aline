@@ -332,6 +332,13 @@ QStringList EditableItemManager::loadedItems(const QString &type) const{
 
 	return {};
 }
+
+QStringList EditableItemManager::loadedItemsTypes() const {
+
+	return _itemsByTypes.keys();
+
+}
+
 void EditableItemManager::forceUnloadItem(QString ref) {
 
 	if (!isItemLoaded(ref)) {
