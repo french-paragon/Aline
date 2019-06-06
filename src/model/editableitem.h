@@ -172,6 +172,7 @@ public Q_SLOTS:
 
 	virtual void changeRef(QString const& newRef);
 
+protected:
 	void warnRefering(QString referentItemRef);
 	void warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef);
 	void warnUnrefering(QString referentItemRef);
