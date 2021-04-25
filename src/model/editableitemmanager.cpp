@@ -20,8 +20,8 @@ const QString EditableItemManager::RefMimeType = "text/editableitemref";
 
 EditableItemManager::EditableItemManager(QObject *parent) :
 	QAbstractItemModel(parent),
-	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
 	_labels(nullptr),
+	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
 	_activeItem(nullptr),
 	_editorManager(nullptr)
 {
@@ -403,16 +403,18 @@ bool EditableItemManager::clearItem(QString itemRef) {
 
 	clearItemData(itemRef);
 
-
+	return true;
 
 }
 
 bool EditableItemManager::clearItems(QStringList itemRefs) {
 
-	for (QString ref : itemRefs) {
-		clearItem(ref);
+	bool status = true;
+	for (QString const& ref : itemRefs) {
+		status = status and clearItem(ref);
 	}
 
+	return status;
 }
 
 bool EditableItemManager::saveItem(QString ref) {
@@ -431,12 +433,15 @@ bool EditableItemManager::saveItem(QString ref) {
 
 bool EditableItemManager::saveAll() {
 
-	for (QString ref : _loadedItems.keys()) {
-		saveItem(ref);
+	bool status = true;
+	for (QString const& ref : _loadedItems.keys()) {
+		status = status and saveItem(ref);
 	}
 
-	saveLabels();
-	saveStruct();
+	status = status and saveLabels();
+	status = status and saveStruct();
+
+	return status;
 
 }
 
@@ -468,6 +473,7 @@ bool EditableItemManager::makeRefUniq(QString &ref) const {
 }
 
 bool EditableItemManager::hasDistantFile(QString fileName) {
+	Q_UNUSED(fileName);
 	return false; //distant files are not supported by defaults.
 }
 

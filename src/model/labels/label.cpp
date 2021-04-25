@@ -93,6 +93,8 @@ bool Label::addChild(Label* child) {
 		child->setParentLabel(this);
 	}
 
+	return true;
+
 }
 void Label::removeChild(Label* child) {
 
@@ -140,6 +142,7 @@ bool Label::removeLabels(int row, int count) {
 	}
 
 	_childrens.remove(row, count);
+	return true;
 }
 
 QVector<Label*> const& Label::subLabels() const {
