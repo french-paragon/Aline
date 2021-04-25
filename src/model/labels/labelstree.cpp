@@ -179,7 +179,7 @@ bool LabelsTree::setData(const QModelIndex &index, const QVariant &value, int ro
 
 		label->setObjectName(value.toString());
 
-		emit dataChanged(index, index, {Qt::DisplayRole});
+		Q_EMIT dataChanged(index, index, {Qt::DisplayRole});
 
 		return true;
 
@@ -193,7 +193,7 @@ bool LabelsTree::setData(const QModelIndex &index, const QVariant &value, int ro
 			label->markItem(item);
 		}
 
-		emit dataChanged(index, index, {Qt::CheckStateRole});
+		Q_EMIT dataChanged(index, index, {Qt::CheckStateRole});
 
 		return true;
 
@@ -210,7 +210,7 @@ bool LabelsTree::setData(const QModelIndex &index, const QVariant &value, int ro
 			label->unmarkItem(item);
 		}
 
-		emit dataChanged(index, index, {Qt::CheckStateRole});
+		Q_EMIT dataChanged(index, index, {Qt::CheckStateRole});
 
 		return true;
 
@@ -671,7 +671,7 @@ void LabelsTree::setActiveLabel(QModelIndex const& activeLabelIndex) {
 		connect(newLabel, &Label::itemRefAdded, this, &LabelsTree::activeLabelFilterExtend);
 		connect(newLabel, &Label::itemRefRemoved, this, &LabelsTree::activeLabelFilterReduce);
 		_activeLabel = newLabel;
-		emit activeLabelFilterChanged(QStringList::fromVector(_activeLabel->itemsRefs()));
+		Q_EMIT activeLabelFilterChanged(QStringList::fromVector(_activeLabel->itemsRefs()));
 	}
 
 

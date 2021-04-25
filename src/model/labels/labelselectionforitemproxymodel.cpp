@@ -132,7 +132,7 @@ void LabelSelectionForItemProxyModel::setSourceModel(LabelsTree* newSourceModel)
 
 void LabelSelectionForItemProxyModel::onActiveItemChanged() {
 
-	emit dataChanged(QModelIndex(), QModelIndex(), {Qt::CheckStateRole});
+	Q_EMIT dataChanged(QModelIndex(), QModelIndex(), {Qt::CheckStateRole});
 }
 
 } // namespace Aline

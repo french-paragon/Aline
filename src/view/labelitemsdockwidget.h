@@ -41,7 +41,7 @@ public:
 	explicit LabelItemsDockWidget(MainWindow *parent = 0);
 	~LabelItemsDockWidget();
 
-signals:
+Q_SIGNALS:
 
 	void itemDoubleClicked(QString itemRef);
 

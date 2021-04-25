@@ -42,7 +42,8 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	_hasUnsavedChanged(false),
 	_manager(parent),
 	_parentItem(nullptr),
-	_block_change_detection(false)
+	_changeDetectionIsBlocked(false),
+	_hasBeenLoadedFromDisk(false)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -57,7 +58,9 @@ EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
 	_ref(ref),
 	_hasUnsavedChanged(false),
 	_manager(nullptr),
-	_parentItem(parent)
+	_parentItem(parent),
+	_changeDetectionIsBlocked(false),
+	_hasBeenLoadedFromDisk(false)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -105,19 +108,45 @@ void EditableItem::changeRef(QString const& newRef) {
 	if (newRef != _ref) {
 		QString oldRef = _ref;
 		_ref = newRef;
-		emit refSwap(oldRef, _ref);
-		emit refChanged(_ref);
+
+		for (QString referentRef : _referentItems) {
+			EditableItem* referent = _manager->loadItem(referentRef);
+
+			if (referent != nullptr) {
+				referent->warnReferedRefChanges(oldRef, _ref);
+			}
+		}
+
+		Q_EMIT refSwap(oldRef, _ref);
+		Q_EMIT refChanged(_ref);
 	}
 
 }
 
+void EditableItem::warnRefering(QString referentItemRef) {
+	_referentItems.insert(referentItemRef);
+}
+
+void EditableItem::warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef) {
+	warnUnrefering(referentItemOldRef);
+	warnRefering(referentItemRef);
+}
+
+void EditableItem::warnUnrefering(QString referentItemRef) {
+	_referentItems.remove(referentItemRef);
+}
+
+void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
+	return;
+}
+
 void EditableItem::onVisibleStateChanged() {
-	emit visibleStateChanged(_ref);
+	Q_EMIT visibleStateChanged(_ref);
 }
 
 void EditableItem::newUnsavedChanges() {
 
-	if (_block_change_detection) {
+	if (_changeDetectionIsBlocked) {
 		return;
 	}
 
@@ -131,7 +160,7 @@ void EditableItem::newUnsavedChanges() {
 	_hasUnsavedChanged = true;
 
 	if (previous != _hasUnsavedChanged) {
-		emit unsavedStateChanged(_hasUnsavedChanged);
+		Q_EMIT unsavedStateChanged(_hasUnsavedChanged);
 	}
 }
 
@@ -143,7 +172,7 @@ void EditableItem::clearHasUnsavedChanges() {
 		}
 
 		_hasUnsavedChanged = false;
-		emit unsavedStateChanged(false);
+		Q_EMIT unsavedStateChanged(false);
 	}
 }
 
@@ -223,9 +252,19 @@ void EditableItem::setParentItem(EditableItem* parent) {
 
 }
 
+bool EditableItem::hasBeenLoadedFromDisk() const
+{
+	return _hasBeenLoadedFromDisk;
+}
+
+bool EditableItem::changeDetectionIsBlocked() const
+{
+	return _changeDetectionIsBlocked;
+}
+
 void EditableItem::blockChangeDetection(bool block_change_detection)
 {
-	_block_change_detection = block_change_detection;
+	_changeDetectionIsBlocked = block_change_detection;
 }
 
 QStringList EditableItem::getLabels() const
@@ -242,7 +281,7 @@ void EditableItem::setLabels(const QStringList &labels)
 		while (!_labels.empty()) {
 			QString label = _labels.back();
 			_labels.pop_back();
-			emit labelRemoved(label);
+			Q_EMIT labelRemoved(label);
 		}
 
 		for (QString label : labels) {
@@ -259,7 +298,7 @@ bool EditableItem::addLabel(QString const& labelRef) {
 
 	if (!hasLabel(labelRef)) {
 		_labels.push_back(labelRef);
-		emit labelAdded(labelRef);
+		Q_EMIT labelAdded(labelRef);
 		return true;
 	}
 	return false;
@@ -270,7 +309,7 @@ bool EditableItem::removeLabel(QString const& labelRef) {
 
 	if (hasLabel(labelRef)) {
 		_labels.removeOne(labelRef);
-		emit labelRemoved(labelRef);
+		Q_EMIT labelRemoved(labelRef);
 		return true;
 	}
 	return false;

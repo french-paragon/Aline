@@ -18,7 +18,7 @@ void Editor::setHasUnsavedChanges(bool saveState) {
 }
 
 void Editor::updateEffectiveTitle() {
-	emit titleChanged(this, _title + ((_saveState) ? " *" : ""));
+	Q_EMIT titleChanged(this, _title + ((_saveState) ? " *" : ""));
 }
 
 QString Editor::title() const

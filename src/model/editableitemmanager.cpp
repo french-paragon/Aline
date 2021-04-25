@@ -6,6 +6,7 @@
 #include "view/editorfactorymanager.h"
 
 #include "model/labels/labelstree.h"
+#include "../utils/view_model/indexrebasedproxymodel.h"
 
 #include <QSet>
 #include <QIcon>
@@ -199,7 +200,7 @@ bool EditableItemManager::setData(const QModelIndex &index, const QVariant &valu
 		if (item != nullptr) {
 			item->setObjectName(value.toString());
 			data->_name = value.toString();
-			emit dataChanged(index, index, {Qt::DisplayRole});
+			Q_EMIT dataChanged(index, index, {Qt::DisplayRole});
 			return true;
 		}
 	}
@@ -297,6 +298,8 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 
 	connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
 
+	item->_hasBeenLoadedFromDisk = true;
+
 	treeStruct* node = _treeIndex.value(ref, nullptr);
 
 	if (node == nullptr) {
@@ -309,22 +312,46 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 
 }
 
-QStringList EditableItemManager::loadedItems() const{
-	return _loadedItems.keys();
+QStringList EditableItemManager::loadedItems(const QString &type) const{
+	if (type == "") {
+		return _loadedItems.keys();
+	}
+
+	if (_itemsByTypes.contains(type)) {
+
+		QVector<treeStruct*> const& ref = _itemsByTypes[type];
+		QStringList list;
+		list.reserve(ref.size());
+
+		for (treeStruct* s : ref) {
+			list.push_back(s->_ref);
+		}
+
+		return list;
+	}
+
+	return {};
 }
+
+QStringList EditableItemManager::loadedItemsTypes() const {
+
+	return _itemsByTypes.keys();
+
+}
+
 void EditableItemManager::forceUnloadItem(QString ref) {
 
 	if (!isItemLoaded(ref)) {
 		return; //no need to unload a not present item.
 	}
 
-	emit itemAboutToBeUnloaded(ref);
+	Q_EMIT itemAboutToBeUnloaded(ref);
 
 	EditableItem* item = _loadedItems.value(ref)._item;
 	_loadedItems.remove(ref);
 	delete item; //effectively delete item.
 
-	emit itemUnloaded(ref);
+	Q_EMIT itemUnloaded(ref);
 
 }
 
@@ -511,11 +538,11 @@ void EditableItemManager::closeAll() {
 
 	for (QString ref : _loadedItems.keys()) {
 
-		emit itemAboutToBeUnloaded(ref); //at that point the items can still be saved or other operations can be carried on by the watchers.
+		Q_EMIT itemAboutToBeUnloaded(ref); //at that point the items can still be saved or other operations can be carried on by the watchers.
 
 		_loadedItems.remove(ref);
 
-		emit itemUnloaded(ref);
+		Q_EMIT itemUnloaded(ref);
 
 	}
 
@@ -528,7 +555,7 @@ void EditableItemManager::setActiveItem(QString ref) {
 		EditableItem* potential = qobject_cast<EditableItem*>(loadItem(ref));
 
 		_activeItem = potential;
-		emit activeItemChanged();
+		Q_EMIT activeItemChanged();
 
 	}
 
@@ -570,7 +597,7 @@ void EditableItemManager::itemVisibleStateChanged(QString ref) {
 
 		QModelIndex index = indexFromLeaf(leaf);
 
-		emit dataChanged(index, index, {Qt::DisplayRole});
+		Q_EMIT dataChanged(index, index, {Qt::DisplayRole});
 
 	}
 
@@ -637,6 +664,33 @@ bool EditableItemManager::insertItem(EditableItem* item) {
 void EditableItemManager::setEditorManager(EditorFactoryManager *editorManager)
 {
 	_editorManager = editorManager;
+}
+
+QAbstractItemModel* EditableItemManager::getSubTreeFromItemType(QString typeRef, QObject* modelParent) {
+
+	QModelIndex typeIndex = indexFromType(typeRef);
+
+	if (typeIndex == QModelIndex()) {
+		return nullptr;
+	}
+
+	ModelViewUtils::IndexRebasedProxyModel* model = new ModelViewUtils::IndexRebasedProxyModel(modelParent);
+
+	model->setSourceModel(this, typeIndex);
+
+	return model;
+
+}
+
+QHash<int, QByteArray> EditableItemManager::roleNames() const {
+
+	QHash<int, QByteArray> ret = QAbstractItemModel::roleNames();
+
+	ret.insert(ItemRefRole, "itemRef");
+	ret.insert(ItemTypeRefRole, "itemTypeRef");
+
+	return ret;
+
 }
 
 void EditableItemManager::setFactoryManager(EditableItemFactoryManager *factoryManager, bool takeOwnership)

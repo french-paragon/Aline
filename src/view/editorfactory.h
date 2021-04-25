@@ -21,9 +21,9 @@ public:
 	QStringList editableTypes() const;
 	virtual Editor* createItem(QWidget* parent) const = 0;
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

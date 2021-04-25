@@ -17,7 +17,10 @@ find_package(Qt5Core REQUIRED)
 find_package(Qt5Gui REQUIRED)
 find_package(Qt5Test REQUIRED)
 find_package(Qt5Widgets REQUIRED)
+find_package(Qt5QuickWidgets REQUIRED)
 find_package(Qt5Qml REQUIRED)
+
+ADD_DEFINITIONS(-DQT_NO_KEYWORDS)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)

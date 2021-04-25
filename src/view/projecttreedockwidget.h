@@ -42,7 +42,7 @@ public:
 	explicit ProjectTreeDockWidget(MainWindow *parent = 0);
 	~ProjectTreeDockWidget();
 
-signals:
+Q_SIGNALS:
 
 	void itemCreationTriggered(QString itemTypeRef, QString ref);
 	void itemDoubleClicked(QString itemRef);

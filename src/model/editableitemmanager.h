@@ -64,7 +64,8 @@ public:
 	virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
 
 	EditableItem* loadItem(QString const& ref);
-	QStringList loadedItems() const;
+	QStringList loadedItems(QString const& type = "") const;
+	QStringList loadedItemsTypes() const;
 	void forceUnloadItem(QString ref);
 	bool isItemLoaded(const QString &ref) const;
 	bool containItem(const QString & ref) const;
@@ -115,7 +116,11 @@ public:
 	 */
 	void setEditorManager(EditorFactoryManager *editorManager);
 
-signals:
+	Q_INVOKABLE QAbstractItemModel* getSubTreeFromItemType(QString typeRef, QObject* modelParent = nullptr);
+
+	virtual QHash<int, QByteArray> roleNames() const;
+
+Q_SIGNALS:
 
 	void loadingItemSucessFull(QString ref);
 
@@ -124,7 +129,7 @@ signals:
 
 	void activeItemChanged();
 
-public slots:
+public Q_SLOTS:
 
 	virtual void reset() = 0;
 	virtual void closeAll();

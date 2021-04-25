@@ -86,7 +86,7 @@ void ProjectTreeDockWidget::selectionChanged() {
 
 void ProjectTreeDockWidget::onItemCreationTriggered(QString itemTypeRef) {
 
-	emit itemCreationTriggered(itemTypeRef, itemTypeRef);
+	Q_EMIT itemCreationTriggered(itemTypeRef, itemTypeRef);
 
 }
 
@@ -174,7 +174,7 @@ void ProjectTreeDockWidget::receiveDoubleClick(const QModelIndex &index) {
 
 	QString ref = _internalModel->data(index, EditableItemManager::ItemRefRole).toString();
 
-	emit itemDoubleClicked(ref);
+	Q_EMIT itemDoubleClicked(ref);
 
 }
 
@@ -189,7 +189,7 @@ void ProjectTreeDockWidget::supprButtonClicked() {
 		selectedItems << _internalModel->data(index, Aline::EditableItemFactoryManager::ItemRefRole).toString();
 	}
 
-	emit itemSuppressionTriggered(selectedItems);
+	Q_EMIT itemSuppressionTriggered(selectedItems);
 
 }
 
@@ -208,7 +208,7 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 			QAction* editAction = menu.addAction(tr("éditer"));
 
 			connect(editAction, &QAction::triggered, [this, &index] () {
-				emit itemDoubleClicked(index.data(EditableItemManager::ItemRefRole).toString());
+				Q_EMIT itemDoubleClicked(index.data(EditableItemManager::ItemRefRole).toString());
 			});
 
 			QAction* actionRemove = menu.addAction(tr("supprimer"));
@@ -242,7 +242,7 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 		connect(action, &EditableItemTypeSpecializedAction::triggered,
 				this, [&index, this] (QString type_id) {
 
-					emit itemCreationTriggered(type_id, type_id);
+					Q_EMIT itemCreationTriggered(type_id, type_id);
 
 		});
 

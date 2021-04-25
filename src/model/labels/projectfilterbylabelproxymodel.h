@@ -46,9 +46,9 @@ public:
 
 	void connectLabelTree(LabelsTree * labelTree);
 
-signals:
+Q_SIGNALS:
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

@@ -23,11 +23,11 @@ public:
 
 	QString getEditedItemRef() const;
 
-signals:
+Q_SIGNALS:
 
 	void editedItemChanged(EditableItem* new_edited_item);
 
-public slots:
+public Q_SLOTS:
 
 protected:
 

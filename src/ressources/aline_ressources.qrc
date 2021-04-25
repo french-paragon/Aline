@@ -13,5 +13,9 @@
         <file>icons/zoom_one.svg</file>
         <file>icons/zoom_plus.svg</file>
         <file>icons/zoom_simple.svg</file>
+        <file>icons/down.svg</file>
+        <file>icons/left.svg</file>
+        <file>icons/right.svg</file>
+        <file>icons/up.svg</file>
     </qresource>
 </RCC>

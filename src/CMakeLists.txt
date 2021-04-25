@@ -10,6 +10,8 @@ list(APPEND LIB_SRC
 		model/labels/projectfilterbylabelproxymodel.cpp
 		model/exceptions/itemioexception.cpp
 		model/exceptions/datasourcebusyexception.cpp
+		model/viewmodel/externalitemreferencelistmodel.cpp
+		model/viewmodel/editableitemfilteredconnectionproxymodel.cpp
 		view/mainwindow.cpp
 		view/labelitemsdockwidget.cpp
 		view/projectlabelsdockwidget.cpp
@@ -28,6 +30,7 @@ list(APPEND LIB_SRC
 		view/projecttreedockwidget.ui
 		utils/stringutils.cpp
 		utils/jsonutils.cpp
+		utils/view_model/indexrebasedproxymodel.cpp
 		control/app.cpp
 		ressources/aline_ressources.qrc
 		)
@@ -47,3 +50,5 @@ target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
 target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Qml)
 target_link_libraries(${PROJECT_NAME} Qt5::QuickWidgets)
+
+install (TARGETS ${PROJECT_NAME} DESTINATION usr/lib)

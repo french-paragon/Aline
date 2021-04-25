@@ -69,10 +69,10 @@ void Label::setRef(QString ref) {
 		_ref = sref;
 
 		if (_hasBeenRefed) {
-			emit refChanged(oldRef, _ref);
+			Q_EMIT refChanged(oldRef, _ref);
 		} else {
 			_hasBeenRefed = true;
-			emit gettedRef(_ref);
+			Q_EMIT gettedRef(_ref);
 		}
 	}
 }
@@ -183,7 +183,7 @@ bool Label::markItem(Aline::EditableItem* item) {
 	}
 
 	if (ok) {
-		emit itemRefAdded(item->getRef());
+		Q_EMIT itemRefAdded(item->getRef());
 	}
 
 	return ok;
@@ -224,7 +224,7 @@ bool Label::unmarkItem(Aline::EditableItem* item) {
 	}
 
 	if (ok) {
-		emit itemRefRemoved(item->getRef());
+		Q_EMIT itemRefRemoved(item->getRef());
 	}
 
 	return ok;
