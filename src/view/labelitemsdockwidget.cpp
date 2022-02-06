@@ -27,8 +27,8 @@ namespace Aline {
 
 LabelItemsDockWidget::LabelItemsDockWidget(MainWindow *parent) :
 	QDockWidget(parent),
-	ui(new Ui::LabelItemsDockWidget),
-	_mw_parent(parent)
+	_mw_parent(parent),
+	ui(new Ui::LabelItemsDockWidget)
 {
 	ui->setupUi(this);
 

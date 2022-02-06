@@ -31,9 +31,9 @@ namespace Aline {
 
 ProjectTreeDockWidget::ProjectTreeDockWidget(MainWindow *parent) :
 	QDockWidget(parent),
-	ui(new Ui::ProjectTreeDockWidget),
 	_mw_parent(parent),
-	_newItemMenu(nullptr)
+	_newItemMenu(nullptr),
+	ui(new Ui::ProjectTreeDockWidget)
 {
 	_internalModel = new QSortFilterProxyModel(this);
 
@@ -185,7 +185,7 @@ void ProjectTreeDockWidget::supprButtonClicked() {
 	QModelIndexList smod = ui->treeView->selectionModel()->selectedIndexes();
 	QStringList selectedItems;
 
-	for (QModelIndex index : smod) {
+	for (QModelIndex index : qAsConst(smod)) {
 		selectedItems << _internalModel->data(index, Aline::EditableItemFactoryManager::ItemRefRole).toString();
 	}
 
@@ -206,15 +206,16 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 
 		if (Aline::EditorFactoryManager::GlobalEditorFactoryManager.hasFactoryInstalledForItem(itemTypeRef) && index.parent() != QModelIndex()) {
 			QAction* editAction = menu.addAction(tr("éditer"));
+			QString ref = index.data(EditableItemManager::ItemRefRole).toString();
 
-			connect(editAction, &QAction::triggered, [this, &index] () {
-				Q_EMIT itemDoubleClicked(index.data(EditableItemManager::ItemRefRole).toString());
+			connect(editAction, &QAction::triggered, this, [this, ref] () {
+				Q_EMIT itemDoubleClicked(ref);
 			});
 
 			QAction* actionRemove = menu.addAction(tr("supprimer"));
 
-			connect(actionRemove, &QAction::triggered, [&index, this] () {
-				itemSuppressionTriggered({index.data(EditableItemManager::ItemRefRole).toString()});
+			connect(actionRemove, &QAction::triggered, this, [ref, this] () {
+				Q_EMIT itemSuppressionTriggered({ref});
 			});
 
 			menu.addSeparator();
@@ -224,7 +225,7 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 
 			QAction* renameAction = menu.addAction(tr("renommer"));
 
-			connect(renameAction, &QAction::triggered, [&index, this] () {ui->treeView->edit(index);});
+			connect(renameAction, &QAction::triggered, this, [&index, this] () {ui->treeView->edit(index);});
 
 			menu.addSeparator();
 
@@ -240,7 +241,7 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 																						  &menu);
 
 		connect(action, &EditableItemTypeSpecializedAction::triggered,
-				this, [&index, this] (QString type_id) {
+				this, [this] (QString type_id) {
 
 					Q_EMIT itemCreationTriggered(type_id, type_id);
 

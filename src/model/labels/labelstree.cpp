@@ -300,7 +300,7 @@ bool LabelsTree::dropMimeData(const QMimeData *data,
 			return false;
 		}
 
-		for (QString ref : newItems) {
+		for (QString const& ref : qAsConst(newItems)) {
 
 			if (label->itemsRefs().contains(ref)) {
 				continue;
@@ -381,7 +381,7 @@ bool LabelsTree::insertRows(int row, QVector<Label*> const& labels, const QModel
 	for (Label* l : labels) {
 		QStringList refs = l->refAndSubRefs();
 
-		for (QString ref : refs) {
+		for (QString const& ref : qAsConst(refs)) {
 
 			if (_labelsRefs.contains(ref)) {
 				return false; //can't insert labels with redundant references.
@@ -517,6 +517,10 @@ void LabelsTree::insertRefs(const QStringList &refs) {
 
 int LabelsTree::getRowFromLabel(Label* label) {
 
+	if (label == nullptr) {
+		return -1;
+	}
+
 	if (label->parentLabel() == nullptr) {
 		return _labels.indexOf(label);
 	}
@@ -535,13 +539,13 @@ bool LabelsTree::moveRefsToParent(QStringList refs, QModelIndex const& parent) {
 		next = next.parent();
 	}
 
-	for(QString ref : refs) {
+	for(QString const& ref : qAsConst(refs)) {
 		if (parentHierarchy.contains(ref)) {
 			return false; //can't move one of the label as the target is a direct descendant of the ref to move.
 		}
 	}
 
-	for(QString ref : refs) {
+	for(QString const& ref : qAsConst(refs)) {
 		moveRefToParent(ref, parent);
 	}
 
