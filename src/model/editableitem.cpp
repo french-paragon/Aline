@@ -109,7 +109,7 @@ void EditableItem::changeRef(QString const& newRef) {
 		QString oldRef = _ref;
 		_ref = newRef;
 
-		for (QString referentRef : _referentItems) {
+		for (QString const& referentRef : qAsConst(_referentItems)) {
 			EditableItem* referent = _manager->loadItem(referentRef);
 
 			if (referent != nullptr) {
@@ -137,6 +137,8 @@ void EditableItem::warnUnrefering(QString referentItemRef) {
 }
 
 void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
+	Q_UNUSED(oldRef);
+	Q_UNUSED(newRef);
 	return;
 }
 
@@ -167,7 +169,9 @@ void EditableItem::newUnsavedChanges() {
 void EditableItem::clearHasUnsavedChanges() {
 	if (_hasUnsavedChanged) {
 
-		for (EditableItem* sit : getSubItems()) {
+		QList<Aline::EditableItem*> items = getSubItems();
+
+		for (EditableItem* sit : qAsConst(items)) {
 			sit->clearHasUnsavedChanges();
 		}
 
@@ -225,7 +229,7 @@ void EditableItem::insertSubItem(EditableItem* item) {
 
 	_usedRef.insert(item->getRef());
 
-	connect(item, &EditableItem::unsavedStateChanged, [this] (bool state) {
+	connect(item, &EditableItem::unsavedStateChanged, this, [this] (bool state) {
 		if (state == true) newUnsavedChanges();
 	});
 
@@ -284,7 +288,7 @@ void EditableItem::setLabels(const QStringList &labels)
 			Q_EMIT labelRemoved(label);
 		}
 
-		for (QString label : labels) {
+		for (QString const& label : labels) {
 			addLabel(label);
 		}
 	}
