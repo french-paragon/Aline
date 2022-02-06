@@ -67,7 +67,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 					QJsonArray arr = subObj.value(ITEM_SUBITEM_LIST).toArray();
 					QList<Aline::EditableItem*> itemList;
 
-					for (QJsonValue val : arr) {
+					for (QJsonValue const& val : qAsConst(arr)) {
 
 						if (val.isObject()) {
 							QJsonObject listedObj = val.toObject();
@@ -197,7 +197,7 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 	QList<QByteArray> dynamicProperties = item->dynamicPropertyNames();
 
-	for (QByteArray cpropName : dynamicProperties) {
+	for (QByteArray const& cpropName : qAsConst(dynamicProperties)) {
 
 		addPropToObject(obj, item, cpropName.toStdString().c_str());
 

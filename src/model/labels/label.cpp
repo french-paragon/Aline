@@ -142,6 +142,7 @@ bool Label::removeLabels(int row, int count) {
 	}
 
 	_childrens.remove(row, count);
+
 	return true;
 }
 

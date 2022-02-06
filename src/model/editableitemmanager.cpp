@@ -22,8 +22,8 @@ const QString EditableItemManager::RefMimeType = "text/editableitemref";
 EditableItemManager::EditableItemManager(QObject *parent) :
 	QAbstractItemModel(parent),
 	_labels(nullptr),
-	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
 	_activeItem(nullptr),
+	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
 	_editorManager(nullptr)
 {
 	cleanTreeStruct();
@@ -48,7 +48,7 @@ QModelIndex EditableItemManager::index(int row, int column, const QModelIndex &p
 
 	if (parent == QModelIndex()) {
 
-		if (row >= _itemsByTypes.keys().size()) {
+		if (row >= _itemsByTypes.size()) {
 			return QModelIndex();
 		}
 
@@ -86,7 +86,7 @@ QModelIndex EditableItemManager::parent(const QModelIndex &index) const {
 int EditableItemManager::rowCount(const QModelIndex &parent) const {
 
 	if (parent == QModelIndex()) {
-		return _itemsByTypes.keys().size();
+		return _itemsByTypes.size();
 	}
 
 	void * dataPtr = parent.internalPointer();
@@ -360,7 +360,7 @@ bool EditableItemManager::isItemLoaded(QString const& ref) const {
 }
 
 bool EditableItemManager::containItem(const QString & ref) const {
-	return _treeIndex.keys().contains(ref);
+	return _treeIndex.contains(ref);
 }
 
 bool EditableItemManager::createItem(QString typeRef, QString pref) {
@@ -461,7 +461,10 @@ bool EditableItemManager::saveItem(QString ref) {
 bool EditableItemManager::saveAll() {
 
 	bool status = true;
-	for (QString const& ref : _loadedItems.keys()) {
+
+	QList<QString> keys = _loadedItems.keys();
+
+	for (QString const& ref : qAsConst(keys)) {
 		status = status and saveItem(ref);
 	}
 
@@ -536,7 +539,9 @@ LabelsTree* EditableItemManager::labelsTree() {
 
 void EditableItemManager::closeAll() {
 
-	for (QString ref : _loadedItems.keys()) {
+	QList<QString> keys = _loadedItems.keys();
+
+	for (QString const& ref : qAsConst(keys)) {
 
 		Q_EMIT itemAboutToBeUnloaded(ref); //at that point the items can still be saved or other operations can be carried on by the watchers.
 
@@ -607,14 +612,14 @@ void EditableItemManager::cleanTreeStruct() {
 
 	beginResetModel();
 
-	for (treeStruct* leaf : _treeIndex.values()) {
+	for (treeStruct* leaf : qAsConst(_treeIndex)) {
 		delete leaf;
 	}
 
 	_treeIndex.clear();
 	_itemsByTypes.clear();
 
-	for (QString ref : _factoryManager->installedFactoriesKeys()) {
+	for (QString const& ref : _factoryManager->installedFactoriesKeys()) {
 		_itemsByTypes.insert(ref, QVector<treeStruct*>());
 	}
 
@@ -637,7 +642,7 @@ bool EditableItemManager::insertItem(EditableItem* item) {
 
 	if (!_itemsByTypes.contains(item_leaf->_type_ref)) {
 
-		int s = _itemsByTypes.keys().size();
+		int s = _itemsByTypes.size();
 
 		beginInsertRows(QModelIndex(), s, s);
 

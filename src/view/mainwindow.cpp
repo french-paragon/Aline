@@ -19,9 +19,9 @@ const QString MainWindow::MENU_DISPLAY_NAME = "display_menu";
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow),
 	_currentProject(nullptr),
-	_editorFactoryManager(nullptr)
+	_editorFactoryManager(nullptr),
+	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 
@@ -173,7 +173,7 @@ void MainWindow::registerProjectFunction(QString const& fName,
 	QAction* openProjectAction = new QAction(projectType, this);
 	openProjectAction->setToolTip(longDescr);
 
-	connect(openProjectAction, &QAction::triggered, [fName, this] () {
+	connect(openProjectAction, &QAction::triggered, this, [fName, this] () {
 		setWindowProjectFromFunc(fName);
 	});
 
@@ -214,13 +214,8 @@ void MainWindow::closeEditor(int index) {
 
 	Q_EMIT editorAboutToBeRemoved(editor);
 
-	if (_openedEditors.values().contains(editor)) {
-
-		QString key = _openedEditors.key(editor);
-
-		_openedEditors.remove(key);
-
-	}
+	QString key = _openedEditors.key(editor);
+	_openedEditors.remove(key);
 
 	ui->tabWidget->removeTab(index);
 }
@@ -231,13 +226,8 @@ void MainWindow::closeEditor(Editor* editor) {
 
 	Q_EMIT editorAboutToBeRemoved(editor);
 
-	if (_openedEditors.values().contains(editor)) {
-
-		QString key = _openedEditors.key(editor);
-
-		_openedEditors.remove(key);
-
-	}
+	QString key = _openedEditors.key(editor);
+	_openedEditors.remove(key);
 
 	ui->tabWidget->removeTab(ui->tabWidget->indexOf(editor));
 

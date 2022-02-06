@@ -38,7 +38,7 @@ protected:
 
 	EditableItem * _trackedItem;
 
-	char* _watchedPropertyName;
+	std::string _watchedPropertyName;
 	int _watchedPropertyIndex;
 
 	QMetaObject::Connection _connection;

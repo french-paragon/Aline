@@ -21,10 +21,9 @@ ExternalItemReferenceListProxyModel::ExternalItemReferenceListProxyModel(Editabl
 
 		_trackedItem = item;
 
-		_watchedPropertyName = new char[watchPropertyName.length() + 1];
-		strcpy(_watchedPropertyName, watchPropertyName.toStdString().c_str());
+		_watchedPropertyName = watchPropertyName.toStdString();
 
-		_watchedPropertyIndex = item->metaObject()->indexOfProperty(_watchedPropertyName);
+		_watchedPropertyIndex = item->metaObject()->indexOfProperty(_watchedPropertyName.c_str());
 
 		if (_watchedPropertyIndex >= 0) {
 
@@ -33,8 +32,8 @@ ExternalItemReferenceListProxyModel::ExternalItemReferenceListProxyModel(Editabl
 			if (p.type() == QVariant::StringList && p.hasNotifySignal()) {
 
 				QMetaMethod signal = p.notifySignal();
-				int index_of_slot = metaObject()->indexOfSlot("reset()");
-				QMetaMethod slot = metaObject()->method(index_of_slot);
+				int index_of_slot = ExternalItemReferenceListProxyModel::staticMetaObject.indexOfSlot("reset()");
+				QMetaMethod slot = ExternalItemReferenceListProxyModel::staticMetaObject.method(index_of_slot);
 
 				_connection = connect(_trackedItem, signal, this, slot);
 
@@ -48,7 +47,7 @@ ExternalItemReferenceListProxyModel::ExternalItemReferenceListProxyModel(Editabl
 }
 
 ExternalItemReferenceListProxyModel::~ExternalItemReferenceListProxyModel() {
-	delete _watchedPropertyName;
+
 }
 
 void ExternalItemReferenceListProxyModel::reset() {
@@ -61,7 +60,7 @@ QStringList ExternalItemReferenceListProxyModel::list() const {
 		return QStringList();
 	}
 
-	return _trackedItem->property(_watchedPropertyName).toStringList();
+	return _trackedItem->property(_watchedPropertyName.c_str()).toStringList();
 }
 
 bool ExternalItemReferenceListProxyModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent) const {

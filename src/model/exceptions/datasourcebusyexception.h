@@ -20,7 +20,7 @@ public:
 
 protected:
 
-	QString _what;
+	std::string _what;
 };
 
 } // namespace Aline

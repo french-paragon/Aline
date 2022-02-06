@@ -3,7 +3,7 @@
 namespace Aline {
 
 DataSourceBusyException::DataSourceBusyException(const QString &what) :
-	_what(what)
+	_what(what.toStdString())
 {
 
 }
@@ -14,7 +14,7 @@ DataSourceBusyException::DataSourceBusyException(DataSourceBusyException const& 
 }
 
 const char* DataSourceBusyException::what() const throw() {
-	return _what.toStdString().c_str();
+	return _what.c_str();
 }
 
 void DataSourceBusyException::raise() const {

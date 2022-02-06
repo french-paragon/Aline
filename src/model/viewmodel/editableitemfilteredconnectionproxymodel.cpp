@@ -21,10 +21,9 @@ EditableItemFilteredConnectionProxyModel::EditableItemFilteredConnectionProxyMod
 
 		_trackedItem = item;
 
-		_watchedPropertyName = new char[propName.length() + 1];
-		strcpy(_watchedPropertyName, propName.toStdString().c_str());
+		_watchedPropertyName = propName.toStdString();
 
-		_watchedPropertyIndex = item->metaObject()->indexOfProperty(_watchedPropertyName);
+		_watchedPropertyIndex = item->metaObject()->indexOfProperty(_watchedPropertyName.c_str());
 
 		if (_watchedPropertyIndex >= 0) {
 
@@ -33,12 +32,12 @@ EditableItemFilteredConnectionProxyModel::EditableItemFilteredConnectionProxyMod
 			if (p.type() == QVariant::StringList && p.hasNotifySignal()) {
 
 				QMetaMethod signal = p.notifySignal();
-				int index_of_slot = metaObject()->indexOfSlot("checkForbidenItemRefs()");
-				QMetaMethod slot = metaObject()->method(index_of_slot);
+				int index_of_slot = EditableItemFilteredConnectionProxyModel::staticMetaObject.indexOfSlot("checkForbidenItemRefs()");
+				QMetaMethod slot = EditableItemFilteredConnectionProxyModel::staticMetaObject.method(index_of_slot);
 
 				_connection = connect(_trackedItem, signal, this, slot);
 
-				_forbidenItemRefs = item->property(_watchedPropertyName).toStringList();
+				_forbidenItemRefs = item->property(_watchedPropertyName.c_str()).toStringList();
 
 			} else {
 				_watchedPropertyIndex = -1;
@@ -51,11 +50,11 @@ EditableItemFilteredConnectionProxyModel::EditableItemFilteredConnectionProxyMod
 }
 
 EditableItemFilteredConnectionProxyModel::~EditableItemFilteredConnectionProxyModel() {
-	delete _watchedPropertyName;
+
 }
 
 void EditableItemFilteredConnectionProxyModel::checkForbidenItemRefs() {
-	setForbidenItemRefs(_trackedItem->property(_watchedPropertyName).toStringList());
+	setForbidenItemRefs(_trackedItem->property(_watchedPropertyName.c_str()).toStringList());
 }
 
 bool EditableItemFilteredConnectionProxyModel::filterAcceptsRow(int source_row, const QModelIndex & source_parent) const {

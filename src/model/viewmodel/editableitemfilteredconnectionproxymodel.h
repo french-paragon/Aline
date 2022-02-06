@@ -7,6 +7,10 @@ namespace Aline {
 
 class EditableItem;
 
+/*!
+ * \brief The EditableItemFilteredConnectionProxyModel class provide a model filter capable of listing only a set of option available based on the options already set for a given editable item
+ * (e.g. ask only for the mobile and home phone number if a contact already have a workplace number).
+ */
 class EditableItemFilteredConnectionProxyModel : public QSortFilterProxyModel
 {
 	Q_OBJECT
@@ -32,7 +36,7 @@ protected:
 
 	EditableItem* _trackedItem;
 
-	char* _watchedPropertyName;
+	std::string _watchedPropertyName;
 	int _watchedPropertyIndex;
 
 	QStringList _forbidenItemRefs;
