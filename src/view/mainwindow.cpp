@@ -69,6 +69,10 @@ MainWindow::~MainWindow()
 	delete ui;
 }
 
+int MainWindow::nOpenedEditors() const {
+	return ui->tabWidget->count();
+}
+
 Editor* MainWindow::editorAt(int index) {
 
 	QWidget* widget = ui->tabWidget->widget(index);
@@ -77,6 +81,49 @@ Editor* MainWindow::editorAt(int index) {
 
 	return editor;
 
+}
+
+Editor* MainWindow::findEditorByName(QString const& name) {
+
+	for (int i = 0; i < nOpenedEditors(); i++) {
+		Editor* e = editorAt(i);
+
+		if (e->objectName() == name) {
+			return e;
+		}
+	}
+
+	return nullptr;
+
+}
+QVector<Editor*> MainWindow::findAllEditorsOfType(QString const& type) {
+	QVector<Editor*> eds = {};
+
+	for (int i = 0; i < nOpenedEditors(); i++) {
+		Editor* e = editorAt(i);
+
+		if (e->getTypeId() == type) {
+			eds.push_back(e);
+		}
+	}
+
+	return eds;
+}
+
+
+void MainWindow::switchToEditor(int index) {
+
+	if (index >= 0 and index < ui->tabWidget->count()) {
+		ui->tabWidget->setCurrentIndex(index);
+	}
+}
+
+void MainWindow::switchToEditor(Editor* editor) {
+	int index = ui->tabWidget->indexOf(editor);
+
+	if (index >= 0) {
+		ui->tabWidget->setCurrentIndex(index);
+	}
 }
 
 
@@ -212,13 +259,6 @@ void MainWindow::addEditor(Editor* editor) {
 	switchToEditor(editor);
 }
 
-void MainWindow::switchToEditor(Editor* editor) {
-	int index = ui->tabWidget->indexOf(editor);
-
-	if (index >= 0) {
-		ui->tabWidget->setCurrentIndex(index);
-	}
-}
 
 void MainWindow::closeEditor(int index) {
 

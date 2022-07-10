@@ -48,7 +48,13 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+	int nOpenedEditors() const;
 	Editor* editorAt(int index);
+	Editor* findEditorByName(QString const& name);
+	QVector<Editor*> findAllEditorsOfType(QString const& type);
+
+	void switchToEditor(int index);
+	void switchToEditor(Editor* editor);
 
 	EditableItemManager *currentProject() const;
 	void setCurrentProject(EditableItemManager *currentProject);
@@ -90,8 +96,6 @@ Q_SIGNALS:
 public Q_SLOTS:
 
 	void addEditor(Editor* editor);
-
-	void switchToEditor(Editor* editor);
 
 	void closeEditor(int index);
 	void closeEditor(Editor* editor);
