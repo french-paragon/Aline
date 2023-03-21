@@ -93,7 +93,14 @@ bool EditableItem::autoSave() const {
 }
 
 void EditableItem::suppress() {
-	//default implementation do noting.
+
+	for (QString const& referentRef : qAsConst(_referentItems)) {
+		EditableItem* referent = _manager->loadItem(referentRef);
+
+		if (referent != nullptr) {
+			referent->warnReferedRemoved(_ref);
+		}
+	}
 }
 
 bool EditableItem::save() {
@@ -157,6 +164,10 @@ void EditableItem::warnUnrefering(QString referentItemRef) {
 void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
 	Q_UNUSED(oldRef);
 	Q_UNUSED(newRef);
+	return;
+}
+void EditableItem::warnReferedRemoved(QString ref) {
+	Q_UNUSED(ref);
 	return;
 }
 

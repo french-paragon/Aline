@@ -205,6 +205,15 @@ protected:
 	 */
 	virtual void warnReferedRefChanges(QString oldRef, QString newRef);
 
+	/*!
+	 * \brief warnReferedRemoved warn an item refering another item that this other item is about to be supressed from the project.
+	 * \param ref The reference of the item.
+	 *
+	 * By default, editableItem don't refer to other items, so this function do nothing.
+	 * A subclass of editable item which refer to other items needs to reimplement this function to be warned about its refered items being deleted^.
+	 */
+	virtual void warnReferedRemoved(QString ref);
+
 	void onVisibleStateChanged();
 
 	void newUnsavedChanges();
