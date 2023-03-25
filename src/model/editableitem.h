@@ -173,6 +173,10 @@ public:
 	void warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef);
 	void warnUnrefering(QString referentItemRef);
 
+	inline QList<QString> listReferents() const {
+		return _referentItems.values();
+	}
+
 Q_SIGNALS:
 
 	void parentChanged(QString newRef);

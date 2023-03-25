@@ -1,7 +1,13 @@
 list(APPEND LIB_TEST_SRC
             aline_test_global.h
+            testeditableitemmanager.h
             testeditableitemmanager.cpp
-            editableitemtestmodel.cpp)
+            editableitemtestmodel.h
+            editableitemtestmodel.cpp
+            dummyeditableitem.h
+            dummyeditableitem.cpp
+            referingeditableitem.h
+            referingeditableitem.cpp)
 
 add_library(${PROJECT_NAME}_tests ${LIB_TEST_SRC})
 
