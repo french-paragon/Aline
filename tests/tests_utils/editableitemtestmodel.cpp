@@ -62,7 +62,8 @@ void EditableItemTestModel::recursivelyTestSubItemsStaticPropertiesTypes(Editabl
 		}
 
 		const char* prop = mobj->property(i).name();
-		const char* msg = QString("Property named [%1] is stored but its type is not supported in Aline framework now !").toStdString().c_str();
+		std::string str_msg = QString("Property named [%1] is stored but its type is not supported in Aline framework now !").toStdString();
+		const char* msg = str_msg.c_str();
 
 		int type_id = mobj->property(i).userType();
 

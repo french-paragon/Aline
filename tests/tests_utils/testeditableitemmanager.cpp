@@ -3,7 +3,8 @@
 namespace Aline {
 namespace Tests {
 
-TestEditableItemManager::TestEditableItemManager()
+TestEditableItemManager::TestEditableItemManager(QObject *parent):
+	EditableItemManager(parent)
 {
 
 }

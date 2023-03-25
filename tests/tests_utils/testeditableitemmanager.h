@@ -14,7 +14,7 @@ namespace Tests {
 class TestEditableItemManager : public EditableItemManager
 {
 public:
-	TestEditableItemManager();
+	TestEditableItemManager(QObject *parent = nullptr);
 
 	virtual bool hasDataSource() const;
 
