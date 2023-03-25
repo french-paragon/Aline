@@ -6,6 +6,7 @@
 #include <QSignalSpy>
 
 #include <ctime>
+#include <iterator>
 #include <QDebug>
 
 class testRowMotionModel : public QAbstractItemModel
@@ -13,9 +14,21 @@ class testRowMotionModel : public QAbstractItemModel
 	Q_OBJECT
 public:
 
-	explicit testRowMotionModel() {
-		row1Childs << "R1C1" << "R1C2" << "R1C3";
-		row2Childs << "R2C21" << "R2C2" << "R2C3";
+	using InnerListType = QStringList;
+
+	explicit testRowMotionModel() :
+		QAbstractItemModel(nullptr),
+		row1Childs(),
+		row2Childs()
+	{
+
+		row1Childs.push_back("R1C1");
+		row1Childs.push_back("R1C2");
+		row1Childs.push_back("R1C3");
+
+		row2Childs.push_back("R2C21");
+		row2Childs.push_back("R2C2");
+		row2Childs.push_back("R2C3");
 	}
 
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const {
@@ -40,7 +53,7 @@ public:
 			return QModelIndex();
 		}
 
-		QStringList* ptr = reinterpret_cast<QStringList*>(child.internalPointer());
+		InnerListType* ptr = reinterpret_cast<InnerListType*>(child.internalPointer());
 
 		if (ptr == &row1Childs) {
 			return createIndex(0, 0, nullptr);
@@ -64,9 +77,9 @@ public:
 		if (parent == QModelIndex()) {
 			return 2;
 		} else if (parent == index(0, 0, QModelIndex()) ) {
-			return row1Childs.length();
+			return row1Childs.size();
 		} else if (parent == index(1, 0, QModelIndex()) ) {
-			return row2Childs.length();
+			return row2Childs.size();
 		}
 
 		return 0;
@@ -85,11 +98,15 @@ public:
 		}
 
 		if (index.parent() == this->index(0, 0, QModelIndex())) {
-			return row1Childs.at(index.row());
+			auto it = row1Childs.begin();
+			std::advance(it,index.row());
+			return *(it);
 		}
 
 		if (index.parent() == this->index(1, 0, QModelIndex())) {
-			return row2Childs.at(index.row());
+			auto it = row2Childs.begin();
+			std::advance(it,index.row());
+			return *(it);
 		}
 
 		return QVariant();
@@ -98,15 +115,15 @@ public:
 
 	void moveFromRow1ToRow2() {
 
-		if (row1Childs.length() == 0) {
+		if (row1Childs.front() == 0) {
 			return;
 		}
 
 		beginMoveRows(index(0, 0, QModelIndex()), 0, 0, index(1, 0, QModelIndex()), 0);
 
-		QString item = row1Childs.first();
+		QString item = row1Childs.front();
 		row1Childs.pop_front();
-		row2Childs.insert(0, item);
+		row2Childs.insert(row2Childs.begin(), item);
 
 		endMoveRows();
 
@@ -114,31 +131,69 @@ public:
 
 	void moveFromRow2ToRow1() {
 
-		if (row2Childs.length() == 0) {
+		if (row2Childs.size() == 0) {
 			return;
 		}
 
 		beginMoveRows(index(1, 0, QModelIndex()), 0, 0, index(0, 0, QModelIndex()), 0);
 
-		QString item = row2Childs.first();
+		QString item = row2Childs.front();
 		row2Childs.pop_front();
-		row1Childs.insert(0, item);
+		row1Childs.insert(row1Childs.begin(), item);
 
 		endMoveRows();
 
 	}
 
-	void switchInRow1() {
+	void insertInRow1() {
 
-		if (row1Childs.length() <= 1) {
+		beginInsertRows(index(0, 0, QModelIndex()), 0, 0);
+		row1Childs.insert(row1Childs.begin(), "Special");
+		endInsertRows();
+	}
+
+	void deleteInRow1() {
+
+		if (row1Childs.size() <= 1) {
 			return;
 		}
 
-		beginMoveRows(index(0, 0, QModelIndex()), 0, 0, index(0, 0, QModelIndex()), row1Childs.length()-1);
-
-		QString item = row1Childs.first();
+		beginRemoveRows(index(0, 0, QModelIndex()), 0, 0);
 		row1Childs.pop_front();
-		row1Childs.append(item);
+		endRemoveRows();
+
+	}
+
+	void insertInRow2() {
+
+		beginInsertRows(index(1, 0, QModelIndex()), 0, 0);
+		row2Childs.insert(row2Childs.begin(), "Special");
+		endInsertRows();
+	}
+
+	void deleteInRow2() {
+
+		if (row2Childs.size() <= 1) {
+			return;
+		}
+
+		beginRemoveRows(index(1, 0, QModelIndex()), 0, 0);
+		row2Childs.pop_front();
+		endRemoveRows();
+
+	}
+
+	void switchInRow1() {
+
+		if (row1Childs.size() <= 1) {
+			return;
+		}
+
+		beginMoveRows(index(0, 0, QModelIndex()), 0, 0, index(0, 0, QModelIndex()), row1Childs.size()-1);
+
+		QString item = row1Childs.front();
+		row1Childs.pop_front();
+		row1Childs.push_back(item);
 
 		endMoveRows();
 
@@ -146,15 +201,15 @@ public:
 
 	void switchInRow2() {
 
-		if (row2Childs.length() <= 1) {
+		if (row2Childs.size() <= 1) {
 			return;
 		}
 
-		beginMoveRows(index(1, 0, QModelIndex()), 0, 0, index(1, 0, QModelIndex()), row2Childs.length()-1);
+		beginMoveRows(index(1, 0, QModelIndex()), 0, 0, index(1, 0, QModelIndex()), row2Childs.size()-1);
 
-		QString item = row2Childs.first();
+		QString item = row2Childs.front();
 		row2Childs.pop_front();
-		row2Childs.append(item);
+		row2Childs.push_back(item);
 
 		endMoveRows();
 
@@ -162,8 +217,8 @@ public:
 
 protected:
 
-	QStringList row1Childs;
-	QStringList row2Childs;
+	InnerListType row1Childs;
+	InnerListType row2Childs;
 
 };
 
@@ -181,6 +236,7 @@ private Q_SLOTS:
 	void testMovingIndex();
 	void testInsertingVisibleChild();
 	void testChangingDatas();
+	void testInsertingAndRemovingDatas();
 	void testMovingDatas();
 
 	void cleanup();
@@ -470,57 +526,99 @@ void IndexRebasedProxyModelTest::testChangingDatas() {
 	_sourceModel->setData(targetSource, oldData);
 
 }
+void IndexRebasedProxyModelTest::testInsertingAndRemovingDatas() {
+
+	testRowMotionModel* motionTestModel = new testRowMotionModel();
+
+	Aline::ModelViewUtils::IndexRebasedProxyModel* proxyModel =
+			new Aline::ModelViewUtils::IndexRebasedProxyModel();
+	proxyModel->setSourceModel(motionTestModel);
+	proxyModel->setSourceTarget(motionTestModel->index(1, 0));
+
+	int countRowInserted = 0;
+	int countRowRemoved = 0;
+
+	QMetaObject::Connection con1 = connect(proxyModel, &QAbstractItemModel::rowsInserted, [&countRowInserted] () {
+		countRowInserted++;
+	});
+
+
+	QMetaObject::Connection con2 = connect(proxyModel, &QAbstractItemModel::rowsRemoved, [&countRowRemoved] () {
+		countRowRemoved++;
+	});
+
+	connectionsToRemove << con1 << con2;
+
+	motionTestModel->insertInRow1();
+	QCOMPARE(countRowInserted, 0);
+
+	motionTestModel->deleteInRow1();
+	QCOMPARE(countRowRemoved, 0);
+
+	motionTestModel->insertInRow2();
+	QCOMPARE(countRowInserted, 1);
+
+	motionTestModel->deleteInRow2();
+	QCOMPARE(countRowRemoved, 1);
+
+	delete proxyModel;
+	delete motionTestModel;
+}
 
 void IndexRebasedProxyModelTest::testMovingDatas() {
 
-	testRowMotionModel motionTestModel;
+	testRowMotionModel* motionTestModel = new testRowMotionModel();
 
-	_proxyModel->setSourceModel(&motionTestModel);
-	_proxyModel->setSourceTarget(motionTestModel.index(0, 0));
+	Aline::ModelViewUtils::IndexRebasedProxyModel* proxyModel =
+			new Aline::ModelViewUtils::IndexRebasedProxyModel();
+
+	proxyModel->setSourceModel(motionTestModel);
+	proxyModel->setSourceTarget(motionTestModel->index(0, 0));
 
 	int countRowMoved = 0;
 	int countRowInserted = 0;
 	int countRowRemoved = 0;
 
-	QMetaObject::Connection con1 = connect(_proxyModel, &QAbstractItemModel::rowsMoved, [&countRowMoved] () {
+	QMetaObject::Connection con1 = connect(proxyModel, &QAbstractItemModel::rowsMoved, [&countRowMoved] () {
 		countRowMoved++;
 	});
 
-	QMetaObject::Connection con2 = connect(_proxyModel, &QAbstractItemModel::rowsInserted, [&countRowInserted] () {
+	QMetaObject::Connection con2 = connect(proxyModel, &QAbstractItemModel::rowsInserted, [&countRowInserted] () {
 		countRowInserted++;
 	});
 
-	QMetaObject::Connection con3 = connect(_proxyModel, &QAbstractItemModel::rowsRemoved, [&countRowRemoved] () {
+	QMetaObject::Connection con3 = connect(proxyModel, &QAbstractItemModel::rowsRemoved, [&countRowRemoved] () {
 		countRowRemoved++;
 	});
 
 	connectionsToRemove << con1 << con2 << con3;
 
-	motionTestModel.switchInRow1();
+	motionTestModel->switchInRow1();
 
 	QCOMPARE(countRowMoved, 1);
 	QCOMPARE(countRowInserted, 0);
 	QCOMPARE(countRowRemoved, 0);
 
-	motionTestModel.switchInRow2();
+	motionTestModel->switchInRow2();
 
 	QCOMPARE(countRowMoved, 1);
 	QCOMPARE(countRowInserted, 0);
 	QCOMPARE(countRowRemoved, 0);
 
-	motionTestModel.moveFromRow2ToRow1();
+	motionTestModel->moveFromRow1ToRow2();
 
 	QCOMPARE(countRowMoved, 1);
-	QCOMPARE(countRowInserted, 1);
-	QCOMPARE(countRowRemoved, 0);
+	QCOMPARE(countRowInserted, 0);
+	QCOMPARE(countRowRemoved, 1);
 
-	motionTestModel.moveFromRow1ToRow2();
+	motionTestModel->moveFromRow2ToRow1();
 
 	QCOMPARE(countRowMoved, 1);
 	QCOMPARE(countRowInserted, 1);
 	QCOMPARE(countRowRemoved, 1);
 
-	_proxyModel->setSourceModel(_sourceModel);
+	delete proxyModel;
+	delete motionTestModel;
 
 }
 

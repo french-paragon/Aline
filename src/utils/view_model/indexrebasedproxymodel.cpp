@@ -22,17 +22,18 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 using namespace Aline::ModelViewUtils;
 
-IndexRebasedProxyModel::IntermediateModel::IntermediateModel(QObject* parent) :
-	QIdentityProxyModel(parent)
-{
-
-}
 
 IndexRebasedProxyModel::IndexRebasedProxyModel(QObject *parent) :
 	QAbstractItemModel(parent),
 	_sourceTarget(QModelIndex())
 {
-	_intermediate = new IntermediateModel(this);
+	_proxyNodeTree = nullptr;
+}
+
+IndexRebasedProxyModel::~IndexRebasedProxyModel() {
+	if (_proxyNodeTree != nullptr) {
+		delete _proxyNodeTree;
+	}
 }
 
 QModelIndex IndexRebasedProxyModel::sourceTarget() const
@@ -54,6 +55,7 @@ void IndexRebasedProxyModel::setSourceTarget(const QModelIndex &sourceTarget)
 			_sourceWasValid = false;
 		}
 
+		rebuildTreeProxy();
 		endResetModel();
 
 	} else if (sourceTarget != _sourceTarget) {
@@ -63,27 +65,16 @@ void IndexRebasedProxyModel::setSourceTarget(const QModelIndex &sourceTarget)
 
 QModelIndex IndexRebasedProxyModel::index(int row, int column, const QModelIndex &parent) const {
 
-	QModelIndex sourceParent = mapToSource(parent);
+	Node* pNode = getNodeFromIndex(parent);
+	Node* n = pNode->getChild(row, column);
 
-	QModelIndex sourceIndex = _sourceModel->index(row, column, sourceParent);
-
-	if (sourceIndex == QModelIndex()) {
-		return QModelIndex();
-	}
-
-	return createIndex(sourceIndex.row(), sourceIndex.column(), sourceIndex.internalPointer());
+	return getIndexFromNode(n);
 
 }
 QModelIndex IndexRebasedProxyModel::parent(const QModelIndex &child) const {
 
-	if (_sourceModel == nullptr) {
-		return QModelIndex();
-	}
-
-	QModelIndex sourceIndex = mapToSource(child);
-	QModelIndex sourceParent = sourceIndex.parent();
-
-	return mapFromSource(sourceParent);
+	Node* n = getNodeFromIndex(child);
+	return getIndexFromNode(n->parent);
 
 }
 
@@ -103,13 +94,24 @@ QModelIndex IndexRebasedProxyModel::mapFromSource(const QModelIndex &sourceIndex
 			return QModelIndex();
 		}
 
+		QModelIndexList path;
+
 		for (QModelIndex id = sourceIndex; id != (QModelIndex) _sourceTarget; id = id.parent()) { //check that the _sourceTarget is in the ancestors of the index.
+			path << id;
+
 			if (id == QModelIndex()) {
 				return QModelIndex();
 			}
 		}
 
-		return createIndex(sourceIndex.row(), sourceIndex.column(), sourceIndex.internalPointer());
+		Node* n = _proxyNodeTree;
+
+		for (int i = 0; i < path.size(); i++) {
+			QModelIndex sourceIdx = path[path.size()-i-1];
+			n = n->getChild(sourceIdx.row(), sourceIdx.column());
+		}
+
+		return getIndexFromNode(n);
 
 	} else {
 		return QModelIndex();
@@ -127,27 +129,41 @@ QModelIndex IndexRebasedProxyModel::mapToSource(const QModelIndex &proxyIndex) c
 		return _sourceTarget;
 	}
 
-	QModelIndex intermediateIndex = _intermediate->createIndex(proxyIndex.row(), proxyIndex.column(), proxyIndex.internalPointer());
+	QModelIndexList path;
 
-	return _intermediate->mapToSource(intermediateIndex);
+	for (QModelIndex id = proxyIndex; id != QModelIndex(); id = id.parent()) {
+		path << id;
+	}
 
+	QModelIndex targetIdx = _sourceTarget;
+
+	for (int i = 0; i < path.size(); i++) {
+		QModelIndex sourceIdx = path[path.size()-i-1];
+		targetIdx = _sourceModel->index(sourceIdx.row(), sourceIdx.column(), targetIdx);
+	}
+
+	return targetIdx;
 }
 
 int IndexRebasedProxyModel::rowCount(const QModelIndex &parent) const {
 
-	if (_sourceModel == nullptr) {
+	Node* n = getNodeFromIndex(parent);
+
+	if (n == nullptr) {
 		return 0;
 	}
 
-	return _sourceModel->rowCount(mapToSource(mapToSource(parent)));
+	return n->nRows();
 }
 int IndexRebasedProxyModel::columnCount(const QModelIndex &parent) const {
 
-	if (_sourceModel == nullptr) {
+	Node* n = getNodeFromIndex(parent);
+
+	if (n == nullptr) {
 		return 0;
 	}
 
-	return _sourceModel->columnCount(mapToSource(mapToSource(parent)));
+	return n->nCols();
 }
 
 void IndexRebasedProxyModel::setSourceModel(QAbstractItemModel *newSourceModel) {
@@ -219,7 +235,6 @@ void IndexRebasedProxyModel::setSourceModel(QAbstractItemModel *newSourceModel) 
 	beginResetModel();
 
 	_sourceModel = newSourceModel;
-	_intermediate->setSourceModel(newSourceModel);
 	_sourceTarget = QModelIndex();
 
 	if (_sourceModel == nullptr) {
@@ -252,6 +267,8 @@ void IndexRebasedProxyModel::setSourceModel(QAbstractItemModel *newSourceModel) 
 	_sourceModelResetWatch = connect(newSourceModel, &QAbstractItemModel::modelReset, this, &IndexRebasedProxyModel::reset);
 
 	_dataChangedWatch = connect(newSourceModel, &QAbstractItemModel::dataChanged, this, &IndexRebasedProxyModel::onSourceModelDataChanged);
+
+	rebuildTreeProxy();
 
 	endResetModel();
 }
@@ -326,6 +343,7 @@ void IndexRebasedProxyModel::onSourceRowInserted(QModelIndex const& sourceParent
 	QModelIndex mapped = mapFromSource(sourceParent);
 	if (mapped != QModelIndex() || sourceParent == _sourceTarget) {
 
+		rebuildTreeProxy(); //TODO make it more efficient
 		endInsertRows();
 	}
 
@@ -335,6 +353,7 @@ void IndexRebasedProxyModel::onSourceColInserted(QModelIndex const& sourceParent
 	QModelIndex mapped = mapFromSource(sourceParent);
 	if (mapped != QModelIndex() || sourceParent == _sourceTarget) {
 
+		rebuildTreeProxy();
 		endInsertColumns();
 	}
 
@@ -367,6 +386,7 @@ void IndexRebasedProxyModel::onSourceRowRemoved(QModelIndex const& sourceParent)
 	QModelIndex mapped = mapFromSource(sourceParent);
 	if (mapped != QModelIndex() || sourceParent == _sourceTarget) {
 
+		rebuildTreeProxy();
 		endRemoveRows();
 	} else {
 		checkSourceTarget();
@@ -379,6 +399,7 @@ void IndexRebasedProxyModel::onSourceColRemoved(QModelIndex const& sourceParent)
 	QModelIndex mapped = mapFromSource(sourceParent);
 	if (mapped != QModelIndex() || sourceParent == _sourceTarget) {
 
+		rebuildTreeProxy();
 		endRemoveColumns();
 	} else {
 		checkSourceTarget();
@@ -458,10 +479,13 @@ void IndexRebasedProxyModel::onSourceRowMoved(QModelIndex const& parent, int sta
 	}
 
 	if (startedInside && endInside) {
+		rebuildTreeProxy();
 		endMoveRows();
 	} else if (startedInside) {
+		rebuildTreeProxy();
 		endRemoveRows();
 	} else if (endInside) {
+		rebuildTreeProxy();
 		endInsertRows();
 	}
 
@@ -487,10 +511,13 @@ void IndexRebasedProxyModel::onSourceColMoved(QModelIndex const& parent, int sta
 	}
 
 	if (startedInside && endInside) {
+		rebuildTreeProxy();
 		endMoveColumns();
 	} else if (startedInside) {
+		rebuildTreeProxy();
 		endRemoveColumns();
 	} else if (endInside) {
+		rebuildTreeProxy();
 		endInsertColumns();
 	}
 
@@ -516,6 +543,45 @@ void IndexRebasedProxyModel::onSourceModelAboutToReset() {
 void IndexRebasedProxyModel::reset() {
 
 	checkSourceTarget();
+	rebuildTreeProxy();
 	endResetModel();
+
+}
+
+IndexRebasedProxyModel::Node* IndexRebasedProxyModel::setupNodeForIndex (Node* parent, QModelIndex const& index) {
+
+	Node* node = new Node(parent, index.row(), index.column());
+
+	int nRows = _sourceModel->rowCount(index);
+	int nCols = _sourceModel->columnCount(index);
+
+	if (nRows == 0 or nCols == 0) {
+		node->childrens = {{}};
+		return node;
+	}
+
+	node->childrens = QVector<QVector<Node*>>(nRows);
+
+	for (int i = 0; i < nRows; i++) {
+		node->childrens[i] = QVector<Node*>(nCols);
+
+		for (int j = 0; j < nCols; j++) {
+			QModelIndex cIndex = _sourceModel->index(i,j,index);
+
+			Node* child = setupNodeForIndex(node, cIndex);
+			node->childrens[i][j] = child;
+		}
+	}
+
+	return node;
+};
+
+void IndexRebasedProxyModel::rebuildTreeProxy() {
+
+	if (_proxyNodeTree != nullptr) {
+		delete _proxyNodeTree;
+	}
+
+	_proxyNodeTree = setupNodeForIndex(nullptr, _sourceTarget);
 
 }

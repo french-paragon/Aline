@@ -31,6 +31,7 @@ class IndexRebasedProxyModel : public QAbstractItemModel
 	Q_OBJECT
 public:
 	explicit IndexRebasedProxyModel(QObject *parent = 0);
+	~IndexRebasedProxyModel();
 
 	QModelIndex sourceTarget() const;
 	void setSourceTarget(const QModelIndex &sourceTarget);
@@ -57,12 +58,61 @@ public Q_SLOTS:
 
 protected:
 
-	class IntermediateModel : public QIdentityProxyModel
-	{
-		explicit IntermediateModel(QObject* parent);
+	struct Node {
+		Node* parent;
+		int row;
+		int col;
+		QVector<QVector<Node*>> childrens;
 
-		friend class IndexRebasedProxyModel;
+		Node(Node* parent, int row, int col) :
+			parent(parent),
+			row(row),
+			col(col) {
+
+		}
+
+		~Node() {
+			for (QVector<Node*> const& vec : qAsConst(childrens)) {
+				for (Node* n : vec) {
+					delete n;
+				}
+			}
+		}
+
+		inline int nRows() const {
+			return childrens.size();
+		}
+
+		inline int nCols() const {
+
+			if (childrens.size() == 0) {
+				return 0;
+			}
+
+			return childrens[0].size();
+		}
+
+		inline Node* getChild(int row, int col) const {
+			return childrens[row][col];
+		}
 	};
+
+	inline Node* getNodeFromIndex(QModelIndex const& index) const {
+		if (index == QModelIndex()) {
+			return _proxyNodeTree;
+		}
+
+		Node* node = static_cast<Node*>(index.internalPointer());
+
+		return node;
+	}
+
+	inline QModelIndex getIndexFromNode(Node* n) const {
+		if (n == _proxyNodeTree) {
+			return QModelIndex();
+		}
+		return createIndex(n->row, n->col, n);
+	}
 
 	void onSourceRowAboutToBeInserted(QModelIndex const& sourceParent, int first, int last);
 	void onSourceColAboutToBeInserted(QModelIndex const& sourceParent, int first, int last);
@@ -92,8 +142,12 @@ protected:
 
 	void checkSourceTarget();
 
+	Node* setupNodeForIndex (Node* parent, QModelIndex const& idx);
+	void rebuildTreeProxy();
+
+	Node* _proxyNodeTree;
+
 	QAbstractItemModel * _sourceModel;
-	IntermediateModel* _intermediate;
 
 
 	QMetaObject::Connection _rowAboutToBeDeleteWatch;
