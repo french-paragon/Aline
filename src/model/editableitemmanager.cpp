@@ -42,7 +42,8 @@ EditableItemManager::EditableItemManager(QObject *parent) :
 	_labels(nullptr),
 	_activeItem(nullptr),
 	_factoryManager(&EditableItemFactoryManager::GlobalEditableItemFactoryManager),
-	_editorManager(nullptr)
+	_editorManager(nullptr),
+	_refUrlSeparator("/")
 {
 	cleanTreeStruct();
 }
@@ -462,6 +463,33 @@ bool EditableItemManager::clearItems(QStringList itemRefs) {
 	return status;
 }
 
+EditableItem* EditableItemManager::loadItemByUrl(QStringList const& url) {
+
+	EditableItem* current = nullptr;
+
+	for (QString const& ref : url) {
+		if (current == nullptr) {
+			current = loadItem(ref);
+		} else {
+			current = current->getSubItemByRef(ref);
+		}
+
+		if (current == nullptr) {
+			break;
+		}
+	}
+
+	return current;
+
+}
+
+
+EditableItem* EditableItemManager::loadItemByUrl(QString const& url) {
+
+	QStringList url_list = url.split(refUrlSeparator());
+	return loadItemByUrl(url_list);
+}
+
 bool EditableItemManager::saveItem(QString ref) {
 	if (isItemLoaded(ref)) {
 		bool status = effectivelySaveItem(ref);
@@ -682,6 +710,16 @@ bool EditableItemManager::insertItem(EditableItem* item) {
 
 	return true;
 
+}
+
+const QString &EditableItemManager::refUrlSeparator() const
+{
+	return _refUrlSeparator;
+}
+
+void EditableItemManager::setRefUrlSeparator(const QString &newRefUrlSeparator)
+{
+	_refUrlSeparator = newRefUrlSeparator;
 }
 
 void EditableItemManager::setEditorManager(EditorFactoryManager *editorManager)

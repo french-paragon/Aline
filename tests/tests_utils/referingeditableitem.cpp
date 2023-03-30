@@ -62,19 +62,19 @@ void ReferingEditableItem::setReferedItemRef(const QString &newReferedItemRef)
 	}
 
 	//disconnect
-	EditableItem* item = getManager()->loadItem(_referedItemRef);
+	EditableItem* item = getManager()->loadItemByUrl(_referedItemRef);
 
 	if (item != nullptr) {
-		item->warnUnrefering(getRef());
+		item->warnUnrefering(getFullRefUrl());
 	}
 
 	_referedItemRef.clear();
 
 	//connect
-	item = getManager()->loadItem(newReferedItemRef);
+	item = getManager()->loadItemByUrl(newReferedItemRef);
 
 	if (item != nullptr) {
-		item->warnRefering(getRef());
+		item->warnRefering(getFullRefUrl());
 	}
 
 	_referedItemRef = newReferedItemRef;

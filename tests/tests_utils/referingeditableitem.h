@@ -29,7 +29,7 @@ namespace Aline {
 namespace Tests {
 
 /*!
- * \brief The ReferingEditableItem class represent a single reference to an other editable item.
+ * \brief The ReferingEditableItem class represent a single reference to another editable item.
  *
  * This item is meant to be used for testing purposes
  */

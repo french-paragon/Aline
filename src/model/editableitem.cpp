@@ -95,7 +95,7 @@ bool EditableItem::autoSave() const {
 void EditableItem::suppress() {
 
 	for (QString const& referentRef : qAsConst(_referentItems)) {
-		EditableItem* referent = _manager->loadItem(referentRef);
+		EditableItem* referent = getManager()->loadItemByUrl(referentRef);
 
 		if (referent != nullptr) {
 			referent->warnReferedRemoved(_ref);
@@ -118,6 +118,17 @@ QString EditableItem::getRef() const
 {
 	return _ref;
 }
+QString EditableItem::getFullRefUrl() const {
+
+	EditableItem* parent = getParentItem();
+
+	if (parent == nullptr) {
+		return getRef();
+	}
+
+	return parent->getFullRefUrl() + getManager()->refUrlSeparator() + getRef();
+
+}
 
 bool EditableItem::getHasUnsavedChanged() const
 {
@@ -132,14 +143,22 @@ void EditableItem::changeRef(QString const& newRef) {
 
 	if (newRef != _ref) {
 		QString oldRef = _ref;
+		QString oldUrl = getFullRefUrl();
 		_ref = newRef;
+		QString newUrl = getFullRefUrl();
 
 		for (QString const& referentRef : qAsConst(_referentItems)) {
-			EditableItem* referent = _manager->loadItem(referentRef);
+			EditableItem* referent = getManager()->loadItemByUrl(referentRef);
 
 			if (referent != nullptr) {
-				referent->warnReferedRefChanges(oldRef, _ref);
+				referent->warnReferedRefChanges(oldUrl, newUrl);
 			}
+		}
+
+		QList<EditableItem*> childrens = getSubItems();
+
+		for (EditableItem* child : childrens) {
+			child->treatParentRefChange(oldUrl, newUrl);
 		}
 
 		Q_EMIT refSwap(oldRef, _ref);
@@ -159,6 +178,27 @@ void EditableItem::warnReferentRefChanges(QString referentItemOldRef, QString re
 
 void EditableItem::warnUnrefering(QString referentItemRef) {
 	_referentItems.remove(referentItemRef);
+}
+
+void EditableItem::treatParentRefChange(QString oldParentUrl, QString newParentUrl) {
+
+	QString oldUrl = oldParentUrl + getManager()->refUrlSeparator() + getRef();
+	QString newUrl = newParentUrl + getManager()->refUrlSeparator() + getRef();
+
+	for (QString const& referentRef : qAsConst(_referentItems)) {
+		EditableItem* referent = getManager()->loadItemByUrl(referentRef);
+
+		if (referent != nullptr) {
+			referent->warnReferedRefChanges(oldUrl, newUrl);
+		}
+	}
+
+	QList<EditableItem*> childrens = getSubItems();
+
+	for (EditableItem* child : childrens) {
+		child->treatParentRefChange(oldUrl, newUrl);
+	}
+
 }
 
 void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
@@ -236,6 +276,14 @@ void EditableItem::removeSubItemRef(EditableItem* item) {
 
 EditableItemManager *EditableItem::getManager() const
 {
+	if (_manager == nullptr) {
+		EditableItem* parent = getParentItem();
+
+		if (parent != nullptr) {
+			return parent->getManager();
+		}
+	}
+
 	return _manager;
 }
 
@@ -268,6 +316,18 @@ QList<Aline::EditableItem*> EditableItem::getSubItems() const {
 
 	return QObject::findChildren<Aline::EditableItem*>(QString(), Qt::FindDirectChildrenOnly);
 
+}
+
+EditableItem* EditableItem::getSubItemByRef(QString const& ref) const {
+	QList<Aline::EditableItem*> items = getSubItems();
+
+	for (EditableItem* item : items) {
+		if (item->getRef() == ref) {
+			return item;
+		}
+	}
+
+	return nullptr;
 }
 
 QStringList EditableItem::getFileReferencePropertiesName() const {

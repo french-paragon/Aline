@@ -16,9 +16,12 @@ private Q_SLOTS:
 	void initTestCase();
 
 	void refSet();
+
 	void refChange();
 	void referingChange();
 	void referedDeleted();
+
+	void subItemRefered();
 
 	void cleanupTestCase();
 
@@ -128,6 +131,42 @@ void TestEditableItemLifeCycle::referedDeleted() {
 
 
 	QVERIFY2(refering->referedItemRef().isEmpty(), "Refered item ref did not reset");
+
+}
+
+void TestEditableItemLifeCycle::subItemRefered() {
+
+	refering->setReferedItemRef(dummy1->getRef());
+
+	QString oldRef = dummy1->getRef();
+	QString tmpRef = "tmp";
+
+	QString subRef = "sub";
+	QString subTmpRef = "subtmp";
+
+	Aline::Tests::DummyEditableItem* subitem = new Aline::Tests::DummyEditableItem(subRef, dummy1);
+
+	refering->setReferedItemRef(subitem->getFullRefUrl());
+
+	QVERIFY2(refering->referedItemRef() == subitem->getFullRefUrl(), "Refered item ref did not change");
+
+	subitem->changeRef(subTmpRef);
+
+	QVERIFY2(refering->referedItemRef() == subitem->getFullRefUrl(), "Refered item ref did not change");
+
+	subitem->changeRef(subRef);
+
+	QVERIFY2(refering->referedItemRef() == subitem->getFullRefUrl(), "Refered item ref did not change");
+
+	dummy1->changeRef(tmpRef);
+
+	QVERIFY2(refering->referedItemRef() == subitem->getFullRefUrl(), "Refered item ref did not change");
+
+	dummy1->changeRef(oldRef);
+
+	QVERIFY2(refering->referedItemRef() == subitem->getFullRefUrl(), "Refered item ref did not change");
+
+	refering->setReferedItemRef(dummy1->getRef());
 
 }
 

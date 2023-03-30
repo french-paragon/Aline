@@ -93,6 +93,14 @@ public:
 	bool clearItem(QString itemRef);
 	bool clearItems(QStringList itemRefs);
 
+	/*!
+	 * \brief getItemByUrl load an item (possibly a subitem) by using an url, i.e. a sequence of references.
+	 * \param url the list of references
+	 * \return the item, or nullptr if nothing could be found.
+	 */
+	EditableItem* loadItemByUrl(QStringList const& url);
+	EditableItem* loadItemByUrl(QString const& url);
+
 	virtual bool saveItem(QString ref);
 	virtual bool saveAll();
 	virtual bool saveStruct() = 0;
@@ -138,6 +146,8 @@ public:
 
 	virtual QHash<int, QByteArray> roleNames() const;
 
+	const QString &refUrlSeparator() const;
+
 Q_SIGNALS:
 
 	void loadingItemSucessFull(QString ref);
@@ -155,6 +165,7 @@ public Q_SLOTS:
 	void setActiveItem(QString ref);
 
 protected:
+	void setRefUrlSeparator(const QString &newRefUrlSeparator);
 
 	void cleanTreeStruct();
 
@@ -194,6 +205,8 @@ protected:
 
 	EditableItemFactoryManager* _factoryManager;
 	EditorFactoryManager* _editorManager;
+
+	QString _refUrlSeparator;
 };
 
 } // namespace Aline

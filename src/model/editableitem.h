@@ -89,6 +89,7 @@ public:
 	virtual QString getTypeName() const = 0;
 
 	QString getRef() const;
+	QString getFullRefUrl() const;
 
 	virtual bool getHasUnsavedChanged() const;
 
@@ -118,6 +119,16 @@ public:
 	 */
 	virtual void insertSubItem(EditableItem* item);
 	virtual QList<EditableItem *> getSubItems() const;
+
+	/*!
+	 * \brief getSubItemByRef return a specific subitem given its reference.
+	 * \param ref the reference of the subitem.
+	 * \return the item, or nullptr if no item could be found.
+	 *
+	 * The default implementation search all subitems extensively.
+	 * This can be pretty unnefective, so the function can be overriden to be more effective is subclasses.
+	 */
+	virtual EditableItem* getSubItemByRef(QString const& ref) const;
 
 	/*!
 	 * \brief getFileReferencePropertiesName get the name of the properties which refer to a file.
@@ -201,9 +212,16 @@ public Q_SLOTS:
 protected:
 
 	/*!
+	 * \brief treatParentRefChange is called by a parent editable item to let subitem warn referents about their changes in url.
+	 * \param oldParentUrl the old url of the parent
+	 * \param newParentUrl the new url of the parent
+	 */
+	void treatParentRefChange(QString oldParentUrl, QString newParentUrl);
+
+	/*!
 	 * \brief warnReferedRefChanges warn an item refering another item that this other item is about to change ref.
-	 * \param oldRef The old ref of the refered item.
-	 * \param newRef The new ref of the refered item.
+	 * \param oldRef The old url ref of the refered item.
+	 * \param newRef The new url ref of the refered item.
 	 * By default, editableItem don't refer to other items, so this function do nothing.
 	 * A subclass of editable item which refer to other items needs to reimplement this function to be warned about references changes.
 	 */
