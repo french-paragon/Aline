@@ -242,19 +242,7 @@ Qt::ItemFlags EditableItemManager::flags(const QModelIndex &index) const {
 			return f;
 		}
 
-		QString itemTypeRef = index.data(ItemTypeRefRole).toString();
-
-		bool hasEditor = false;
-
-		if (_editorManager != nullptr) {
-			hasEditor = _editorManager->hasFactoryInstalledForItem(itemTypeRef);
-		} else {
-			hasEditor = Aline::EditorFactoryManager::GlobalEditorFactoryManager.hasFactoryInstalledForItem(itemTypeRef);
-		}
-
-		if (!hasEditor) {
-			f |= Qt::ItemIsEditable;
-		}
+		f |= Qt::ItemIsEditable;
 
 		return f;
 	}

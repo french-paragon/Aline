@@ -46,6 +46,8 @@ ProjectTreeDockWidget::ProjectTreeDockWidget(MainWindow *parent) :
 	connect(_mw_parent, &MainWindow::currentProjectChanged,
 			this, &ProjectTreeDockWidget::projectChanged);
 
+	ui->treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
 	connect(ui->treeView, &QTreeView::doubleClicked,
 			this, &ProjectTreeDockWidget::receiveDoubleClick);
 
