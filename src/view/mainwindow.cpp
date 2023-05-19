@@ -304,14 +304,14 @@ void MainWindow::saveCurrentEditor() {
 
 }
 
-void MainWindow::editItem(QString const& itemRef) {
+void MainWindow::editItem(QString const& itemUrl) {
 
-	if (_openedEditors.contains(itemRef)) {
-		switchToEditor(_openedEditors.value(itemRef));
+	if (_openedEditors.contains(itemUrl)) {
+		switchToEditor(_openedEditors.value(itemUrl));
 		return;
 	}
 
-	EditableItem* item = _currentProject->loadItem(itemRef);
+	EditableItem* item = _currentProject->loadItemByUrl(itemUrl);
 
 	if (item == nullptr) {
 		return;
@@ -327,7 +327,7 @@ void MainWindow::editItem(QString const& itemRef) {
 
 	if (editor != nullptr) {
 		addEditor(editor);
-		_openedEditors.insert(itemRef, editor);
+		_openedEditors.insert(itemUrl, editor);
 	}
 
 }
