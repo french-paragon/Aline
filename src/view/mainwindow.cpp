@@ -250,6 +250,9 @@ void MainWindow::setEditorFactoryManager(EditorFactoryManager *editorFactoryMana
 {
 	_editorFactoryManager = editorFactoryManager;
 }
+EditorFactoryManager* MainWindow::editorManager() {
+	return _editorFactoryManager;
+}
 
 void MainWindow::addEditor(Editor* editor) {
 	ui->tabWidget->addTab(editor, editor->title());

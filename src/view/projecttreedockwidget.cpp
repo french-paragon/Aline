@@ -33,6 +33,7 @@ ProjectTreeDockWidget::ProjectTreeDockWidget(MainWindow *parent) :
 	QDockWidget(parent),
 	_mw_parent(parent),
 	_newItemMenu(nullptr),
+	_currentProject(nullptr),
 	ui(new Ui::ProjectTreeDockWidget)
 {
 	_internalModel = new QSortFilterProxyModel(this);
@@ -116,14 +117,19 @@ void ProjectTreeDockWidget::projectChanged(Aline::EditableItemManager* project) 
 	reselectProject(project);
 	rebuildMenu(project);
 
-	_newItemFactoryWatcher = connect(project->factoryManager(), &Aline::EditableItemFactoryManager::rowsInserted,
-									 this, &ProjectTreeDockWidget::rebuildMenuWithoutProject);
+	_currentProject = project;
 
-	_itemCreationTrigger = connect(this, &ProjectTreeDockWidget::itemCreationTriggered,
-								   project, static_cast<bool(Aline::EditableItemManager::*)(QString, QString)>(&Aline::EditableItemManager::createItem));
+	if (project != nullptr) {
 
-	_itemSuppresionTrigger = connect(this, &ProjectTreeDockWidget::itemSuppressionTriggered,
-									 project, &Aline::EditableItemManager::clearItems);
+		_newItemFactoryWatcher = connect(project->factoryManager(), &Aline::EditableItemFactoryManager::rowsInserted,
+										 this, &ProjectTreeDockWidget::rebuildMenuWithoutProject);
+
+		_itemCreationTrigger = connect(this, &ProjectTreeDockWidget::itemCreationTriggered,
+									   project, static_cast<bool(Aline::EditableItemManager::*)(QString, QString)>(&Aline::EditableItemManager::createItem));
+
+		_itemSuppresionTrigger = connect(this, &ProjectTreeDockWidget::itemSuppressionTriggered,
+										 project, &Aline::EditableItemManager::clearItems);
+	}
 }
 
 void ProjectTreeDockWidget::reselectProject(Aline::EditableItemManager *project) {
@@ -199,29 +205,17 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 
 	QModelIndex index = ui->treeView->indexAt(pos);
 
+	Aline::EditorFactoryManager* editorManager = _mw_parent->editorManager();
+	if (editorManager == nullptr) {
+		editorManager = &Aline::EditorFactoryManager::GlobalEditorFactoryManager;
+	}
+
 	if (index.isValid()) {
 
 		QMenu menu;
 
 		QVariant data  = index.data(EditableItemManager::ItemTypeRefRole);
 		QString itemTypeRef = data.toString();
-
-		if (Aline::EditorFactoryManager::GlobalEditorFactoryManager.hasFactoryInstalledForItem(itemTypeRef) && index.parent() != QModelIndex()) {
-			QAction* editAction = menu.addAction(tr("éditer"));
-			QString ref = index.data(EditableItemManager::ItemRefRole).toString();
-
-			connect(editAction, &QAction::triggered, this, [this, ref] () {
-				Q_EMIT itemDoubleClicked(ref);
-			});
-
-			QAction* actionRemove = menu.addAction(tr("supprimer"));
-
-			connect(actionRemove, &QAction::triggered, this, [ref, this] () {
-				Q_EMIT itemSuppressionTriggered({ref});
-			});
-
-			menu.addSeparator();
-		}
 
 		if (_internalModel->flags(index) & Qt::ItemIsEditable) {
 
@@ -232,6 +226,24 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 			menu.addSeparator();
 
 		}
+
+		QString ref = index.data(EditableItemManager::ItemRefRole).toString();
+
+		if (editorManager->hasFactoryInstalledForItem(itemTypeRef) && index.parent() != QModelIndex()) {
+			QAction* editAction = menu.addAction(tr("éditer"));
+
+			connect(editAction, &QAction::triggered, this, [this, ref] () {
+				Q_EMIT itemDoubleClicked(ref);
+			});
+		}
+
+		QAction* actionRemove = menu.addAction(tr("supprimer"));
+
+		connect(actionRemove, &QAction::triggered, this, [ref, this] () {
+			Q_EMIT itemSuppressionTriggered({ref});
+		});
+
+		menu.addSeparator();
 
 		Aline::EditableItemFactoryManager* f = _mw_parent->currentProject()->factoryManager();
 

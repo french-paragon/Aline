@@ -84,6 +84,7 @@ public:
 	void setDefaultProjectOpener(const QString &defaultProjectOpener);
 
 	void setEditorFactoryManager(EditorFactoryManager *editorFactoryManager);
+	EditorFactoryManager* editorManager();
 
 Q_SIGNALS:
 

@@ -75,6 +75,8 @@ private:
 	QMetaObject::Connection _newItemFactoryWatcher;
 	QMetaObject::Connection _itemCreationTrigger;
 	QMetaObject::Connection _itemSuppresionTrigger;
+
+	Aline::EditableItemManager* _currentProject;
 };
 
 } //namespace Sabrina
