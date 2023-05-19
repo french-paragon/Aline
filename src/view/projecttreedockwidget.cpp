@@ -68,6 +68,8 @@ ProjectTreeDockWidget::ProjectTreeDockWidget(MainWindow *parent) :
 
 	connect(ui->treeView, &QTreeView::customContextMenuRequested,
 			this, &ProjectTreeDockWidget::buildTreeContextMenu);
+
+	ui->treeView->setHeaderHidden(true);
 }
 
 ProjectTreeDockWidget::~ProjectTreeDockWidget()
