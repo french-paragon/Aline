@@ -54,6 +54,8 @@ LabelItemsDockWidget::LabelItemsDockWidget(MainWindow *parent) :
 	connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged,
 			this, &LabelItemsDockWidget::selectionChanged);
 
+	ui->treeView->setHeaderHidden(true);
+
 }
 
 LabelItemsDockWidget::~LabelItemsDockWidget()

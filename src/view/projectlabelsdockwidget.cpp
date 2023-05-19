@@ -69,6 +69,8 @@ ProjectLabelsDockWidget::ProjectLabelsDockWidget(MainWindow *parent) :
 
 	connect(ui->treeView->selectionModel(), &QItemSelectionModel::selectionChanged,
 			this, &ProjectLabelsDockWidget::selectionChanged);
+
+	ui->treeView->setHeaderHidden(true);
 }
 
 ProjectLabelsDockWidget::~ProjectLabelsDockWidget()
