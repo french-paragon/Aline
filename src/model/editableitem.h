@@ -250,6 +250,12 @@ protected:
 	QString makeSubItemRefUniq(QString const& subItemRef) const;
 	QSet<QString> _usedRef;
 
+	/*!
+	 * \brief removeSubItemRef clear a subitem ref from the list of used ref
+	 * \param item the item which ref should be removed
+	 *
+	 * call this function when you remove a subitem from the item.
+	 */
 	void removeSubItemRef(EditableItem* item);
 
 private:
