@@ -18,6 +18,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "editor.h"
 
+#include "mainwindow.h"
+
 namespace Aline {
 
 Editor::Editor(QWidget *parent) : QWidget(parent)
@@ -50,6 +52,23 @@ QStringList Editor::editableTypes() const {
 
 void Editor::setEditedItem(EditableItem* item) {
 	Q_UNUSED(item);
+}
+
+MainWindow* Editor::getEditorMainWindow() const {
+	QWidget* pItem = parentWidget();
+	MainWindow* mwParent = qobject_cast<MainWindow*>(pItem);
+
+	while (mwParent == nullptr) {
+
+		if (pItem == nullptr) {
+			return nullptr;
+		}
+
+		pItem = pItem->parentWidget();
+		mwParent = qobject_cast<MainWindow*>(pItem);
+	}
+
+	return mwParent;
 }
 
 } // namespace Aline

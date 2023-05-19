@@ -61,6 +61,12 @@ public:
 	 */
 	virtual void setEditedItem(EditableItem* item);
 
+	/*!
+	 * \brief getEditorMainWindow search the editor parents hierarchy to find the main windows
+	 * \return the main windows, or nullptr if none could be found.
+	 */
+	MainWindow* getEditorMainWindow() const;
+
 Q_SIGNALS:
 
 	void titleChanged(Editor* himself, QString title);
