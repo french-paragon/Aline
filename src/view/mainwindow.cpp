@@ -50,7 +50,7 @@ MainWindow* MainWindow::findWidgetMainWindow(QWidget* widget) {
 			return nullptr;
 		}
 
-		current = widget->parentWidget();
+		current = current->parentWidget();
 		mw = qobject_cast<MainWindow*>(current);
 	}
 
