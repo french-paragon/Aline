@@ -58,7 +58,9 @@ list(APPEND LIB_SRC
             utils/view_model/indexrebasedproxymodel.h
             utils/view_model/indexrebasedproxymodel.cpp
             control/app.h
-            control/app.cpp
+			control/app.cpp
+			control/editableitemactionsmanager.h
+			control/editableitemactionsmanager.cpp
             ressources/aline_ressources.qrc
             )
 

@@ -35,6 +35,29 @@ namespace Aline {
 const QString MainWindow::MENU_FILE_NAME = "file_menu";
 const QString MainWindow::MENU_DISPLAY_NAME = "display_menu";
 
+MainWindow* MainWindow::findWidgetMainWindow(QWidget* widget) {
+
+	if (widget == nullptr) {
+		return nullptr;
+	}
+
+	QWidget* current = widget;
+	MainWindow* mw = qobject_cast<MainWindow*>(current);
+
+	while(mw == nullptr) {
+
+		if (current == nullptr) {
+			return nullptr;
+		}
+
+		current = widget->parentWidget();
+		mw = qobject_cast<MainWindow*>(current);
+	}
+
+	return mw;
+
+}
+
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	_currentProject(nullptr),
