@@ -76,7 +76,7 @@ QList<QAction*> EditableItemActionsManager::factorizeItemContextActions(QObject*
 		return {};
 	}
 
-	if (item->getParentItem() == nullptr) {
+	if (item->getParentItem() != nullptr) {
 		return {}; //no actions for non root items;
 	}
 
