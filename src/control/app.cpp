@@ -40,10 +40,10 @@ bool App::start(QString appCode) {
 bool App::hasActionManager(QString const& typeRef) const {
 	return _installedActionManager.contains(typeRef);
 }
-EditableItemActionsManager* App::getManagerForType(QString const& typeRef) const {
+EditableItemActionsManager* App::getActionsManagerForType(QString const& typeRef) const {
 	return _installedActionManager.value(typeRef, _defaultActionManager);
 }
-bool App::installManagerForType(QString const& typeRef, EditableItemActionsManager* manager) {
+bool App::installActionsManagerForType(QString const& typeRef, EditableItemActionsManager* manager) {
 	if (hasActionManager(typeRef)) {
 		return false;
 	}

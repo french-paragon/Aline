@@ -50,7 +50,7 @@ public:
 	 * \param typeRef the type ref
 	 * \return the installed action manager for the type, or the default manager if none is available.
 	 */
-	EditableItemActionsManager* getManagerForType(QString const& typeRef) const;
+	EditableItemActionsManager* getActionsManagerForType(QString const& typeRef) const;
 
 	/*!
 	 * \brief installManagerForType install a manager for a given type, in no manager has been installed yet.
@@ -60,7 +60,7 @@ public:
 	 *
 	 * The app takes ownership of the manager
 	 */
-	bool installManagerForType(QString const& typeRef, EditableItemActionsManager* manager);
+	bool installActionsManagerForType(QString const& typeRef, EditableItemActionsManager* manager);
 
 protected:
 

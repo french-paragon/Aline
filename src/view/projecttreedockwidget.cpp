@@ -232,7 +232,7 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 		}
 
 		App* app = App::getAppInstance();
-		EditableItemActionsManager* actionsManager = app->getManagerForType(itemTypeRef);
+		EditableItemActionsManager* actionsManager = app->getActionsManagerForType(itemTypeRef);
 
 		QVariant itemRef = index.data(EditableItemManager::ItemRefRole);
 
