@@ -30,6 +30,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QMetaObject>
 #include <QMetaProperty>
 
+#include "model/interfaces/jsonencodableitem.h"
+
 
 const QString Aline::JsonUtils::LABEL_REF = "labels";
 
@@ -54,6 +56,20 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 	}
 
 	item->blockChangeDetection(true);
+
+	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
+
+	if (jsonEncodable != nullptr) {
+		jsonEncodable->confgureItemFromJson(obj);
+
+		if (blockSignals) {
+			item->blockSignals(false);
+		}
+
+		item->blockChangeDetection(false);
+
+		return;
+	}
 
 	for (QString prop : obj.keys()) {
 
@@ -198,6 +214,13 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
+	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
+
+	if (jsonEncodable != nullptr) {
+		return jsonEncodable->encodeItemToJson();
+	}
+
+	//if the item is not encodable, attempt to do as best as possible based on visile properties
 	QJsonObject obj;
 
 	const QMetaObject* mobj = item->metaObject();
