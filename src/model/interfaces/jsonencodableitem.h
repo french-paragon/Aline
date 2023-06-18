@@ -13,7 +13,7 @@ class JsonEncodableItem
 {
 public:
 	virtual QJsonObject encodeItemToJson() const = 0;
-	virtual bool confgureItemFromJson(QJsonObject const& obj) const = 0;
+	virtual bool confgureItemFromJson(QJsonObject const& obj) = 0;
 };
 
 } // namespace Aline
