@@ -26,7 +26,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::EditableItem*>("Aline::EditableItem*") + qmlRegisterType<Aline::EditableItem>() + qRegisterMetaType<Aline::EditableItemManager*>("Aline::EditableItemManager*") + qmlRegisterType<Aline::EditableItemManager>();
+int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::EditableItem*>("Aline::EditableItem*") +
+		qmlRegisterAnonymousType<Aline::EditableItem>("Aline", 1) +
+		qRegisterMetaType<Aline::EditableItemManager*>("Aline::EditableItemManager*") +
+		qmlRegisterAnonymousType<Aline::EditableItemManager>("Aline", 1);
 
 const QString EditableItemQmlEditor::GENERIC_QMLBASED_EDITOR_TYPE = "aline_qml_generic";
 
