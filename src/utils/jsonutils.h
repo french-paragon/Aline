@@ -48,6 +48,8 @@ extern const QString LABEL_SUBLABELS_ID;
 extern const QString ITEM_SUBITEM_ID;
 extern const QString ITEM_SUBITEM_LIST;
 
+extern const QString ITEM_REFERENT_LIST;
+
 extern const QString TREE_REF_ID;
 extern const QString TREE_TYPE_ID;
 extern const QString TREE_NAME_ID;

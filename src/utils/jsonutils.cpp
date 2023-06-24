@@ -43,6 +43,8 @@ const QString Aline::JsonUtils::LABEL_SUBLABELS_ID = "sublabels";
 const QString Aline::JsonUtils::ITEM_SUBITEM_ID = "item_internalsubitems";
 const QString Aline::JsonUtils::ITEM_SUBITEM_LIST = "subitemslist";
 
+const QString Aline::JsonUtils::ITEM_REFERENT_LIST = "item_referentslist";
+
 const QString Aline::JsonUtils::TREE_REF_ID = "reference";
 const QString Aline::JsonUtils::TREE_TYPE_ID = "type";
 const QString Aline::JsonUtils::TREE_NAME_ID = "name";
@@ -56,6 +58,21 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 	}
 
 	item->blockChangeDetection(true);
+
+	if (obj.contains(ITEM_REFERENT_LIST)) {
+		QJsonValue val = obj.value(ITEM_REFERENT_LIST);
+		if (val.isArray()) {
+			QJsonArray referents = val.toArray();
+
+			for (auto val : qAsConst(referents)) {
+				QString referent = val.toString("");
+
+				if (!referent.isEmpty()) {
+					item->warnRefering(referent);
+				}
+			}
+		}
+	}
 
 	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
 
@@ -242,6 +259,14 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 		addPropToObject(obj, item, cpropName.toStdString().c_str());
 
+	}
+
+	QJsonArray referents;
+	for (QString & referent : item->listReferents()) {
+		referents.push_back(referent);
+	}
+	if (referents.size() > 0) {
+		obj.insert(ITEM_REFERENT_LIST, referents);
 	}
 
 	return obj;

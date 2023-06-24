@@ -155,9 +155,17 @@ void EditableItem::changeRef(QString const& newRef) {
 			}
 		}
 
+		for (QString & referingRef : listRefering()) {
+			EditableItem* refering = getManager()->loadItemByUrl(referingRef);
+
+			if (refering != nullptr) {
+				refering->warnReferentRefChanges(oldUrl, newUrl);
+			}
+		}
+
 		QList<EditableItem*> childrens = getSubItems();
 
-		for (EditableItem* child : childrens) {
+		for (EditableItem* & child : childrens) {
 			child->treatParentRefChange(oldUrl, newUrl);
 		}
 
@@ -178,6 +186,10 @@ void EditableItem::warnReferentRefChanges(QString referentItemOldRef, QString re
 
 void EditableItem::warnUnrefering(QString referentItemRef) {
 	_referentItems.remove(referentItemRef);
+}
+
+QList<QString> EditableItem::listRefering() const {
+	return QList<QString>();
 }
 
 void EditableItem::treatParentRefChange(QString oldParentUrl, QString newParentUrl) {

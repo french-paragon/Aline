@@ -188,6 +188,16 @@ public:
 		return _referentItems.values();
 	}
 
+	/*!
+	 * \brief listRefering list the items the current item is refering
+	 * \return the list of urls
+	 *
+	 * By default this function return nothing and needs to be reimplemented in classes which refer other classes.
+	 *
+	 * !If you forget to override this function while refering some items, the changeref function will fail!.
+	 */
+	virtual QList<QString> listRefering() const;
+
 Q_SIGNALS:
 
 	void parentChanged(QString newRef);
