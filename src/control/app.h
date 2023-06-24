@@ -62,12 +62,50 @@ public:
 	 */
 	bool installActionsManagerForType(QString const& typeRef, EditableItemActionsManager* manager);
 
+	/*!
+	 * \brief installSpecialInterface install a special interface
+	 * \param code the registration code to indentify the interface
+	 * \param interface the interface
+	 * \return true if the interface has been installed, false otherwise.
+	 *
+	 * Note that the app take ownership of the interface.
+	 *
+	 * Interfaces are QObjects implementing special functions that can be queried by parts of the application
+	 * or application modules to perform special tasks.
+	 *
+	 * Interfaces can be registered, and even queried dynamically at runtime, which makes it convinient
+	 * for sharing some functions across additional modules.
+	 *
+	 * Interfaces can be queried with the meta object system, or casted using qobject_cast.
+	 *
+	 */
+	inline bool installSpecialInterface(QString const& code, QObject* interface) {
+		if (_appSpecialInterfaces.contains(code)) {
+			return false;
+		}
+
+		interface->setParent(this);
+		_appSpecialInterfaces.insert(code, interface);
+		return true;
+	}
+
+	/*!
+	 * \brief getSpecialInterface get a special interface of the app.
+	 * \param interfaceCode the code of the interface.
+	 * \return the interface, or nullptr if is does not exist.
+	 */
+	inline QObject* getSpecialInterface(QString const& interfaceCode) {
+		return _appSpecialInterfaces.value(interfaceCode, nullptr);
+	}
+
 protected:
 
 	QString _appCode;
 
 	EditableItemActionsManager* _defaultActionManager;
 	QMap<QString, EditableItemActionsManager*> _installedActionManager;
+
+	QMap<QString, QObject*> _appSpecialInterfaces;
 };
 
 } // namespace Aline
