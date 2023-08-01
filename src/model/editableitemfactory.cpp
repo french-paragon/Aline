@@ -240,30 +240,28 @@ QVariant EditableItemFactoryManager::data(const QModelIndex &index,
 
 QString EditableItemFactoryManager::itemIconUrl(QString type_ref) {
 
-	if (!hasFactoryInstalled(type_ref)) {
-		return "";
+	if (hasFactoryInstalled(type_ref)) {
+		return _installedItemFactories.value(type_ref)->getItemTypeIconUrl();
 	}
 
-	return _installedItemFactories.value(type_ref)->getItemTypeIconUrl();
+	if (hasSubItemFactoryInstalled(type_ref)) {
+		return _installedSubItemFactories.value(type_ref)->getItemTypeIconUrl();
+	}
+
+	return "";
 }
 
 QString EditableItemFactoryManager::itemTypeName(QString type_ref) {
 
-	if (!hasFactoryInstalled(type_ref)) {
-		return "";
+	if (hasFactoryInstalled(type_ref)) {
+		return _installedItemFactories.value(type_ref)->getItemTypeName();
 	}
 
-	return _installedItemFactories.value(type_ref)->getItemTypeName();
-}
-
-QString EditableItemFactoryManager::subItemIconUrl(QString type_ref) {
-
-	if (!hasSubItemFactoryInstalled(type_ref)) {
-		return "";
+	if (hasSubItemFactoryInstalled(type_ref)) {
+		return _installedSubItemFactories.value(type_ref)->getItemTypeName();
 	}
 
-	return _installedSubItemFactories.value(type_ref)->getItemTypeIconUrl();
-
+	return "";
 }
 
 const QVector<QString> &EditableItemFactoryManager::installedFactoriesKeys() const
