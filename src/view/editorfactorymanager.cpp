@@ -26,8 +26,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-EditorFactoryManager EditorFactoryManager::GlobalEditorFactoryManager;
-
 EditorFactoryManager::EditorFactoryManager(QObject *parent) :
 	QAbstractListModel(parent)
 {
