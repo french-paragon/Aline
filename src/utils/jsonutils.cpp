@@ -51,7 +51,12 @@ const QString Aline::JsonUtils::TREE_NAME_ID = "name";
 const QString Aline::JsonUtils::TREE_CHILDRENS_ID = "childrens";
 const QString Aline::JsonUtils::TREE_ACCEPT_CHILDRENS_ID = "accept_childrens";
 
-void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject const& obj, EditableItemFactoryManager* subItemFactory, QStringList const& specialSkippedProperties, bool blockSignals) {
+void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
+									   QJsonObject const& obj,
+									   EditableItemFactoryManager* subItemFactory,
+									   QStringList const& specialSkippedProperties,
+									   bool blockSignals,
+									   const JsonPropExtractor* visitor) {
 
 	if (blockSignals) {
 		item->blockSignals(true);
@@ -104,6 +109,15 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 
 		if (specialSkippedProperties.contains(prop)) {
 			continue;
+		}
+
+		//check if the end user wanted to erase the default behavior with the visitor
+		if (visitor != nullptr) {
+			bool visitorDidIt = (*visitor)(obj, item, prop.toStdString().c_str());
+
+			if (visitorDidIt) {
+				continue;
+			}
 		}
 
 		const QMetaObject* meta = item->metaObject();
@@ -229,7 +243,7 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 }
 
-QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
+QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator *visitor) {
 
 	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
 
@@ -250,12 +264,30 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 		const char* prop = mobj->property(i).name();
 
+		//check if the end user wanted to erase the default behavior with the visitor
+		if (visitor != nullptr) {
+			bool visitorDidIt = (*visitor)(obj, item, prop);
+
+			if (visitorDidIt) {
+				continue;
+			}
+		}
+
 		addPropToObject(obj, item, prop);
 	}
 
 	QList<QByteArray> dynamicProperties = item->dynamicPropertyNames();
 
 	for (QByteArray const& cpropName : qAsConst(dynamicProperties)) {
+
+		//check if the end user wanted to erase the default behavior with the visitor
+		if (visitor != nullptr) {
+			bool visitorDidIt = (*visitor)(obj, item, cpropName.toStdString().c_str());
+
+			if (visitorDidIt) {
+				continue;
+			}
+		}
 
 		addPropToObject(obj, item, cpropName.toStdString().c_str());
 
