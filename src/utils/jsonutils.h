@@ -27,6 +27,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QJsonValue>
 #include <QException>
 
+#include <functional>
+
 class QModelIndex;
 
 namespace Aline {
@@ -47,6 +49,8 @@ extern const QString LABEL_SUBLABELS_ID;
 
 extern const QString ITEM_SUBITEM_ID;
 extern const QString ITEM_SUBITEM_LIST;
+
+extern const QString ITEM_REFERENT_LIST;
 
 extern const QString TREE_REF_ID;
 extern const QString TREE_TYPE_ID;
@@ -76,12 +80,18 @@ protected:
 	std::string _what;
 };
 
+//! \brief JsonPropEncapsulator represent an encapsulator that can be provided to the automatic json encoding function to modify its functionning.
+using JsonPropEncapsulator = std::function<bool(QJsonObject &, Aline::EditableItem*, const char*)>;
+//! \brief JsonPropEncapsulator represent an encapsulator that can be provided to the automatic json extracting function to modify its functionning.
+using JsonPropExtractor = std::function<bool(QJsonObject const&, Aline::EditableItem*, const char*)>;
+
 ALINE_EXPORT void extractItemData(Aline::EditableItem* item,
 								  QJsonObject const& obj,
 								  EditableItemFactoryManager* subItemFactory,
 								  QStringList const& specialSkippedProperties = {},
-								  bool blockSignals = true);
-ALINE_EXPORT QJsonObject encapsulateItemToJson(Aline::EditableItem* item);
+								  bool blockSignals = true,
+								  const JsonPropExtractor* visitor = nullptr);
+ALINE_EXPORT QJsonObject encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator* visitor = nullptr);
 
 ALINE_EXPORT QJsonValue encodeVariantToJson(QVariant var);
 ALINE_EXPORT QVariant decodeVariantFromJson(QJsonValue val, QVariant::Type type);

@@ -30,6 +30,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QMetaObject>
 #include <QMetaProperty>
 
+#include "model/interfaces/jsonencodableitem.h"
+
 
 const QString Aline::JsonUtils::LABEL_REF = "labels";
 
@@ -41,19 +43,55 @@ const QString Aline::JsonUtils::LABEL_SUBLABELS_ID = "sublabels";
 const QString Aline::JsonUtils::ITEM_SUBITEM_ID = "item_internalsubitems";
 const QString Aline::JsonUtils::ITEM_SUBITEM_LIST = "subitemslist";
 
+const QString Aline::JsonUtils::ITEM_REFERENT_LIST = "item_referentslist";
+
 const QString Aline::JsonUtils::TREE_REF_ID = "reference";
 const QString Aline::JsonUtils::TREE_TYPE_ID = "type";
 const QString Aline::JsonUtils::TREE_NAME_ID = "name";
 const QString Aline::JsonUtils::TREE_CHILDRENS_ID = "childrens";
 const QString Aline::JsonUtils::TREE_ACCEPT_CHILDRENS_ID = "accept_childrens";
 
-void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject const& obj, EditableItemFactoryManager* subItemFactory, QStringList const& specialSkippedProperties, bool blockSignals) {
+void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
+									   QJsonObject const& obj,
+									   EditableItemFactoryManager* subItemFactory,
+									   QStringList const& specialSkippedProperties,
+									   bool blockSignals,
+									   const JsonPropExtractor* visitor) {
 
 	if (blockSignals) {
 		item->blockSignals(true);
 	}
 
 	item->blockChangeDetection(true);
+
+	if (obj.contains(ITEM_REFERENT_LIST)) {
+		QJsonValue val = obj.value(ITEM_REFERENT_LIST);
+		if (val.isArray()) {
+			QJsonArray referents = val.toArray();
+
+			for (auto val : qAsConst(referents)) {
+				QString referent = val.toString("");
+
+				if (!referent.isEmpty()) {
+					item->warnRefering(referent);
+				}
+			}
+		}
+	}
+
+	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
+
+	if (jsonEncodable != nullptr) {
+		jsonEncodable->confgureItemFromJson(obj);
+
+		if (blockSignals) {
+			item->blockSignals(false);
+		}
+
+		item->blockChangeDetection(false);
+
+		return;
+	}
 
 	for (QString prop : obj.keys()) {
 
@@ -71,6 +109,15 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item, QJsonObject co
 
 		if (specialSkippedProperties.contains(prop)) {
 			continue;
+		}
+
+		//check if the end user wanted to erase the default behavior with the visitor
+		if (visitor != nullptr) {
+			bool visitorDidIt = (*visitor)(obj, item, prop.toStdString().c_str());
+
+			if (visitorDidIt) {
+				continue;
+			}
 		}
 
 		const QMetaObject* meta = item->metaObject();
@@ -196,8 +243,15 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 }
 
-QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
+QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator *visitor) {
 
+	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
+
+	if (jsonEncodable != nullptr) {
+		return jsonEncodable->encodeItemToJson();
+	}
+
+	//if the item is not encodable, attempt to do as best as possible based on visile properties
 	QJsonObject obj;
 
 	const QMetaObject* mobj = item->metaObject();
@@ -210,6 +264,15 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 		const char* prop = mobj->property(i).name();
 
+		//check if the end user wanted to erase the default behavior with the visitor
+		if (visitor != nullptr) {
+			bool visitorDidIt = (*visitor)(obj, item, prop);
+
+			if (visitorDidIt) {
+				continue;
+			}
+		}
+
 		addPropToObject(obj, item, prop);
 	}
 
@@ -217,8 +280,25 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 	for (QByteArray const& cpropName : qAsConst(dynamicProperties)) {
 
+		//check if the end user wanted to erase the default behavior with the visitor
+		if (visitor != nullptr) {
+			bool visitorDidIt = (*visitor)(obj, item, cpropName.toStdString().c_str());
+
+			if (visitorDidIt) {
+				continue;
+			}
+		}
+
 		addPropToObject(obj, item, cpropName.toStdString().c_str());
 
+	}
+
+	QJsonArray referents;
+	for (QString & referent : item->listReferents()) {
+		referents.push_back(referent);
+	}
+	if (referents.size() > 0) {
+		obj.insert(ITEM_REFERENT_LIST, referents);
 	}
 
 	return obj;

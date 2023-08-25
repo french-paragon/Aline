@@ -100,7 +100,6 @@ public:
 
 	QString itemIconUrl(QString type_ref);
 	QString itemTypeName(QString type_ref);
-	QString subItemIconUrl(QString type_ref);
 
 	QVector<QString> const& installedFactoriesKeys() const;
 

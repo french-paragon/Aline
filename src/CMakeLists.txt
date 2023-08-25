@@ -1,5 +1,7 @@
 list(APPEND LIB_SRC
             aline_global.h
+			model/interfaces/jsonencodableitem.h
+			model/interfaces/jsonencodableitem.cpp
             model/editableitem.h
             model/editableitem.cpp
             model/editableitemmanager.h
@@ -58,7 +60,9 @@ list(APPEND LIB_SRC
             utils/view_model/indexrebasedproxymodel.h
             utils/view_model/indexrebasedproxymodel.cpp
             control/app.h
-            control/app.cpp
+			control/app.cpp
+			control/editableitemactionsmanager.h
+			control/editableitemactionsmanager.cpp
             ressources/aline_ressources.qrc
             )
 
@@ -78,4 +82,21 @@ target_link_libraries(${PROJECT_NAME} Qt5::Gui)
 target_link_libraries(${PROJECT_NAME} Qt5::Qml)
 target_link_libraries(${PROJECT_NAME} Qt5::QuickWidgets)
 
-install (TARGETS ${PROJECT_NAME} DESTINATION usr/lib)
+target_include_directories(
+	${PROJECT_NAME}
+	PUBLIC
+	$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>
+)
+
+install(TARGETS ${PROJECT_NAME}
+	  EXPORT ${ALINE_EXPORTNAME}
+	  RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+	  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+	  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      )
+
+foreach(FILE IN LISTS LIB_SRC)
+	if(FILE MATCHES "^((.*)/)?([^/]+)\\.h$")
+		install(FILES ${FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${CMAKE_MATCH_2})
+	endif()
+endforeach()

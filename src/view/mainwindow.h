@@ -42,6 +42,13 @@ class ALINE_EXPORT MainWindow : public QMainWindow
 
 public:
 
+	/*!
+	 * \brief findWidgetMainWindow find the main window a widget belongs to
+	 * \param widget the widget
+	 * \return the main windows
+	 */
+	static MainWindow* findWidgetMainWindow(QWidget* widget);
+
 	static const QString MENU_FILE_NAME;
 	static const QString MENU_DISPLAY_NAME;
 

@@ -24,6 +24,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "editableitemtypespecializedaction.h"
 
+#include "control/app.h"
+#include "control/editableitemactionsmanager.h"
+
 #include "../model/editableitemfactory.h"
 #include "editorfactorymanager.h"
 
@@ -205,45 +208,52 @@ void ProjectTreeDockWidget::supprButtonClicked() {
 
 void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 
-	QModelIndex index = ui->treeView->indexAt(pos);
-
-	Aline::EditorFactoryManager* editorManager = _mw_parent->editorManager();
-	if (editorManager == nullptr) {
-		editorManager = &Aline::EditorFactoryManager::GlobalEditorFactoryManager;
+	if (_currentProject == nullptr) {
+		return;
 	}
+
+	QModelIndex index = ui->treeView->indexAt(pos);
 
 	if (index.isValid()) {
 
-		QMenu menu;
+		QMenu menu(this); //needs to make the current widget parent, so that the action manager can find the main windows
 
 		QVariant data  = index.data(EditableItemManager::ItemTypeRefRole);
 		QString itemTypeRef = data.toString();
 
 		if (_internalModel->flags(index) & Qt::ItemIsEditable) {
 
-			QAction* renameAction = menu.addAction(tr("renommer"));
+			QAction* renameAction = menu.addAction(tr("Rename"));
 
-			connect(renameAction, &QAction::triggered, this, [&index, this] () {ui->treeView->edit(index);});
+			connect(renameAction, &QAction::triggered, this, [index, this] () {ui->treeView->edit(index);});
 
 			menu.addSeparator();
 
 		}
 
-		QString ref = index.data(EditableItemManager::ItemRefRole).toString();
+		App* app = App::getAppInstance();
+		EditableItemActionsManager* actionsManager = app->getActionsManagerForType(itemTypeRef);
 
-		if (editorManager->hasFactoryInstalledForItem(itemTypeRef) && index.parent() != QModelIndex()) {
-			QAction* editAction = menu.addAction(tr("éditer"));
+		QVariant itemRef = index.data(EditableItemManager::ItemRefRole);
 
-			connect(editAction, &QAction::triggered, this, [this, ref] () {
-				Q_EMIT itemDoubleClicked(ref);
-			});
+		QList<QAction*> actions;
+
+		if (itemRef.isValid()) { //we have an item
+			QString ref = itemRef.toString();
+			EditableItem* item = _currentProject->loadItem(ref);
+
+			if (item != nullptr) {
+
+				actions = actionsManager->factorizeItemContextActions(&menu, item);
+
+			}
+		} else {
+			actions = actionsManager->factorizeClassContextActions(&menu, _currentProject, itemTypeRef);
 		}
 
-		QAction* actionRemove = menu.addAction(tr("supprimer"));
-
-		connect(actionRemove, &QAction::triggered, this, [ref, this] () {
-			Q_EMIT itemSuppressionTriggered({ref});
-		});
+		for (QAction* action : qAsConst(actions)) {
+			menu.addAction(action);
+		}
 
 		menu.addSeparator();
 
@@ -253,7 +263,7 @@ void ProjectTreeDockWidget::buildTreeContextMenu(QPoint const& pos) {
 
 		EditableItemTypeSpecializedAction* action = new EditableItemTypeSpecializedAction(itemTypeRef,
 																						  QIcon(f->itemIconUrl(itemTypeRef)),
-																						  QString("ajouter une instance de %1").arg(typeName),
+																						  QString("Add a %1").arg(typeName),
 																						  &menu);
 
 		connect(action, &EditableItemTypeSpecializedAction::triggered,

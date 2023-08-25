@@ -18,16 +18,39 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "app.h"
 
+#include "editableitemactionsmanager.h"
+
 namespace Aline {
+
+App* App::getAppInstance() {
+	return qobject_cast<App*>(QApplication::instance());
+}
 
 App::App(int & argc, char **argv) :
 	QApplication(argc, argv)
 {
-
+	_defaultActionManager = new EditableItemActionsManager(this); //default action manager
 }
 
 bool App::start(QString appCode) {
 	_appCode = appCode;
+	return true;
+}
+
+bool App::hasActionManager(QString const& typeRef) const {
+	return _installedActionManager.contains(typeRef);
+}
+EditableItemActionsManager* App::getActionsManagerForType(QString const& typeRef) const {
+	return _installedActionManager.value(typeRef, _defaultActionManager);
+}
+bool App::installActionsManagerForType(QString const& typeRef, EditableItemActionsManager* manager) {
+	if (hasActionManager(typeRef)) {
+		return false;
+	}
+
+	manager->setParent(this);
+	_installedActionManager.insert(typeRef, manager);
+
 	return true;
 }
 
