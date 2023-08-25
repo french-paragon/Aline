@@ -227,6 +227,8 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item) {
 
 QJsonValue Aline::JsonUtils::encodeVariantToJson(QVariant var) {
 
+	QMetaType metaType(var.type());
+
 	if (var.type() == QVariant::PointF) {
 		QPointF data = var.toPointF();
 
@@ -247,12 +249,25 @@ QJsonValue Aline::JsonUtils::encodeVariantToJson(QVariant var) {
 		QColor col = var.value<QColor>();
 
 		return QJsonValue(col.name(QColor::HexArgb));
+
+	} else if (metaType.flags() & QMetaType::IsEnumeration) {
+		const QMetaObject* mtObj = metaType.metaObject();
+
+		if (mtObj != nullptr) {
+			int enumIdx = mtObj->indexOfEnumerator(metaType.name());
+			if (enumIdx >= 0) {
+				QMetaEnum metaEnum = mtObj->enumerator(enumIdx);
+				return QJsonValue(metaEnum.valueToKey(var.toInt()));
+			}
+		}
 	}
 
 	return QJsonValue::fromVariant(var);
 
 }
 QVariant Aline::JsonUtils::decodeVariantFromJson(QJsonValue val, QVariant::Type type) {
+
+	QMetaType metaType(type);
 
 	if (type == QVariant::PointF) {
 
@@ -321,6 +336,26 @@ QVariant Aline::JsonUtils::decodeVariantFromJson(QJsonValue val, QVariant::Type 
 		QColor col(colorName);
 
 		return QVariant(col);
+
+	} else if (metaType.flags() & QMetaType::IsEnumeration) {
+		const QMetaObject* mtObj = metaType.metaObject();
+
+		if (mtObj != nullptr) {
+			int enumIdx = mtObj->indexOfEnumerator(metaType.name());
+			if (enumIdx >= 0) {
+				QMetaEnum metaEnum = mtObj->enumerator(enumIdx);
+				std::string str = val.toString().toStdString();
+
+				bool ok;
+				int key = metaEnum.keyToValue(str.c_str(), &ok);
+
+				if (!ok) {
+					return QVariant();
+				}
+
+				return QVariant(key);
+			}
+		}
 	}
 
 	return val.toVariant();
