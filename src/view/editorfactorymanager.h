@@ -38,8 +38,6 @@ public:
 		ItemRefRole = Qt::UserRole + 1
 	};
 
-	static EditorFactoryManager GlobalEditorFactoryManager;
-
 	explicit EditorFactoryManager(QObject *parent = nullptr);
 
 	void installFactory(EditorFactory* factory, bool takeOwnership = true);

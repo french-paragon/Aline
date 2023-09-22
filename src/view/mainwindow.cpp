@@ -344,8 +344,6 @@ void MainWindow::editItem(QString const& itemUrl) {
 
 	if (_editorFactoryManager != nullptr) {
 		editor = _editorFactoryManager->createItemForEditableItem(item, this);
-	} else {
-		editor = EditorFactoryManager::GlobalEditorFactoryManager.createItemForEditableItem(item, this);
 	}
 
 	if (editor != nullptr) {
