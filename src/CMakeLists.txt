@@ -66,6 +66,8 @@ list(APPEND LIB_SRC
             ressources/aline_ressources.qrc
             )
 
+set(CMAKE_DEBUG_POSTFIX d)
+
 add_library(${PROJECT_NAME} ${LIB_SRC})
 #set_target_properties( ${PROJECT_NAME}
 #	PROPERTIES
@@ -94,7 +96,6 @@ install(TARGETS ${PROJECT_NAME}
 	  LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 	  ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
       )
-
 foreach(FILE IN LISTS LIB_SRC)
 	if(FILE MATCHES "^((.*)/)?([^/]+)\\.h$")
 		install(FILES ${FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${CMAKE_MATCH_2})
