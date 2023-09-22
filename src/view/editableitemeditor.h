@@ -40,6 +40,7 @@ public:
 	virtual void saveAction();
 
 	QString getEditedItemRef() const;
+	QString getEditedItemUrl() const;
 
 Q_SIGNALS:
 

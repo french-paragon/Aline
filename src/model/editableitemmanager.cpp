@@ -587,11 +587,11 @@ void EditableItemManager::closeAll() {
 
 }
 
-void EditableItemManager::setActiveItem(QString ref) {
+void EditableItemManager::setActiveItem(QString url) {
 
-	if (_activeItem == nullptr || _activeItem->getRef() != ref) {
+	if (_activeItem == nullptr || _activeItem->getFullRefUrl() != url) {
 
-		EditableItem* potential = qobject_cast<EditableItem*>(loadItem(ref));
+		EditableItem* potential = qobject_cast<EditableItem*>(loadItemByUrl(url));
 
 		_activeItem = potential;
 		Q_EMIT activeItemChanged();
