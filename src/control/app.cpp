@@ -20,6 +20,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "editableitemactionsmanager.h"
 
+#include <QTemporaryDir>
+
 namespace Aline {
 
 App* App::getAppInstance() {
@@ -27,9 +29,17 @@ App* App::getAppInstance() {
 }
 
 App::App(int & argc, char **argv) :
-	QApplication(argc, argv)
+	QApplication(argc, argv),
+	_tmp_dir(nullptr)
 {
 	_defaultActionManager = new EditableItemActionsManager(this); //default action manager
+}
+
+App::~App() {
+
+	if (_tmp_dir != nullptr) {
+		delete _tmp_dir;
+	}
 }
 
 bool App::start(QString appCode) {
@@ -52,6 +62,16 @@ bool App::installActionsManagerForType(QString const& typeRef, EditableItemActio
 	_installedActionManager.insert(typeRef, manager);
 
 	return true;
+}
+
+QString App::getAppTempDirectory() const {
+
+	if (_tmp_dir == nullptr) {
+		_tmp_dir = new QTemporaryDir();
+	}
+
+	return _tmp_dir->path();
+
 }
 
 } // namespace Aline

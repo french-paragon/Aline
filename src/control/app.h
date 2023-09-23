@@ -23,6 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <QApplication>
 
+class QTemporaryDir;
+
 namespace Aline {
 
 class EditableItemActionsManager;
@@ -35,6 +37,7 @@ public:
 	static App* getAppInstance();
 
 	App(int &argc, char** argv);
+	~App();
 
 	virtual bool start(QString appCode = "default");
 
@@ -98,6 +101,13 @@ public:
 		return _appSpecialInterfaces.value(interfaceCode, nullptr);
 	}
 
+
+	/*!
+	 * \brief getAppTempDirectory return a temporary directory that will be cleaned up when the application is closed.
+	 * \return the path to the directory;
+	 */
+	QString getAppTempDirectory() const;
+
 protected:
 
 	QString _appCode;
@@ -106,6 +116,8 @@ protected:
 	QMap<QString, EditableItemActionsManager*> _installedActionManager;
 
 	QMap<QString, QObject*> _appSpecialInterfaces;
+
+	mutable QTemporaryDir* _tmp_dir;
 };
 
 } // namespace Aline
