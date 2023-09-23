@@ -388,7 +388,7 @@ void MainWindow::onCurrentEditorChanged() {
 	Aline::EditableItemEditor* eie = qobject_cast<Aline::EditableItemEditor*>(w);
 
 	if (eie != nullptr) {
-		Q_EMIT editedItemChanged(eie->getEditedItemRef());
+		Q_EMIT editedItemChanged(eie->getEditedItemUrl());
 	}
 
 }

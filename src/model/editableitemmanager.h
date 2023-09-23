@@ -162,7 +162,7 @@ public Q_SLOTS:
 	virtual void reset() = 0;
 	virtual void closeAll();
 
-	void setActiveItem(QString ref);
+	void setActiveItem(QString url);
 
 protected:
 	void setRefUrlSeparator(const QString &newRefUrlSeparator);

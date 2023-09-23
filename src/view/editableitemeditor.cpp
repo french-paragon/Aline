@@ -56,5 +56,8 @@ void EditableItemEditor::saveAction() {
 QString EditableItemEditor::getEditedItemRef() const {
 	return _editedItem->getRef();
 }
+QString EditableItemEditor::getEditedItemUrl() const {
+	return _editedItem->getFullRefUrl();
+}
 
 } // namespace Aline
