@@ -206,7 +206,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 }
 
-void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* prop) {
+void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* prop, const Aline::JsonUtils::JsonPropEncapsulator *visitor) {
 
 	QString sprop(prop);
 
@@ -217,7 +217,7 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 		Aline::EditableItem* subitem = qvariant_cast<Aline::EditableItem*>(item->property(prop));
 
-		obj.insert(sprop, Aline::JsonUtils::encapsulateItemToJson(subitem));
+		obj.insert(sprop, Aline::JsonUtils::encapsulateItemToJson(subitem, visitor));
 
 	} else if (meta->property(prop_index).userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
 
@@ -226,7 +226,7 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 		QJsonArray arr;
 
 		for (Aline::EditableItem* subitem : list) {
-			arr.push_back(Aline::JsonUtils::encapsulateItemToJson(subitem));
+			arr.push_back(Aline::JsonUtils::encapsulateItemToJson(subitem, visitor));
 		}
 
 		QJsonObject subCollection;
@@ -273,7 +273,7 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, c
 			}
 		}
 
-		addPropToObject(obj, item, prop);
+		addPropToObject(obj, item, prop, visitor);
 	}
 
 	QList<QByteArray> dynamicProperties = item->dynamicPropertyNames();
@@ -289,7 +289,7 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, c
 			}
 		}
 
-		addPropToObject(obj, item, cpropName.toStdString().c_str());
+		addPropToObject(obj, item, cpropName.toStdString().c_str(), visitor);
 
 	}
 
