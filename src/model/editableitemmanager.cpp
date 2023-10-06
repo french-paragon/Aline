@@ -303,8 +303,6 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 
 	EditableItem* item = effectivelyLoadItem(ref);
 
-	connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
-
 	item->_hasBeenLoadedFromDisk = true;
 
 	treeStruct* node = _treeIndex.value(ref, nullptr);
@@ -314,6 +312,10 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 	} else {
 		_loadedItems.insert(item->getRef(), {node, item});
 	}
+
+	item->onLoadingDone(); //call the handler for the loading done!
+
+	connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
 
 	return item;
 

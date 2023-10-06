@@ -261,6 +261,10 @@ void EditableItem::clearHasUnsavedChanges() {
 	}
 }
 
+void EditableItem::onLoadingDone() {
+
+}
+
 QString EditableItem::makeSubItemRefUniq(QString const& subItemRef) const {
 
 	if (!_usedRef.contains(subItemRef)) {

@@ -251,6 +251,15 @@ protected:
 	void newUnsavedChanges();
 	void clearHasUnsavedChanges();
 
+	/*!
+	 * \brief onLoadingDone is an event handler called when the loading of an object is done.
+	 *
+	 * Default implementation does nothing.
+	 *
+	 * It is recommended to not try to load other items in this handler, to avoid complicated inter-dependancies in the loading chain.
+	 */
+	virtual void onLoadingDone();
+
 	QString _ref;
 
 	QString _p_ref;
