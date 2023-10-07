@@ -52,6 +52,9 @@ ProjectTreeDockWidget::ProjectTreeDockWidget(MainWindow *parent) :
 
 	ui->treeView->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
+	connect(ui->treeView, &QTreeView::clicked,
+			this, &ProjectTreeDockWidget::receiveClick);
+
 	connect(ui->treeView, &QTreeView::doubleClicked,
 			this, &ProjectTreeDockWidget::receiveDoubleClick);
 
@@ -180,6 +183,15 @@ void ProjectTreeDockWidget::rebuildMenu(Aline::EditableItemManager* project) {
 
 	ui->toolButton_new->setMenu(_newItemMenu);
 	ui->toolButton_new->setPopupMode(QToolButton::MenuButtonPopup);
+
+}
+
+
+void ProjectTreeDockWidget::receiveClick(const QModelIndex &index) {
+
+	QString ref = _internalModel->data(index, EditableItemManager::ItemRefRole).toString();
+
+	Q_EMIT itemClicked(ref);
 
 }
 

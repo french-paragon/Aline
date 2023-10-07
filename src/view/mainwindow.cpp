@@ -61,6 +61,7 @@ MainWindow* MainWindow::findWidgetMainWindow(QWidget* widget) {
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
 	_currentProject(nullptr),
+	_currentItemUrl(""),
 	_editorFactoryManager(nullptr),
 	ui(new Ui::MainWindow)
 {
@@ -159,6 +160,8 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 {
 	if (currentProject != _currentProject) {
 
+		setCurrentItem("");
+
 		if (_currentProject != nullptr) {
 			disconnect(this, &Aline::MainWindow::editedItemChanged,
 					   _currentProject, &EditableItemManager::setActiveItem);
@@ -177,6 +180,10 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 
 		Q_EMIT currentProjectChanged(_currentProject);
 	}
+}
+
+QString MainWindow::currentItemRef() const {
+	return _currentItemUrl;
 }
 
 QMenu* MainWindow::findMenuByName(QString const& name, bool createIfNotExist) {
@@ -323,6 +330,25 @@ void MainWindow::saveCurrentEditor() {
 
 	if (editor != nullptr) {
 		editor->saveAction();
+	}
+
+}
+
+void MainWindow::setCurrentItem(QString const& itemUrl) {
+
+	if (_currentProject == nullptr) {
+		return;
+	}
+
+	if (!_currentProject->containItem(itemUrl) and !itemUrl.isEmpty()) { //works only for top level item, but this is expected.
+		return;
+	}
+
+	if (_currentItemUrl != itemUrl) {
+		_currentItemUrl = itemUrl;
+		Q_EMIT currentItemChanged(_currentItemUrl);
+
+		ui->statusbar->showMessage(tr("Current item: %1").arg(_currentItemUrl), 3000);
 	}
 
 }

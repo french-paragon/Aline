@@ -66,6 +66,9 @@ public:
 	EditableItemManager *currentProject() const;
 	void setCurrentProject(EditableItemManager *currentProject);
 
+	QString currentItemRef() const;
+	void setCurrentItem(QString const& itemUrl);
+
 	QMenu* findMenuByName(QString const& name, bool createIfNotExist = false);
 
 	void addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget);
@@ -99,6 +102,7 @@ Q_SIGNALS:
 	void currentProjectChanged(EditableItemManager*);
 	void projectLoaded(EditableItemManager*);
 
+	void currentItemChanged(QString ref);
 	void editedItemChanged(QString ref);
 
 public Q_SLOTS:
@@ -122,6 +126,7 @@ protected:
 	void onCurrentEditorChanged();
 
 	EditableItemManager* _currentProject;
+	QString _currentItemUrl;
 
 	QMap<QString, Aline::Editor*> _openedEditors;
 

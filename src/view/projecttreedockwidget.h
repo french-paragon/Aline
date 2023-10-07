@@ -45,6 +45,7 @@ public:
 Q_SIGNALS:
 
 	void itemCreationTriggered(QString itemTypeRef, QString ref);
+	void itemClicked(QString itemRef);
 	void itemDoubleClicked(QString itemRef);
 	void itemSuppressionTriggered(QStringList itemRef);
 
@@ -60,6 +61,7 @@ private:
 	void rebuildMenuWithoutProject();
 	void rebuildMenu(Aline::EditableItemManager *project);
 
+	void receiveClick(const QModelIndex &index);
 	void receiveDoubleClick(const QModelIndex &index);
 	void supprButtonClicked();
 
