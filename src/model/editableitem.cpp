@@ -326,6 +326,11 @@ void EditableItem::insertSubItem(EditableItem* item) {
 		if (state == true) newUnsavedChanges();
 	});
 
+	connect(item, &EditableItem::refSwap, this, [this] (QString oldRef, QString newRef) {
+		_usedRef.remove(oldRef);
+		_usedRef.insert(newRef);
+	});
+
 }
 
 QList<Aline::EditableItem*> EditableItem::getSubItems() const {
