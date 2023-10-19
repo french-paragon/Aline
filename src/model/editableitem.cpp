@@ -171,6 +171,7 @@ void EditableItem::changeRef(QString const& newRef) {
 
 		Q_EMIT refSwap(oldRef, _ref);
 		Q_EMIT refChanged(_ref);
+		newUnsavedChanges();
 	}
 
 }
