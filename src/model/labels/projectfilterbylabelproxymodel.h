@@ -19,30 +19,26 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include <QAbstractProxyModel>
+#include <QAbstractListModel>
 
 #include "../../aline_global.h"
+#include "../editableitemmanager.h"
 
 namespace Aline {
 
 class LabelsTree;
 
-class ALINE_EXPORT ProjectFilterByLabelProxyModel : public QAbstractProxyModel
+class ALINE_EXPORT ProjectFilterByLabelProxyModel : public QAbstractListModel
 {
 	Q_OBJECT
 public:
 	explicit ProjectFilterByLabelProxyModel(QObject *parent = nullptr);
 
-	virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
-	virtual QModelIndex parent(QModelIndex const& index) const;
+	int rowCount(const QModelIndex &parent = QModelIndex()) const override;
 
-	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
-	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+	QVariant data(QModelIndex const& index, int role = Qt::DisplayRole) const override;
 
-	virtual QModelIndex mapFromSource(const QModelIndex &sourceIndex) const;
-	virtual QModelIndex mapToSource(const QModelIndex &proxyIndex) const;
-
-	virtual void setSourceModel(QAbstractItemModel *sourceModel);
+	void setSourceProject(EditableItemManager *sourceModel);
 
 	void connectLabelTree(LabelsTree * labelTree);
 
@@ -57,10 +53,9 @@ protected:
 	virtual void removeRefsInLabel(QString const& oldRef);
 
 	void resetFilter();
-	void exploreSourceModelIndex(QModelIndex const& sourceIndex);
 
-	QStringList _refInLabel;
-	QModelIndexList _selectedIndices;
+	QStringList _refsInLabel;
+	EditableItemManager* _sourceProject;
 
 	QMetaObject::Connection _connectionProject;
 

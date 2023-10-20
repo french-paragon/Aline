@@ -70,6 +70,7 @@ public:
 	EditableItemManager *parentManager() const;
 
 	void setActiveLabel(const QModelIndex &activeLabelIndex);
+	Label* activeLabel();
 
 	QStringList activeLabelFilter() const;
 

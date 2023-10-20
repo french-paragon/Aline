@@ -19,92 +19,80 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "projectfilterbylabelproxymodel.h"
 
 #include "model/editableitemmanager.h"
+#include "model/editableitem.h"
 
 #include "model/labels/labelstree.h"
+
+#include <QIcon>
 
 namespace Aline {
 
 ProjectFilterByLabelProxyModel::ProjectFilterByLabelProxyModel(QObject *parent) :
-	QAbstractProxyModel(parent)
+	QAbstractListModel(parent)
 {
-
-}
-
-QModelIndex ProjectFilterByLabelProxyModel::index(int row, int column, const QModelIndex &parent) const {
-
-	if (parent != QModelIndex()) {
-		return QModelIndex();
-	}
-
-	if (row < 0 || row >= _selectedIndices.size() || column != 0) {
-		return QModelIndex();
-	}
-
-	return createIndex(row, column);
-
-}
-
-QModelIndex ProjectFilterByLabelProxyModel::parent(QModelIndex const& index) const {
-
-	Q_UNUSED(index);
-	return QModelIndex();
 
 }
 
 int ProjectFilterByLabelProxyModel::rowCount(const QModelIndex &parent) const {
 
 	if (parent == QModelIndex()) {
-		return _selectedIndices.size();
+		return _refsInLabel.size();
 	}
 
 	return 0;
 
 }
 
-int ProjectFilterByLabelProxyModel::columnCount(const QModelIndex &parent) const {
+QVariant ProjectFilterByLabelProxyModel::data(QModelIndex const& index, int role) const {
 
-	if (sourceModel() == nullptr) {
-		return 0;
+	if (_sourceProject == nullptr) {
+		return QVariant();
 	}
 
-	return sourceModel()->columnCount(mapToSource(parent));
+	int row = index.row();
 
-}
-
-QModelIndex ProjectFilterByLabelProxyModel::mapFromSource(const QModelIndex &sourceIndex) const {
-
-	int index = _selectedIndices.indexOf(sourceIndex);
-
-	if (index >= 0) {
-		return createIndex(index, 0);
+	if (row < 0 or row >= _refsInLabel.size()) {
+		return QVariant();
 	}
 
-	return QModelIndex();
-}
+	QString url = _refsInLabel[row];
+	EditableItem* item = _sourceProject->loadItemByUrl(url);
 
-QModelIndex ProjectFilterByLabelProxyModel::mapToSource(const QModelIndex &proxyIndex) const {
-
-	if (proxyIndex.isValid()) {
-
-		return _selectedIndices.at(proxyIndex.row());
-
+	if (item == nullptr) {
+		return QVariant();
 	}
 
-	return QModelIndex();
+	switch (role) {
+	case Qt::DisplayRole:
+		return item->objectName() + (item->getHasUnsavedChanged() ? " *" : "");
+	case Qt::DecorationRole:
+	{
+		QString iconPath = item->iconInternalUrl();
 
+		if (iconPath != "") {
+			return QIcon(iconPath);
+		}
+	}
+	break;
+
+	case EditableItemManager::ItemRefRole:
+		return item->getFullRefUrl();
+	}
+
+	return QVariant();
 }
 
 
 void ProjectFilterByLabelProxyModel::setRefsInLabel(QStringList const& refs) {
 
-	_refInLabel = refs;
+	_refsInLabel = refs;
 
 	resetFilter();
 
 }
 void ProjectFilterByLabelProxyModel::addRefsInLabel(QString const& newRef) {
 
-	_refInLabel.push_back(newRef);
+	_refsInLabel.push_back(newRef);
 
 	resetFilter();
 
@@ -112,22 +100,28 @@ void ProjectFilterByLabelProxyModel::addRefsInLabel(QString const& newRef) {
 
 void ProjectFilterByLabelProxyModel::removeRefsInLabel(QString const& oldRef) {
 
-	_refInLabel.removeOne(oldRef);
+	_refsInLabel.removeOne(oldRef);
 
 	resetFilter();
 
 }
 
-void ProjectFilterByLabelProxyModel::setSourceModel(QAbstractItemModel *sourceModel) {
+void ProjectFilterByLabelProxyModel::setSourceProject(EditableItemManager *sourceModel) {
 
-	QAbstractProxyModel::setSourceModel(sourceModel);
+	_sourceProject = sourceModel;
 
 	if (_connectionProject) {
 		disconnect(_connectionProject);
 	}
 
 	if (sourceModel != nullptr) {
-		_connectionProject = connect(sourceModel, &QAbstractItemModel::dataChanged, this, &ProjectFilterByLabelProxyModel::resetFilter);
+		_connectionProject = connect(sourceModel, &EditableItemManager::itemVisibleStateNeedRefresh, this, [this] (QString url) {
+			int row = _refsInLabel.indexOf(url);
+
+			if (row >= 0 and row < _refsInLabel.size()) {
+				Q_EMIT dataChanged(index(row), index(row));
+			}
+		});
 	}
 
 	resetFilter();
@@ -150,8 +144,7 @@ void ProjectFilterByLabelProxyModel::connectLabelTree(LabelsTree * labelTree) {
 	if (labelTree == nullptr) {
 
 		beginResetModel();
-		_selectedIndices.clear();
-		_refInLabel.clear();
+		_refsInLabel.clear();
 		endResetModel();
 
 		return;
@@ -173,36 +166,8 @@ void ProjectFilterByLabelProxyModel::resetFilter() {
 
 	beginResetModel();
 
-	_selectedIndices.clear();
-
-	int nRow = (sourceModel() != nullptr) ? sourceModel()->rowCount() : 0;
-
-	for(int i = 0; i < nRow; i++) {
-		exploreSourceModelIndex(sourceModel()->index(i, 0));
-	}
-
 	endResetModel();
 
-}
-
-
-void ProjectFilterByLabelProxyModel::exploreSourceModelIndex(QModelIndex const& sourceIndex) {
-
-	QVariant data = sourceIndex.data(EditableItemManager::ItemRefRole);
-
-	if (data.isValid() && data.canConvert(qMetaTypeId<QString>())) {
-		QString ref = data.toString();
-
-		if (_refInLabel.contains(ref)) {
-			_selectedIndices.push_back(sourceIndex);
-		}
-	}
-
-	int nRow = sourceModel()->rowCount(sourceIndex);
-
-	for(int i = 0; i < nRow; i++) {
-		exploreSourceModelIndex(sourceModel()->index(i, 0, sourceIndex));
-	}
 }
 
 } //namespace Sabrina

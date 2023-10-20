@@ -680,6 +680,9 @@ void LabelsTree::setActiveLabel(QModelIndex const& activeLabelIndex) {
 
 
 }
+Label* LabelsTree::activeLabel() {
+	return _activeLabel;
+}
 
 QStringList LabelsTree::activeLabelFilter() const {
 

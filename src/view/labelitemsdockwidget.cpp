@@ -83,13 +83,13 @@ void LabelItemsDockWidget::projectChanged(Aline::EditableItemManager* project) {
 	if (_currentProject != nullptr) {
 
 		_proxy->connectLabelTree(project->labelsTree());
-		_proxy->setSourceModel(project);
+		_proxy->setSourceProject(project);
 		setEnabled(true);
 
 	} else {
 
 		_proxy->connectLabelTree(nullptr);
-		_proxy->setSourceModel(nullptr);
+		_proxy->setSourceProject(nullptr);
 		setEnabled(false);
 
 	}

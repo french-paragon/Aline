@@ -148,12 +148,21 @@ public:
 
 	const QString &refUrlSeparator() const;
 
+	/*!
+	 * \brief refreshItemDataDisplay send signals to views and proxy models to refresh the display for a specific item
+	 * \param itemUrl the url of the item (can be a subitem for proxies displaying subitems).
+	 */
+	void refreshItemDataDisplay(QString itemUrl);
+
 Q_SIGNALS:
 
 	void loadingItemSucessFull(QString ref);
 
 	void itemAboutToBeUnloaded(QString ref);
 	void itemUnloaded(QString ref);
+
+	//! \brief itemVisibleStateChanged signal is emmited when any item (incl subitems) in the project visible state (name/icon/...) need to be refreshed.
+	void itemVisibleStateNeedRefresh(QString url);
 
 	void activeItemChanged();
 
@@ -171,8 +180,6 @@ protected:
 
 	QModelIndex indexFromLeaf(treeStruct* leaf) const;
 	QModelIndex indexFromType(QString typeRef) const;
-
-	void itemVisibleStateChanged(QString ref);
 
 	/*!
 	 * \brief effectivelyLoadItem load an item without checking if it is cached before.

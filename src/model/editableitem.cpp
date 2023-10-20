@@ -225,6 +225,13 @@ void EditableItem::warnReferedRemoved(QString ref) {
 }
 
 void EditableItem::onVisibleStateChanged() {
+
+	EditableItemManager* manager = getManager();
+
+	if (manager != nullptr) {
+		manager->refreshItemDataDisplay(getFullRefUrl()); //refresh displays
+	}
+
 	Q_EMIT visibleStateChanged(_ref);
 }
 

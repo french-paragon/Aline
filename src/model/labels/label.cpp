@@ -159,10 +159,10 @@ bool Label::markItem(Aline::EditableItem* item) {
 	bool ok = true;
 	bool hasItem = false;
 
-	if (_itemsRefs.indexOf(item->getRef()) >= 0) {
+	if (_itemsRefs.indexOf(item->getFullRefUrl()) >= 0) {
 		hasItem = true;
 	} else {
-		_itemsRefs.push_back(item->getRef());
+		_itemsRefs.push_back(item->getFullRefUrl());
 	}
 
 	bool added = item->addLabel(getRef());
@@ -175,16 +175,16 @@ bool Label::markItem(Aline::EditableItem* item) {
 
 		//label is marked in the item, but the item is not marked in the label, this shouldn't happen.
 
-		qDebug() << "Inserted unmarked item: " << item->getRef() << " in label: " << getRef() << " while label was registered in item.";
+		qDebug() << "Inserted unmarked item: " << item->getFullRefUrl() << " in label: " << getRef() << " while label was registered in item.";
 		return false;
 
 	} else if (hasItem) { //item is marked in the label, but the label is not marked in the item, this shouldn't happen.
 		ok = false;
-		qDebug() << "Inserted unmarked label: " << getRef() << " in item: " << item->getRef() << " while item was registered in label.";
+		qDebug() << "Inserted unmarked label: " << getRef() << " in item: " << item->getFullRefUrl() << " while item was registered in label.";
 	}
 
 	if (ok) {
-		Q_EMIT itemRefAdded(item->getRef());
+		Q_EMIT itemRefAdded(item->getFullRefUrl());
 	}
 
 	return ok;
@@ -199,7 +199,7 @@ bool Label::unmarkItem(Aline::EditableItem* item) {
 	bool ok = true;
 	bool hasItem = false;
 
-	int index = _itemsRefs.indexOf(item->getRef());
+	int index = _itemsRefs.indexOf(item->getFullRefUrl());
 
 	if (index >= 0) {
 		hasItem = true;
@@ -216,16 +216,16 @@ bool Label::unmarkItem(Aline::EditableItem* item) {
 
 		//label is marked in the item, but the item is not marked in the label, this shouldn't happen.
 
-		qDebug() << "Removed marked item: " << item->getRef() << " in label: " << getRef() << " while label was not registered in item.";
+		qDebug() << "Removed marked item: " << item->getFullRefUrl() << " in label: " << getRef() << " while label was not registered in item.";
 		return false;
 
 	} else if (!hasItem) { //item is marked in the label, but the label is not marked in the item, this shouldn't happen.
 		ok = false;
-		qDebug() << "Removed marked label: " << getRef() << " in item: " << item->getRef() << " while item was unregistered in label.";
+		qDebug() << "Removed marked label: " << getRef() << " in item: " << item->getFullRefUrl() << " while item was unregistered in label.";
 	}
 
 	if (ok) {
-		Q_EMIT itemRefRemoved(item->getRef());
+		Q_EMIT itemRefRemoved(item->getFullRefUrl());
 	}
 
 	return ok;

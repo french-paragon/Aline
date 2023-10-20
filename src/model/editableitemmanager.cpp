@@ -315,8 +315,6 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 
 	item->onLoadingDone(); //call the handler for the loading done!
 
-	connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
-
 	return item;
 
 }
@@ -393,7 +391,6 @@ bool EditableItemManager::createItem(QString typeRef, QString pref, QString *cre
 	if (item != nullptr) {
 
 		if (insertItem(item) ) {
-			connect(item, &EditableItem::visibleStateChanged, this, &EditableItemManager::itemVisibleStateChanged);
 
 			if (createdItemRef != nullptr) {
 				*createdItemRef = ref;
@@ -626,13 +623,13 @@ QModelIndex EditableItemManager::indexFromType(QString typeRef) const {
 
 }
 
-void EditableItemManager::itemVisibleStateChanged(QString ref) {
+void EditableItemManager::refreshItemDataDisplay(QString itemUrl) {
 
-	if (_treeIndex.contains(ref)) {
+	if (_treeIndex.contains(itemUrl)) {
 
-		treeStruct* leaf = _treeIndex.value(ref);
+		treeStruct* leaf = _treeIndex.value(itemUrl);
 
-		EditableItem* item = loadItem(ref);
+		EditableItem* item = loadItem(itemUrl);
 
 		leaf->_name = item->objectName() + ((item->getHasUnsavedChanged()) ? " *" : "");
 
@@ -641,6 +638,8 @@ void EditableItemManager::itemVisibleStateChanged(QString ref) {
 		Q_EMIT dataChanged(index, index, {Qt::DisplayRole});
 
 	}
+
+	Q_EMIT itemVisibleStateNeedRefresh(itemUrl);
 
 }
 
