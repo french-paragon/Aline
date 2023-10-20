@@ -83,6 +83,16 @@ public:
 	virtual QString getTypeId() const = 0;
 
 	/*!
+	 * \brief editAsTypeId get the type id this type should be considered as for the purpose of editing.
+	 * \return the type the item should be considered as for the purpose of editing, by default getTypeId().
+	 *
+	 * Some classes of items use inheritance but all fit in a single editor setup for the main class,
+	 * or can be edited with one special function to fit them all. This function gives a type id this class
+	 * should be considered as for the purpose of editing.
+	 */
+	virtual QString editAsTypeId() const;
+
+	/*!
 	 * \brief getTypeName allow to get the name of the editable item type as a string.
 	 * \return the name
 	 */

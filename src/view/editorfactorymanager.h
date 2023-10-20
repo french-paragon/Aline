@@ -22,17 +22,21 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "../aline_global.h"
 
 #include <QAbstractListModel>
+#include <functional>
 
 namespace Aline {
 
 class Editor;
 class EditorFactory;
 class EditableItem;
+class MainWindow;
 
 class ALINE_EXPORT EditorFactoryManager : public QAbstractListModel
 {
 	Q_OBJECT
 public:
+
+	using SpecialEditFunction = std::function<void(MainWindow*, EditableItem*)>;
 
 	enum InternalDataRole{
 		ItemRefRole = Qt::UserRole + 1
@@ -59,6 +63,24 @@ public:
 	Editor* createItem(QString type_id, QWidget* parent) const;
 	Editor* createItemForEditableItem(EditableItem* item, QWidget* parent) const;
 
+	/*!
+	 * \brief registerSpecialEditFunction register a special function called when editing a special type of item
+	 * \param type_id the type the function is registered for
+	 * \param function the special edit function
+	 *
+	 * Sometimes we would like some to overing default behavior when trying to edit a certain class of items (opening more than one editor, opening an editor for a different item with a specific configuration, ...).
+	 * To enable this, it is possible to register, in addition to editors, special functions that can be called by the main windows when trying to edit an item.
+	 */
+	void registerSpecialEditFunction(QString type_id, SpecialEditFunction const& function);
+
+	/*!
+	 * \brief hasSpecialEditFunctionInstalled check if a special edit function is installed for a given type.
+	 * \param type_id the type id.
+	 * \return true if a special function
+	 */
+	bool hasSpecialEditFunctionInstalled(QString type_id) const;
+	SpecialEditFunction specialEditFunction(QString type_id) const;
+
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 
@@ -67,6 +89,8 @@ protected:
 	QMap<QString, QString> _editableTypes;
 	QMap<QString, EditorFactory*> _installedFactories;
 	QVector<QString> _installedFactoriesKeys;
+
+	QMap<QString, SpecialEditFunction> _specialEditFunctions;
 };
 
 } // namespace Aline

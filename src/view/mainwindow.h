@@ -59,6 +59,7 @@ public:
 	Editor* editorAt(int index);
 	Editor* findEditorByName(QString const& name);
 	QVector<Editor*> findAllEditorsOfType(QString const& type);
+	Editor* currentEditor();
 
 	void switchToEditor(int index);
 	void switchToEditor(Editor* editor);

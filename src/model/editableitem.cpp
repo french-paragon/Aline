@@ -114,6 +114,10 @@ bool EditableItem::save() {
 	return false;
 }
 
+QString EditableItem::editAsTypeId() const {
+	return getTypeId();
+}
+
 QString EditableItem::getRef() const
 {
 	return _ref;

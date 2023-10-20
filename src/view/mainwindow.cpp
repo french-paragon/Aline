@@ -134,6 +134,10 @@ QVector<Editor*> MainWindow::findAllEditorsOfType(QString const& type) {
 	return eds;
 }
 
+Editor* MainWindow::currentEditor() {
+	return qobject_cast<Editor*>(ui->tabWidget->currentWidget());
+}
+
 
 void MainWindow::switchToEditor(int index) {
 
@@ -355,12 +359,17 @@ void MainWindow::setCurrentItem(QString const& itemUrl) {
 
 void MainWindow::editItem(QString const& itemUrl) {
 
+	EditableItem* item = _currentProject->loadItemByUrl(itemUrl);
+
+	if (_editorFactoryManager->hasSpecialEditFunctionInstalled(item->editAsTypeId())) {
+		_editorFactoryManager->specialEditFunction(item->editAsTypeId())(this, item);
+		return;
+	}
+
 	if (_openedEditors.contains(itemUrl)) {
 		switchToEditor(_openedEditors.value(itemUrl));
 		return;
 	}
-
-	EditableItem* item = _currentProject->loadItemByUrl(itemUrl);
 
 	if (item == nullptr) {
 		return;

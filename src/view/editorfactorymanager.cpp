@@ -98,7 +98,7 @@ Editor* EditorFactoryManager::createItem(QString type_id, QWidget *parent) const
 
 Editor* EditorFactoryManager::createItemForEditableItem(EditableItem* item, QWidget* parent) const {
 
-	QString factoryRef = _editableTypes.value(item->getTypeId(), "");
+	QString factoryRef = _editableTypes.value(item->editAsTypeId(), "");
 
 	if (factoryRef != "") {
 
@@ -116,6 +116,18 @@ Editor* EditorFactoryManager::createItemForEditableItem(EditableItem* item, QWid
 
 	return nullptr;
 
+}
+
+void EditorFactoryManager::registerSpecialEditFunction(QString type_id, SpecialEditFunction const& function) {
+	_specialEditFunctions.insert(type_id, function);
+}
+
+bool EditorFactoryManager::hasSpecialEditFunctionInstalled(QString type_id) const {
+	return _specialEditFunctions.contains(type_id);
+}
+
+EditorFactoryManager::SpecialEditFunction EditorFactoryManager::specialEditFunction(QString type_id) const {
+	return _specialEditFunctions[type_id];
 }
 
 int EditorFactoryManager::rowCount(const QModelIndex &parent) const {
