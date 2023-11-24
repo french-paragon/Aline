@@ -1,5 +1,5 @@
-#ifndef ALINE_TESTS_REFERINGEDITABLEITEM_H
-#define ALINE_TESTS_REFERINGEDITABLEITEM_H
+#ifndef ALINE_TESTS_DUMMYEDITABLEITEM_H
+#define ALINE_TESTS_DUMMYEDITABLEITEM_H
 
 /*This file is part of the project Aline
 
@@ -19,54 +19,37 @@ You should have received a copy of the GNU Lesser General Public License
 along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "../../src/model/editableitem.h"
+#include "../model/editableitem.h"
 
-#include "../../src/model/editableitemfactory.h"
-
-#include <QString>
+#include "../model/editableitemfactory.h"
 
 namespace Aline {
 namespace Tests {
 
-/*!
- * \brief The ReferingEditableItem class represent a single reference to another editable item.
- *
- * This item is meant to be used for testing purposes
- */
-class ReferingEditableItem : public EditableItem
+class DummyEditableItem : public EditableItem
 {
 	Q_OBJECT
 public:
 
 	static const QString TypeId;
 
-	explicit ReferingEditableItem(QString ref, EditableItemManager *parent = nullptr);
-	explicit ReferingEditableItem(QString ref, EditableItem *parent = nullptr);
+	explicit DummyEditableItem(QString ref, EditableItemManager *parent = nullptr);
+	explicit DummyEditableItem(QString ref, EditableItem *parent = nullptr);
 
 	virtual QString getTypeId() const override;
 	virtual QString getTypeName() const override;
 
 	virtual QString iconInternalUrl() const override;
-
-	const QString &referedItemRef() const;
-	void setReferedItemRef(const QString &newReferedItem);
-
-protected:
-
-	virtual void warnReferedRefChanges(QString oldRef, QString newRef) override;
-	virtual void warnReferedRemoved(QString ref) override;
-
-	QString _referedItemRef;
 };
 
-class ReferingEditableItemFactory : public EditableItemFactory {
+class DummyEditableItemFactory : public EditableItemFactory {
 	Q_OBJECT
 public:
-	ReferingEditableItemFactory(QObject *parent = nullptr);
+	DummyEditableItemFactory(QObject *parent = nullptr);
 	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const override;
 };
 
 } // namespace Tests
 } // namespace Aline
 
-#endif // ALINE_TESTS_REFERINGEDITABLEITEM_H
+#endif // ALINE_TESTS_DUMMYEDITABLEITEM_H

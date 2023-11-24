@@ -101,3 +101,42 @@ foreach(FILE IN LISTS LIB_SRC)
 		install(FILES ${FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${CMAKE_MATCH_2})
 	endif()
 endforeach()
+
+list(APPEND LIB_TEST_SRC
+            tests/aline_test_global.h
+            tests/testeditableitemmanager.h
+            tests/testeditableitemmanager.cpp
+            tests/editableitemtestmodel.h
+            tests/editableitemtestmodel.cpp
+            tests/dummyeditableitem.h
+            tests/dummyeditableitem.cpp
+            tests/referingeditableitem.h
+            tests/referingeditableitem.cpp)
+
+set(CMAKE_DEBUG_POSTFIX d)
+
+add_library(${PROJECT_NAME}_tests ${LIB_TEST_SRC})
+
+target_compile_definitions(${PROJECT_NAME}_tests
+  PRIVATE ALINE_TEST_LIBRARY)
+
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../src)
+
+target_link_libraries(${PROJECT_NAME}_tests Qt5::Core)
+target_link_libraries(${PROJECT_NAME}_tests Qt5::Test)
+target_link_libraries(${PROJECT_NAME}_tests ${PROJECT_NAME})
+
+
+install(TARGETS ${PROJECT_NAME}_tests
+          EXPORT ${ALINE_EXPORTNAME}
+          RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+          LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+          ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+      )
+
+foreach(FILE IN LISTS LIB_TEST_SRC)
+        if(FILE MATCHES "^((.*)/)?([^/]+)\\.h$")
+                install(FILES ${FILE} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${PROJECT_NAME}/${CMAKE_MATCH_2})
+        endif()
+endforeach()

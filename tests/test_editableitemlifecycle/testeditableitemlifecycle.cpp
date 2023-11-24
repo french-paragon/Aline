@@ -4,9 +4,9 @@
 
 #include "../../src/model/editableitemfactory.h"
 
-#include "../tests_utils/testeditableitemmanager.h"
-#include "../tests_utils/dummyeditableitem.h"
-#include "../tests_utils/referingeditableitem.h"
+#include "../../src/tests/testeditableitemmanager.h"
+#include "../../src/tests/dummyeditableitem.h"
+#include "../../src/tests/referingeditableitem.h"
 
 class TestEditableItemLifeCycle : public QObject
 {
