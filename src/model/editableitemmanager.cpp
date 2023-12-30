@@ -47,6 +47,12 @@ EditableItemManager::EditableItemManager(QObject *parent) :
 	_editorManager(nullptr),
 	_refUrlSeparator("/")
 {
+
+	if (_factoryManager == nullptr) { //no app instance to get a factory manager from
+		_factoryManager = new EditableItemFactoryManager(this);
+		//in normal usage this should not be the case, but for testing it is desirable to not have to rely on an app being instanced.
+	}
+
 	cleanTreeStruct();
 }
 
