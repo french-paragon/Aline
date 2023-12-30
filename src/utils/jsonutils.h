@@ -94,7 +94,7 @@ ALINE_EXPORT void extractItemData(Aline::EditableItem* item,
 ALINE_EXPORT QJsonObject encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator* visitor = nullptr);
 
 ALINE_EXPORT QJsonValue encodeVariantToJson(QVariant var);
-ALINE_EXPORT QVariant decodeVariantFromJson(QJsonValue val, QVariant::Type type);
+ALINE_EXPORT QVariant decodeVariantFromJson(QJsonValue val, int type);
 
 ALINE_EXPORT QJsonObject encodeLabelAsJson(LabelsTree const* tree, QModelIndex const& index);
 

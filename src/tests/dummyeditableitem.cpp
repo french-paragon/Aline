@@ -56,5 +56,40 @@ EditableItem* DummyEditableItemFactory::createItem(QString ref, EditableItemMana
 	return new DummyEditableItem(ref, parent);
 }
 
+
+const QString DummyEnrichedEditableItem::TypeId = "DummyEnrichedEditableItem";
+
+DummyEnrichedEditableItem::DummyEnrichedEditableItem(QString ref, EditableItemManager *parent) :
+	EditableItem(ref, parent)
+{
+
+}
+DummyEnrichedEditableItem::DummyEnrichedEditableItem(QString ref, EditableItem *parent) :
+	EditableItem(ref, parent)
+{
+
+}
+
+QString DummyEnrichedEditableItem::getTypeId() const {
+	return TypeId;
+}
+QString DummyEnrichedEditableItem::getTypeName() const {
+	return tr("DummyEnrichedEditableItem");
+}
+
+QString DummyEnrichedEditableItem::iconInternalUrl() const {
+	return "";
+}
+
+DummyEnrichedEditableItemFactory::DummyEnrichedEditableItemFactory(QObject *parent) :
+	EditableItemFactory(parent)
+{
+
+}
+
+EditableItem* DummyEnrichedEditableItemFactory::createItem(QString ref, EditableItemManager* parent) const {
+	return new DummyEnrichedEditableItem(ref, parent);
+}
+
 } // namespace Tests
 } // namespace Aline

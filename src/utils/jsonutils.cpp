@@ -181,7 +181,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 		}
 
-		QVariant var = decodeVariantFromJson(obj.value(prop), meta->property(prop_index).type());
+		QVariant var = decodeVariantFromJson(obj.value(prop), meta->property(prop_index).userType());
 
 		if (var.type() != meta->property(prop_index).type() && meta->property(prop_index).type() != QVariant::Invalid) {
 			if (meta->property(prop_index).isEnumType()) {
@@ -307,16 +307,17 @@ QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, c
 
 QJsonValue Aline::JsonUtils::encodeVariantToJson(QVariant var) {
 
-	QMetaType metaType(var.type());
+	int typeId = var.userType();
+	QMetaType metaType(typeId);
 
-	if (var.type() == QVariant::PointF) {
+	if (typeId == QVariant::PointF) {
 		QPointF data = var.toPointF();
 
 		QString rep(QString("%1,%2").arg(data.x()).arg(data.y()));
 
 		return QJsonValue(rep);
 
-	} else if (var.type() == QVariant::SizeF) {
+	} else if (typeId == QVariant::SizeF) {
 
 		QSizeF data = var.toSizeF();
 
@@ -324,28 +325,21 @@ QJsonValue Aline::JsonUtils::encodeVariantToJson(QVariant var) {
 
 		return QJsonValue(rep);
 
-	} else if (var.type() == QVariant::Color) {
+	} else if (typeId == QVariant::Color) {
 
 		QColor col = var.value<QColor>();
 
 		return QJsonValue(col.name(QColor::HexArgb));
 
 	} else if (metaType.flags() & QMetaType::IsEnumeration) {
-		const QMetaObject* mtObj = metaType.metaObject();
 
-		if (mtObj != nullptr) {
-			int enumIdx = mtObj->indexOfEnumerator(metaType.name());
-			if (enumIdx >= 0) {
-				QMetaEnum metaEnum = mtObj->enumerator(enumIdx);
-				return QJsonValue(metaEnum.valueToKey(var.toInt()));
-			}
-		}
+		return QJsonValue(var.toString());
 	}
 
 	return QJsonValue::fromVariant(var);
 
 }
-QVariant Aline::JsonUtils::decodeVariantFromJson(QJsonValue val, QVariant::Type type) {
+QVariant Aline::JsonUtils::decodeVariantFromJson(QJsonValue val, int type) {
 
 	QMetaType metaType(type);
 
@@ -418,24 +412,7 @@ QVariant Aline::JsonUtils::decodeVariantFromJson(QJsonValue val, QVariant::Type 
 		return QVariant(col);
 
 	} else if (metaType.flags() & QMetaType::IsEnumeration) {
-		const QMetaObject* mtObj = metaType.metaObject();
-
-		if (mtObj != nullptr) {
-			int enumIdx = mtObj->indexOfEnumerator(metaType.name());
-			if (enumIdx >= 0) {
-				QMetaEnum metaEnum = mtObj->enumerator(enumIdx);
-				std::string str = val.toString().toStdString();
-
-				bool ok;
-				int key = metaEnum.keyToValue(str.c_str(), &ok);
-
-				if (!ok) {
-					return QVariant();
-				}
-
-				return QVariant(key);
-			}
-		}
+		return val.toVariant(); //conversion from string to enum should be managed by QVariant.
 	}
 
 	return val.toVariant();

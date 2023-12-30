@@ -23,6 +23,11 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "../model/editableitemfactory.h"
 
+#include <QPointF>
+#include <QSizeF>
+#include <QColor>
+#include <QString>
+
 namespace Aline {
 namespace Tests {
 
@@ -49,7 +54,59 @@ public:
 	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const override;
 };
 
+class DummyEnrichedEditableItem : public EditableItem
+{
+	Q_OBJECT
+public:
+
+	enum DummyEnum { Test, Foo, Bar };
+	Q_ENUM(DummyEnum)
+
+	Q_PROPERTY(int intData MEMBER _intData NOTIFY intDataChanged);
+	Q_PROPERTY(QString stringData MEMBER _stringData NOTIFY stringDataChanged);
+	Q_PROPERTY(QPointF pointFData MEMBER _pointFData NOTIFY pointDataChanged);
+	Q_PROPERTY(QSizeF sizeData MEMBER _sizeData NOTIFY sizeDataChanged);
+	Q_PROPERTY(QColor colorData MEMBER _colorData NOTIFY colorDataChanged);
+	Q_PROPERTY(Aline::Tests::DummyEnrichedEditableItem::DummyEnum enumData MEMBER _enumData NOTIFY enumDataChanged);
+
+	static const QString TypeId;
+
+	explicit DummyEnrichedEditableItem(QString ref, EditableItemManager *parent = nullptr);
+	explicit DummyEnrichedEditableItem(QString ref, EditableItem *parent = nullptr);
+
+	virtual QString getTypeId() const override;
+	virtual QString getTypeName() const override;
+
+	virtual QString iconInternalUrl() const override;
+
+	int _intData;
+	QString _stringData;
+	QPointF _pointFData;
+	QSizeF _sizeData;
+	QColor _colorData;
+	DummyEnum _enumData;
+
+Q_SIGNALS:
+
+	void intDataChanged();
+	void stringDataChanged();
+	void pointDataChanged();
+	void sizeDataChanged();
+	void colorDataChanged();
+	void enumDataChanged();
+
+};
+
+class DummyEnrichedEditableItemFactory : public EditableItemFactory {
+	Q_OBJECT
+public:
+	DummyEnrichedEditableItemFactory(QObject *parent = nullptr);
+	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const override;
+};
+
 } // namespace Tests
 } // namespace Aline
+
+Q_DECLARE_METATYPE(Aline::Tests::DummyEnrichedEditableItem::DummyEnum);
 
 #endif // ALINE_TESTS_DUMMYEDITABLEITEM_H
