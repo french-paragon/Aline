@@ -24,12 +24,23 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QtQml/QQmlContext>
 #include <QQmlEngine>
 
+#include <QtGlobal>
+
 namespace Aline {
 
+//register important qml type, accounting for potential older versions of qt to compile the appimage on older lts ubuntu releases.
 int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::EditableItem*>("Aline::EditableItem*") +
+		#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+		qmlRegisterType<Aline::EditableItem>() +
+		#else
 		qmlRegisterAnonymousType<Aline::EditableItem>("Aline", 1) +
+		#endif
 		qRegisterMetaType<Aline::EditableItemManager*>("Aline::EditableItemManager*") +
+		#if QT_VERSION < QT_VERSION_CHECK(5, 14, 0)
+		qmlRegisterType<Aline::EditableItemManager>();
+		#else
 		qmlRegisterAnonymousType<Aline::EditableItemManager>("Aline", 1);
+		#endif
 
 const QString EditableItemQmlEditor::GENERIC_QMLBASED_EDITOR_TYPE = "aline_qml_generic";
 
