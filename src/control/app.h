@@ -103,6 +103,16 @@ public:
 		return _appSpecialInterfaces.value(interfaceCode, nullptr);
 	}
 
+	/*!
+	 * \brief castedSpecialInterface get a special interface of the app, already casted.
+	 * \param interfaceCode the code of the interface.
+	 * \return the interface, or nullptr if is does not exist or if it is not qobject castable to type T.
+	 */
+	template<class T>
+	inline T* castedSpecialInterface(QString const& interfaceCode) {
+		return qobject_cast<T*>(getSpecialInterface(interfaceCode));
+	}
+
 
 	/*!
 	 * \brief getAppTempDirectory return a temporary directory that will be cleaned up when the application is closed.
