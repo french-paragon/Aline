@@ -1,7 +1,7 @@
 list(APPEND LIB_SRC
             aline_global.h
-			model/interfaces/jsonencodableitem.h
-			model/interfaces/jsonencodableitem.cpp
+            model/interfaces/jsonencodableitem.h
+            model/interfaces/jsonencodableitem.cpp
             model/editableitem.h
             model/editableitem.cpp
             model/editableitemmanager.h
@@ -60,9 +60,11 @@ list(APPEND LIB_SRC
             utils/view_model/indexrebasedproxymodel.h
             utils/view_model/indexrebasedproxymodel.cpp
             control/app.h
-			control/app.cpp
-			control/editableitemactionsmanager.h
-			control/editableitemactionsmanager.cpp
+            control/app.cpp
+            control/editableitemactionsmanager.h
+            control/editableitemactionsmanager.cpp
+            control/appInterfaces/recentfileappinterface.h
+            control/appInterfaces/recentfileappinterface.cpp
             ressources/aline_ressources.qrc
             )
 
