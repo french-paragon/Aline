@@ -73,6 +73,11 @@ QString EditableItemFactory::getItemTypeIconUrl() const {
 	return _typeIconUrl;
 
 }
+
+bool EditableItemFactory::isSingleton() const {
+	return false;
+}
+
 EditableSubItemFactory::EditableSubItemFactory(QObject *parent) :
 	QObject(parent),
 	_typeId(""),
@@ -260,6 +265,14 @@ QString EditableItemFactoryManager::itemTypeName(QString type_ref) {
 	}
 
 	return "";
+}
+bool EditableItemFactoryManager::itemTypeIsSingleton(QString type_ref) {
+
+	if (hasFactoryInstalled(type_ref)) {
+		return _installedItemFactories.value(type_ref)->isSingleton();
+	}
+
+	return false;
 }
 
 const QVector<QString> &EditableItemFactoryManager::installedFactoriesKeys() const

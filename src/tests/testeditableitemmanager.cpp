@@ -21,6 +21,10 @@ bool TestEditableItemManager::saveLabels() {
 	return true;
 }
 
+bool TestEditableItemManager::saveSingletons() {
+	return true;
+}
+
 bool TestEditableItemManager::loadStruct() {
 	return true;
 }
@@ -38,6 +42,12 @@ void TestEditableItemManager::reset() {
 EditableItem* TestEditableItemManager::effectivelyLoadItem(QString const& ref) {
 
 	Q_UNUSED(ref);
+
+	return nullptr;
+}
+
+EditableItem* TestEditableItemManager::effectivelyLoadSingleton(QString const& type) {
+	Q_UNUSED(type);
 
 	return nullptr;
 }

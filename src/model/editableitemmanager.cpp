@@ -378,6 +378,45 @@ bool EditableItemManager::containItem(const QString & ref) const {
 	return _treeIndex.contains(ref);
 }
 
+EditableItem* EditableItemManager::loadSingleton(QString const& type) {
+
+	if (type == "") {
+		return nullptr;
+	}
+
+	if (isSingletonLoaded(type)) {
+		return _singletons.value(type);
+	}
+
+	EditableItem* item = effectivelyLoadSingleton(type);
+
+	if (item == nullptr) {
+
+		if (!_factoryManager->itemTypeIsSingleton(type)) {
+
+		}
+
+		item = _factoryManager->createItem(type, type, this);
+
+		if (item != nullptr) {
+			_singletons.insert(type, item);
+		} else {
+			return nullptr;
+		}
+	}
+
+	item->onLoadingDone(); //call the handler for the loading done!
+
+	return item;
+
+}
+QStringList EditableItemManager::loadedSingletons() const {
+	return _singletons.keys();
+}
+bool EditableItemManager::isSingletonLoaded(const QString &type) const {
+	return _singletons.contains(type);
+}
+
 bool EditableItemManager::createItem(QString typeRef, QString pref) {
 	return createItem(typeRef, pref, nullptr);
 }
@@ -387,6 +426,10 @@ bool EditableItemManager::createItem(QString typeRef, QString pref, QString *cre
 	QString ref = pref;
 
 	if (!_factoryManager->hasFactoryInstalled(typeRef)) {
+		return false;
+	}
+
+	if (_factoryManager->itemTypeIsSingleton(typeRef)) {
 		return false;
 	}
 
@@ -509,6 +552,7 @@ bool EditableItemManager::saveAll() {
 		status = status and saveItem(ref);
 	}
 
+	status = status and saveSingletons();
 	status = status and saveLabels();
 	status = status and saveStruct();
 

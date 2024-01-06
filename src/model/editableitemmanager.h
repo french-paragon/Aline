@@ -88,6 +88,11 @@ public:
 	bool isItemLoaded(const QString &ref) const;
 	bool containItem(const QString & ref) const;
 
+	EditableItem* loadSingleton(QString const& type);
+	QStringList loadedSingletons() const;
+	bool isSingletonLoaded(const QString &type) const;
+	bool containSingleton(const QString & type) const;
+
 	bool createItem(QString typeRef, QString ref);
 	bool createItem(QString typeRef, QString ref, QString* createdItemRef);
 	bool clearItem(QString itemRef);
@@ -104,6 +109,7 @@ public:
 	virtual bool saveItem(QString ref);
 	virtual bool saveAll();
 	virtual bool saveStruct() = 0;
+	virtual bool saveSingletons() = 0;
 	virtual bool saveLabels() = 0;
 	virtual bool loadStruct() = 0;
 
@@ -187,6 +193,13 @@ protected:
 	 */
 	virtual EditableItem* effectivelyLoadItem(QString const& ref) = 0;
 
+	/*!
+	 * \brief effectivelyLoadSingleton effectively load a singleton without checking if it is cached before.
+	 * \param type the type of the singleton to load.
+	 * \return the singleton, or nullptr if it has not been instanced yet.
+	 */
+	virtual EditableItem* effectivelyLoadSingleton(QString const& type) = 0;
+
 	virtual bool clearItemData(QString itemRef) = 0;
 
 	virtual bool effectivelySaveItem(QString const& ref) = 0;
@@ -209,6 +222,8 @@ protected:
 	QMap<QString, treeStruct*> _treeIndex; //build an index of the tree.
 	QMap<QString, QVector<treeStruct*>> _itemsByTypes;
 	QMap<QString, loadedItem> _loadedItems;
+
+	QMap<QString, EditableItem*> _singletons;
 
 	EditableItemFactoryManager* _factoryManager;
 	EditorFactoryManager* _editorManager;

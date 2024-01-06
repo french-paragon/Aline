@@ -41,6 +41,16 @@ public:
 	QString getItemTypeIconUrl() const;
 	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const = 0;
 
+	/*!
+	 * \brief isSingleton indicate if the editable item should be considered a singleton in the project
+	 * \return true if the item should be considered a singleton
+	 *
+	 * Singleton are identified by their classname rather than an id, and only one should exist per project.
+	 *
+	 * By default, items are not considered as singleton.
+	 */
+	virtual bool isSingleton() const;
+
 Q_SIGNALS:
 
 public Q_SLOTS:
@@ -98,6 +108,7 @@ public:
 
 	QString itemIconUrl(QString type_ref);
 	QString itemTypeName(QString type_ref);
+	bool itemTypeIsSingleton(QString type_ref);
 
 	QVector<QString> const& installedFactoriesKeys() const;
 

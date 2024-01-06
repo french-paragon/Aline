@@ -38,6 +38,7 @@ public:
 
 	virtual bool saveStruct();
 	virtual bool saveLabels();
+	virtual bool saveSingletons();
 	virtual bool loadStruct();
 
 	virtual bool isNetworkShared() const;
@@ -47,6 +48,7 @@ public:
 protected:
 
 	virtual EditableItem* effectivelyLoadItem(QString const& ref);
+	virtual EditableItem* effectivelyLoadSingleton(QString const& type);
 
 	virtual bool clearItemData(QString itemRef);
 
