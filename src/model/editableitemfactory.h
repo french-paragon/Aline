@@ -120,6 +120,40 @@ protected:
 	QVector<QString> _installedSubFactoriesKeys;
 };
 
+template<class T, bool singleton>
+class EditableItemTemplateFactory : public EditableItemFactory {
+
+public:
+	explicit EditableItemTemplateFactory(QObject *parent = nullptr) :
+		EditableItemFactory(parent) {
+
+	}
+
+	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const override {
+		return new T(ref, parent);
+	}
+
+	virtual bool isSingleton() const override {
+		return singleton;
+	}
+
+};
+
+template<class T>
+class EditableSubItemTemplateFactory : public EditableSubItemFactory {
+
+public:
+	explicit EditableSubItemTemplateFactory(QObject *parent = nullptr) :
+		EditableSubItemFactory(parent) {
+
+	}
+
+	virtual EditableItem* createItem(QString ref, EditableItem* parent) const override {
+		return new T(ref, parent);
+	}
+
+};
+
 } // namespace Aline
 
 #endif // EDITABLEITEMFACTORY_H
