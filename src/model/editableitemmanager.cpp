@@ -393,7 +393,7 @@ EditableItem* EditableItemManager::loadSingleton(QString const& type) {
 	if (item == nullptr) {
 
 		if (!_factoryManager->itemTypeIsSingleton(type)) {
-
+			return nullptr;
 		}
 
 		item = _factoryManager->createItem(type, type, this);
