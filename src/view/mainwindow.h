@@ -126,6 +126,8 @@ protected:
 
 	void onCurrentEditorChanged();
 
+	virtual void closeEvent(QCloseEvent *event) override;
+
 	EditableItemManager* _currentProject;
 	QString _currentItemUrl;
 

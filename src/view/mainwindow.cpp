@@ -29,6 +29,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <QTabWidget>
 #include <QDockWidget>
+#include <QMessageBox>
 
 namespace Aline {
 
@@ -450,6 +451,26 @@ QString MainWindow::defaultProjectCreator() const
 void MainWindow::setDefaultProjectCreator(const QString &defaultProjectCreator)
 {
 	_defaultProjectCreator = defaultProjectCreator;
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) {
+
+	Aline::EditableItemManager* project = currentProject();
+
+	if (project == nullptr) {
+		return QMainWindow::closeEvent(event);
+	}
+
+	if (project->hasUnsavedChanges()) {
+		QMessageBox::StandardButton answer = QMessageBox::question(this, tr("Project has unsaved changes"), tr("Would you like to save the changes to the current project?"));
+
+		if (answer == QMessageBox::StandardButton::Yes) {
+			saveAll();
+		}
+	}
+
+	return QMainWindow::closeEvent(event);
+
 }
 
 } // namespace Aline
