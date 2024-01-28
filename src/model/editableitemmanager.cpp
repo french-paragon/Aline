@@ -528,6 +528,24 @@ EditableItem* EditableItemManager::loadItemByUrl(QString const& url) {
 	return loadItemByUrl(url_list);
 }
 
+bool EditableItemManager::hasUnsavedChanges() const {
+
+	for (loadedItem const& item : _loadedItems) {
+		if (item._item->hasUnsavedChanges()) {
+			return true;
+		}
+	}
+
+	for (EditableItem* singleton : _singletons) {
+		if (singleton->hasUnsavedChanges()) {
+			return true;
+		}
+	}
+
+	return false;
+
+}
+
 bool EditableItemManager::saveItem(QString ref) {
 	if (isItemLoaded(ref)) {
 		bool status = effectivelySaveItem(ref);
@@ -683,7 +701,7 @@ void EditableItemManager::refreshItemDataDisplay(QString itemUrl) {
 
 		EditableItem* item = loadItem(itemUrl);
 
-		leaf->_name = item->objectName() + ((item->getHasUnsavedChanged()) ? " *" : "");
+		leaf->_name = item->objectName() + ((item->hasUnsavedChanges()) ? " *" : "");
 
 		QModelIndex index = indexFromLeaf(leaf);
 

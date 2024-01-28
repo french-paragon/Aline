@@ -101,7 +101,7 @@ public:
 	QString getRef() const;
 	QString getFullRefUrl() const;
 
-	virtual bool getHasUnsavedChanged() const;
+	virtual bool hasUnsavedChanges() const;
 
 	/*!
 	 * \brief acceptChildrens indicate if the item accept childs or not.

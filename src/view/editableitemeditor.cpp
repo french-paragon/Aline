@@ -34,7 +34,7 @@ void EditableItemEditor::setEditedItem(EditableItem* item) {
 		blockSignals(true);
 		setTitle(item->objectName());
 		blockSignals(false);
-		setHasUnsavedChanges(item->getHasUnsavedChanged());
+		setHasUnsavedChanges(item->hasUnsavedChanges());
 
 		connect(item, &EditableItem::objectNameChanged, this, &EditableItemEditor::setTitle);
 		connect(item, &EditableItem::unsavedStateChanged, this, &EditableItemEditor::setHasUnsavedChanges);

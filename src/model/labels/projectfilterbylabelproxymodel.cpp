@@ -64,7 +64,7 @@ QVariant ProjectFilterByLabelProxyModel::data(QModelIndex const& index, int role
 
 	switch (role) {
 	case Qt::DisplayRole:
-		return item->objectName() + (item->getHasUnsavedChanged() ? " *" : "");
+		return item->objectName() + (item->hasUnsavedChanges() ? " *" : "");
 	case Qt::DecorationRole:
 	{
 		QString iconPath = item->iconInternalUrl();
