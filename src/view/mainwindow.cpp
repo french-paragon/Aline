@@ -361,6 +361,10 @@ void MainWindow::editItem(QString const& itemUrl) {
 
 	EditableItem* item = _currentProject->loadItemByUrl(itemUrl);
 
+	if (item == nullptr) {
+		return; //not an item
+	}
+
 	if (_editorFactoryManager->hasSpecialEditFunctionInstalled(item->editAsTypeId())) {
 		_editorFactoryManager->specialEditFunction(item->editAsTypeId())(this, item);
 		return;
