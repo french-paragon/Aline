@@ -107,6 +107,7 @@ public:
 	EditableItem* loadItemByUrl(QStringList const& url);
 	EditableItem* loadItemByUrl(QString const& url);
 
+	bool hasUnsavedChanges() const;
 	virtual bool saveItem(QString ref);
 	virtual bool saveAll();
 	virtual bool saveStruct() = 0;

@@ -104,11 +104,11 @@ void EditableItemTestModel::recursivelyTestSubItemsPropertiesChanges(EditableIte
 		return;
 	}
 
-	if (_subject->getHasUnsavedChanged()) {
+	if (_subject->hasUnsavedChanges()) {
 		_subject->save();
 	}
 
-	QVERIFY2(!_subject->getHasUnsavedChanged(), "Initial saving of object failed !");
+	QVERIFY2(!_subject->hasUnsavedChanges(), "Initial saving of object failed !");
 
 	const QMetaObject* mobj = subItem->metaObject();
 
@@ -156,7 +156,7 @@ void EditableItemTestModel::recursivelyTestSubItemsPropertiesChanges(EditableIte
 
 		if (subItem->setProperty(prop, nouveau)) {
 
-			QVERIFY2(_subject->getHasUnsavedChanged(), QString("Subject state should have changed when changing property named %1 !").arg(prop).toStdString().c_str());
+			QVERIFY2(_subject->hasUnsavedChanges(), QString("Subject state should have changed when changing property named %1 !").arg(prop).toStdString().c_str());
 
 			QCOMPARE(spy.count(), 1);
 			QList<QVariant> arguments = spy.last();
@@ -169,7 +169,7 @@ void EditableItemTestModel::recursivelyTestSubItemsPropertiesChanges(EditableIte
 		QList<QVariant> arguments = spy.last();
 		QVERIFY(arguments.at(0).toBool() == false);
 
-		QVERIFY2(!_subject->getHasUnsavedChanged(), "Intermediate saving of object failed !");
+		QVERIFY2(!_subject->hasUnsavedChanges(), "Intermediate saving of object failed !");
 
 	}
 

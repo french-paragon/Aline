@@ -134,7 +134,7 @@ QString EditableItem::getFullRefUrl() const {
 
 }
 
-bool EditableItem::getHasUnsavedChanged() const
+bool EditableItem::hasUnsavedChanges() const
 {
 	return _hasUnsavedChanged;
 }
