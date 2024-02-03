@@ -22,7 +22,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-Editor::Editor(QWidget *parent) : QWidget(parent)
+Editor::Editor(QWidget *parent) :
+	QWidget(parent),
+	_saveState(false),
+	_title("")
 {
 
 }

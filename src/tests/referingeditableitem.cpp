@@ -23,7 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 namespace Aline {
 namespace Tests {
 
-const QString ReferingEditableItem::TypeId = "ReferingEditableItem";
+const char* ReferingEditableItem::TypeId = "ReferingEditableItem";
 
 ReferingEditableItem::ReferingEditableItem(QString ref, EditableItemManager *parent) :
 	EditableItem(ref, parent),

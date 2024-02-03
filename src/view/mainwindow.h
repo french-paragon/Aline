@@ -49,8 +49,8 @@ public:
 	 */
 	static MainWindow* findWidgetMainWindow(QWidget* widget);
 
-	static const QString MENU_FILE_NAME;
-	static const QString MENU_DISPLAY_NAME;
+	static const char* MENU_FILE_NAME;
+	static const char* MENU_DISPLAY_NAME;
 
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
@@ -71,6 +71,7 @@ public:
 	void setCurrentItem(QString const& itemUrl);
 
 	QMenu* findMenuByName(QString const& name, bool createIfNotExist = false);
+	QMenu* findMenuByName(const char* name, bool createIfNotExist = false);
 
 	void addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget);
 	void addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget, Qt::Orientation orientation);

@@ -36,9 +36,9 @@ class ALINE_EXPORT EditableItemManager : public QAbstractItemModel
 public:
 
 	static const QChar RefSeparator;
-	static const QString RefRoot;
+	static const char* RefRoot;
 
-	static const QString RefMimeType;
+	static const char* RefMimeType;
 
 	enum InternalDataRole{
 		ItemRefRole = Qt::UserRole + 1,
@@ -63,6 +63,7 @@ public:
 	};
 
 	explicit EditableItemManager(QObject *parent = nullptr);
+	~EditableItemManager();
 
 	virtual bool hasDataSource() const = 0;
 

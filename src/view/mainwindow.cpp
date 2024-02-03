@@ -32,8 +32,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-const QString MainWindow::MENU_FILE_NAME = "file_menu";
-const QString MainWindow::MENU_DISPLAY_NAME = "display_menu";
+const char* MainWindow::MENU_FILE_NAME = "file_menu";
+const char* MainWindow::MENU_DISPLAY_NAME = "display_menu";
 
 MainWindow* MainWindow::findWidgetMainWindow(QWidget* widget) {
 
@@ -204,6 +204,11 @@ QMenu* MainWindow::findMenuByName(QString const& name, bool createIfNotExist) {
 
 	return nullptr;
 
+}
+
+QMenu* MainWindow::findMenuByName(const char* name, bool createIfNotExist) {
+	QString nameStr(name);
+	return findMenuByName(nameStr, createIfNotExist);
 }
 
 void MainWindow::addDockWidget(Qt::DockWidgetArea area, QDockWidget * dockwidget) {

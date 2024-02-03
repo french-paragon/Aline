@@ -94,6 +94,11 @@ public:
 		return true;
 	}
 
+	inline bool installSpecialInterface(const char* code, QObject* interface) {
+		QString codeStr(code);
+		return installSpecialInterface(codeStr, interface);
+	}
+
 	/*!
 	 * \brief getSpecialInterface get a special interface of the app.
 	 * \param interfaceCode the code of the interface.

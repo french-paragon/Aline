@@ -16,11 +16,11 @@ class RecentFileAppInterface : public QObject
 {
 	Q_OBJECT
 public:
-	static const QString RecentFileInterfaceCode;
+	static const char* RecentFileInterfaceCode;
 	static const int defaultRecentFilesSaved;
 
-	static const QString RecentFileListSetting;
-	static const QString RecentFileNumberSetting;
+	static const char* RecentFileListSetting;
+	static const char* RecentFileNumberSetting;
 
 	explicit RecentFileAppInterface(QObject *parent = nullptr);
 

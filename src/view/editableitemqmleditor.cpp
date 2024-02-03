@@ -42,7 +42,7 @@ int EditableItemQmlEditor::registerEditableItemCode = qRegisterMetaType<Aline::E
 		qmlRegisterAnonymousType<Aline::EditableItemManager>("Aline", 1);
 		#endif
 
-const QString EditableItemQmlEditor::GENERIC_QMLBASED_EDITOR_TYPE = "aline_qml_generic";
+const char* EditableItemQmlEditor::GENERIC_QMLBASED_EDITOR_TYPE = "aline_qml_generic";
 
 EditableItemQmlEditor::EditableItemQmlEditor(QWidget *parent) :
 	EditableItemEditor(parent),

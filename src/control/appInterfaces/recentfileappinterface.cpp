@@ -5,11 +5,11 @@
 
 namespace Aline {
 
-const QString RecentFileAppInterface::RecentFileInterfaceCode = "Aline_AppInterfaces_RecentFiles";
+const char* RecentFileAppInterface::RecentFileInterfaceCode = "Aline_AppInterfaces_RecentFiles";
 const int RecentFileAppInterface::defaultRecentFilesSaved = 6;
 
-const QString RecentFileAppInterface::RecentFileListSetting = "Aline/RecentFiles/Paths";
-const QString RecentFileAppInterface::RecentFileNumberSetting = "Aline/RecentFiles/NFiles";
+const char* RecentFileAppInterface::RecentFileListSetting = "Aline/RecentFiles/Paths";
+const char* RecentFileAppInterface::RecentFileNumberSetting = "Aline/RecentFiles/NFiles";
 
 RecentFileAppInterface::RecentFileAppInterface(QObject *parent)
 	: QObject{parent}

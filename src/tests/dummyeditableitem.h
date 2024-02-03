@@ -36,7 +36,7 @@ class DummyEditableItem : public EditableItem
 	Q_OBJECT
 public:
 
-	static const QString TypeId;
+	static const char* TypeId;
 
 	explicit DummyEditableItem(QString ref, EditableItemManager *parent = nullptr);
 	explicit DummyEditableItem(QString ref, EditableItem *parent = nullptr);
@@ -69,7 +69,7 @@ public:
 	Q_PROPERTY(QColor colorData MEMBER _colorData NOTIFY colorDataChanged);
 	Q_PROPERTY(Aline::Tests::DummyEnrichedEditableItem::DummyEnum enumData MEMBER _enumData NOTIFY enumDataChanged);
 
-	static const QString TypeId;
+	static const char* TypeId;
 
 	explicit DummyEnrichedEditableItem(QString ref, EditableItemManager *parent = nullptr);
 	explicit DummyEnrichedEditableItem(QString ref, EditableItem *parent = nullptr);

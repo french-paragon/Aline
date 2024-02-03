@@ -38,7 +38,7 @@ class ReferingEditableItem : public EditableItem
 	Q_OBJECT
 public:
 
-	static const QString TypeId;
+	static const char* TypeId;
 
 	explicit ReferingEditableItem(QString ref, EditableItemManager *parent = nullptr);
 	explicit ReferingEditableItem(QString ref, EditableItem *parent = nullptr);
