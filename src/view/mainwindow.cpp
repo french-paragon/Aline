@@ -30,6 +30,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QTabWidget>
 #include <QDockWidget>
 #include <QMessageBox>
+#include <QToolBar>
 
 namespace Aline {
 
@@ -64,7 +65,9 @@ MainWindow::MainWindow(QWidget *parent) :
 	_currentProject(nullptr),
 	_currentItemUrl(""),
 	_editorFactoryManager(nullptr),
-	ui(new Ui::MainWindow)
+	_editorContextToolBar(nullptr),
+	ui(new Ui::MainWindow),
+	_currentEditorResetActionsConnection()
 {
 	ui->setupUi(this);
 
@@ -423,12 +426,75 @@ void MainWindow::updateTitle(Editor* editor, QString newTitle) {
 
 void MainWindow::onCurrentEditorChanged() {
 
-	QWidget* w = ui->tabWidget->currentWidget();
+	disconnect(_currentEditorResetActionsConnection);
+	_currentEditorResetActionsConnection = QMetaObject::Connection();
 
-	Aline::EditableItemEditor* eie = qobject_cast<Aline::EditableItemEditor*>(w);
+	Editor* current = currentEditor();
+
+	if (current == nullptr) {
+		return;
+	}
+
+	_currentEditorResetActionsConnection = connect(current, &Editor::contextActionListChanged,
+												   this, &MainWindow::reconfigureCurrentEditorActions);
+
+	Aline::EditableItemEditor* eie = qobject_cast<Aline::EditableItemEditor*>(current);
 
 	if (eie != nullptr) {
+
 		Q_EMIT editedItemChanged(eie->getEditedItemUrl());
+	}
+
+	reconfigureCurrentEditorActions();
+
+}
+
+void MainWindow::reconfigureCurrentEditorActions() {
+
+	Editor* current = currentEditor();
+
+	if (current == nullptr) {
+		return;
+	}
+
+	QList<QAction*> contextActions = current->getContextActions();
+
+	if (!contextActions.empty()) {
+
+		if (_editorContextToolBar == nullptr) {
+			_editorContextToolBar = new QToolBar(this);
+			_editorContextToolBar->setObjectName("editor_context_toolbar");
+			addToolBar(Qt::TopToolBarArea, _editorContextToolBar);
+		}
+
+		QList<QAction *> actions = _editorContextToolBar->actions();
+
+		for (QAction* action : qAsConst(actions)) {
+			action->deleteLater();
+		}
+
+		_editorContextToolBar->clear();
+
+		for (QAction* action : qAsConst(contextActions)) {
+			action->setParent(_editorContextToolBar);
+			_editorContextToolBar->addAction(action);
+		}
+
+		_editorContextToolBar->show();
+
+	} else {
+		if (_editorContextToolBar != nullptr) {
+
+			QList<QAction *> actions = _editorContextToolBar->actions();
+
+			for (QAction* action : qAsConst(actions)) {
+				action->deleteLater();
+			}
+
+			_editorContextToolBar->clear();
+
+			_editorContextToolBar->hide();
+		}
 	}
 
 }

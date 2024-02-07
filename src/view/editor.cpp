@@ -71,4 +71,8 @@ MainWindow* Editor::getEditorMainWindow() const {
 	return mwParent;
 }
 
+QList<QAction*> Editor::getContextActions() {
+	return QList<QAction*>();
+}
+
 } // namespace Aline

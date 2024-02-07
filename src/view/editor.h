@@ -67,9 +67,19 @@ public:
 	 */
 	MainWindow* getEditorMainWindow() const;
 
+	/*!
+	 * \brief getContextActions build actions that are currently available for the editor
+	 * \return a list of actions
+	 *
+	 * Editor can have a contextual list of actions, presented as a toolbar.
+	 * To do so, they need to override this function (default implementation return an empty list).
+	 */
+	virtual QList<QAction*> getContextActions();
+
 Q_SIGNALS:
 
-	void titleChanged(Editor* himself, QString title);
+	void titleChanged(Aline::Editor* himself, QString title);
+	void contextActionListChanged();
 
 public Q_SLOTS:
 

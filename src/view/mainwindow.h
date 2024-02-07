@@ -25,6 +25,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QMap>
 #include <functional>
 
+class QToolBar;
+
 namespace Aline {
 
 class Editor;
@@ -125,6 +127,7 @@ protected:
 	void updateTitle(Editor* editor, QString newTitle);
 
 	void onCurrentEditorChanged();
+	void reconfigureCurrentEditorActions();
 
 	virtual void closeEvent(QCloseEvent *event) override;
 
@@ -147,9 +150,12 @@ protected:
 	QString _defaultProjectOpener;
 	EditableItemManagerFactory* _editableItemManagerFactory;
 	EditorFactoryManager* _editorFactoryManager;
+	QToolBar* _editorContextToolBar;
 
 private:
 	Ui::MainWindow *ui;
+
+	QMetaObject::Connection _currentEditorResetActionsConnection;
 };
 
 
