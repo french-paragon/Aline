@@ -67,7 +67,12 @@ void EditableItemTestModel::recursivelyTestSubItemsStaticPropertiesTypes(Editabl
 
 		int type_id = mobj->property(i).userType();
 
-		QVERIFY2(EditableItem::AllowedPropertiesTypeId.contains(type_id), msg);
+		QList<int> possibleTypesList;
+		for( int i = 0; i < EditableItem::AllowedPropertiesTypeId.size(); i++) {
+			possibleTypesList.push_back(EditableItem::AllowedPropertiesTypeId[i]);
+		}
+
+		QVERIFY2(possibleTypesList.contains(type_id), msg);
 
 		if (mobj->property(i).userType() == qMetaTypeId<Aline::EditableItem*>()) {
 

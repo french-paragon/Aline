@@ -38,12 +38,12 @@ public:
 
 	static QString simplifyRef(QString ref);
 
-	static const QList<int> AllowedPropertiesTypeId;
+	static const std::array<int, 13> AllowedPropertiesTypeId;
 
-	static const QString REF_PROP_NAME;
-	static const QString TYPE_ID_NAME;
+	static const char* REF_PROP_NAME;
+	static const char* TYPE_ID_NAME;
 
-	static const QString CHILDREN_PROP_NAME;
+	static const char* CHILDREN_PROP_NAME;
 
 	/*!
 	 * \brief EditableItem constructor for item that belongs to a project.

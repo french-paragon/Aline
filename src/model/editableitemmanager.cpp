@@ -35,9 +35,9 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 namespace Aline {
 
 const QChar EditableItemManager::RefSeparator = QChar('/');
-const QString EditableItemManager::RefRoot = QString("root");
+const char* EditableItemManager::RefRoot = "root";
 
-const QString EditableItemManager::RefMimeType = "text/editableitemref";
+const char* EditableItemManager::RefMimeType = "text/editableitemref";
 
 EditableItemManager::EditableItemManager(QObject *parent) :
 	QAbstractItemModel(parent),
@@ -54,6 +54,14 @@ EditableItemManager::EditableItemManager(QObject *parent) :
 	}
 
 	cleanTreeStruct();
+}
+
+EditableItemManager::~EditableItemManager() {
+
+	for (treeStruct* leaf : _treeIndex) {
+		delete leaf;
+	}
+
 }
 
 QModelIndex EditableItemManager::indexFromRef(const QString &ref) const {

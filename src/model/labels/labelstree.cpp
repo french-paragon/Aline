@@ -26,7 +26,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-const QString LabelsTree::LabelRefMimeType = "text/itemlabelref";
+const char* LabelsTree::LabelRefMimeType = "text/itemlabelref";
 
 LabelsTree::LabelsTree(EditableItemManager *parent) :
 	QAbstractItemModel(parent),

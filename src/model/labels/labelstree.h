@@ -41,7 +41,7 @@ public:
 		UnmarkLabelForItem = Qt::UserRole+3
 	};
 
-	static const QString LabelRefMimeType;
+	static const char* LabelRefMimeType;
 
 	explicit LabelsTree(EditableItemManager *parent = nullptr);
 

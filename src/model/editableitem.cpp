@@ -27,7 +27,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-const QList<int> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bool,
+const std::array<int, 13> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bool,
 														  QMetaType::Int,
 														  QMetaType::UInt,
 														  QMetaType::QReal,
@@ -42,10 +42,10 @@ const QList<int> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bool,
 														  qMetaTypeId<QList<Aline::EditableItem*>>()
 														 };
 
-const QString EditableItem::REF_PROP_NAME = "ref";
-const QString EditableItem::TYPE_ID_NAME = "type_id";
+const char* EditableItem::REF_PROP_NAME = "ref";
+const char* EditableItem::TYPE_ID_NAME = "type_id";
 
-const QString EditableItem::CHILDREN_PROP_NAME = "ref_childrens";
+const char* EditableItem::CHILDREN_PROP_NAME = "ref_childrens";
 
 
 QString EditableItem::simplifyRef(QString ref) {

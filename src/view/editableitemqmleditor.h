@@ -36,7 +36,7 @@ class EditableItemQmlEditor : public EditableItemEditor
 
 public:
 
-	static const QString GENERIC_QMLBASED_EDITOR_TYPE;
+	static const char* GENERIC_QMLBASED_EDITOR_TYPE;
 
 	friend class QmlEditorFactory;
 

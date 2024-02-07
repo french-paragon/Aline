@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 namespace Aline {
 namespace Tests {
 
-const QString DummyEditableItem::TypeId = "DummyEditableItem";
+const char* DummyEditableItem::TypeId = "DummyEditableItem";
 
 DummyEditableItem::DummyEditableItem(QString ref, EditableItemManager *parent) :
 	EditableItem(ref, parent)
@@ -57,7 +57,7 @@ EditableItem* DummyEditableItemFactory::createItem(QString ref, EditableItemMana
 }
 
 
-const QString DummyEnrichedEditableItem::TypeId = "DummyEnrichedEditableItem";
+const char* DummyEnrichedEditableItem::TypeId = "DummyEnrichedEditableItem";
 
 DummyEnrichedEditableItem::DummyEnrichedEditableItem(QString ref, EditableItemManager *parent) :
 	EditableItem(ref, parent)
