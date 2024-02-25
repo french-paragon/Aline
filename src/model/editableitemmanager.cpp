@@ -75,6 +75,18 @@ QModelIndex EditableItemManager::indexFromRef(const QString &ref) const {
 	return indexFromLeaf(leaf);
 }
 
+QModelIndex EditableItemManager::typeIndexFromRef(QString const& typeRef) const {
+	QStringList typeIds = _itemsByTypes.keys();
+
+	int row = typeIds.indexOf(typeRef);
+
+	if (row < 0) {
+		return QModelIndex();
+	}
+
+	return index(row, 0, QModelIndex());
+}
+
 QModelIndex EditableItemManager::index(int row, int column, const QModelIndex &parent) const {
 
 	if (column > 0) {

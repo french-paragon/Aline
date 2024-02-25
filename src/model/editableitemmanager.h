@@ -67,7 +67,18 @@ public:
 
 	virtual bool hasDataSource() const = 0;
 
+	/*!
+	 * \brief indexFromRef give the model index from a top level item ref
+	 * \param ref the ref of the top level item
+	 * \return the index of the item
+	 */
 	QModelIndex indexFromRef(QString const& ref) const;
+	/*!
+	 * \brief typeIndexFromRef give the index corresponding to a data type
+	 * \param typeRef the data type id string
+	 * \return the index of the data type
+	 */
+	QModelIndex typeIndexFromRef(QString const& typeRef) const;
 
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 	virtual QModelIndex parent(const QModelIndex &index) const;
