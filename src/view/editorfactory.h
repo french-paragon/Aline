@@ -52,6 +52,20 @@ protected:
 
 };
 
+template<class T>
+class EditorTemplateFactory : public EditorFactory {
+public:
+	explicit EditorTemplateFactory(QObject *parent = nullptr) :
+		EditorFactory(parent)
+	{
+
+	}
+
+	virtual Editor* createItem(QWidget* parent) const {
+		return new T(parent);
+	}
+};
+
 } // namespace Aline
 
 #endif // EDITORFACTORY_H
