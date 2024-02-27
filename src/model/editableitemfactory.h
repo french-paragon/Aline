@@ -90,7 +90,8 @@ class ALINE_EXPORT EditableItemFactoryManager : public QAbstractListModel
 public:
 
 	enum InternalDataRole{
-		ItemRefRole = Qt::UserRole + 1
+		ItemRefRole = Qt::UserRole + 1,
+		IsSingletonRole = Qt::UserRole + 2
 	};
 
 	explicit EditableItemFactoryManager(QObject *parent = nullptr);

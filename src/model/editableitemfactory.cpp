@@ -233,6 +233,8 @@ QVariant EditableItemFactoryManager::data(const QModelIndex &index,
 	case Qt::ToolTipRole:
 	case ItemRefRole:
 		return associatedKey;
+	case IsSingletonRole:
+		return _installedItemFactories.value(associatedKey)->isSingleton();
 	default:
 		break;
 	}

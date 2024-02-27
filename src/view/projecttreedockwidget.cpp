@@ -167,6 +167,11 @@ void ProjectTreeDockWidget::rebuildMenu(Aline::EditableItemManager* project) {
 	for (int i = 0; i < f->rowCount(); i++) {
 
 		QString itemType = f->data(f->index(i), Aline::EditableItemFactoryManager::ItemRefRole).toString();
+		bool isSingleton = f->data(f->index(i), Aline::EditableItemFactoryManager::IsSingletonRole).toBool();
+
+		if (isSingleton) {
+			continue; //cannot create singletons
+		}
 
 		EditableItemTypeSpecializedAction* action = new EditableItemTypeSpecializedAction(itemType,
 																						  QIcon(f->itemIconUrl(itemType)),
