@@ -119,6 +119,7 @@ public Q_SLOTS:
 	void saveCurrentEditor();
 
 	void editItem(QString const& itemUrl);
+	void editItemWithEditorType(QString const& editorTypeRef, QString const& itemUrl);
 	void saveAll();
 
 protected:

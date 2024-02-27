@@ -384,10 +384,6 @@ void MainWindow::editItem(QString const& itemUrl) {
 		return;
 	}
 
-	if (item == nullptr) {
-		return;
-	}
-
 	Editor* editor = nullptr;
 
 	if (_editorFactoryManager != nullptr) {
@@ -397,6 +393,57 @@ void MainWindow::editItem(QString const& itemUrl) {
 	if (editor != nullptr) {
 		addEditor(editor);
 		_openedEditors.insert(itemUrl, editor);
+	}
+
+}
+
+void MainWindow::editItemWithEditorType(QString const& editorTypeRef, QString const& itemUrl) {
+
+	EditableItem* item = _currentProject->loadItemByUrl(itemUrl);
+
+	if (item == nullptr) {
+		return; //not an item
+	}
+
+
+	if (_openedEditors.contains(itemUrl)) {
+
+		Editor* itemEditor = _openedEditors.value(itemUrl);
+
+		if (itemEditor->getTypeId() == editorTypeRef) {
+			switchToEditor(itemEditor);
+			return;
+		}
+	}
+
+	QString joinRef = editorTypeRef + ":" + itemUrl;
+	QString finalRef = joinRef;
+
+	if (_openedEditors.contains(joinRef)) {
+
+		Editor* itemEditor = _openedEditors.value(joinRef);
+
+		switchToEditor(itemEditor);
+		return;
+	}
+
+	Editor* editor = nullptr;
+
+	if (_editorFactoryManager != nullptr) {
+
+		//if the editor is the default fall back on editing the item
+		if (_editorFactoryManager->factoryInstalledForItem(item->getTypeId()) == editorTypeRef) {
+			finalRef = itemUrl;
+		}
+
+		editor = _editorFactoryManager->createItem(editorTypeRef, this);
+	}
+
+	if (editor != nullptr) {
+
+		editor->setEditedItem(item);
+		addEditor(editor);
+		_openedEditors.insert(finalRef, editor);
 	}
 
 }

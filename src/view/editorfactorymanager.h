@@ -60,6 +60,7 @@ public:
 
 	bool hasFactoryInstalled(QString type_id) const;
 	bool hasFactoryInstalledForItem(QString type_id) const;
+	QString factoryInstalledForItem(QString item_type_id) const;
 	Editor* createItem(QString type_id, QWidget* parent) const;
 	Editor* createItemForEditableItem(EditableItem* item, QWidget* parent) const;
 
