@@ -60,6 +60,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 	if (blockSignals) {
 		item->blockSignals(true);
+		item->setupLoadingMode(true);
 	}
 
 	item->blockChangeDetection(true);
@@ -89,6 +90,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 		}
 
 		item->blockChangeDetection(false);
+		item->setupLoadingMode(false);
 
 		return;
 	}
@@ -145,12 +147,16 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 								if (subItemFactory->hasSubItemFactoryInstalled(type)) {
 									Aline::EditableItem* subItem = subItemFactory->createSubItem(type, ref, item);
+									if (blockSignals) {
+										subItem->setupLoadingMode(true);
+									}
 
 									extractItemData(subItem, listedObj, subItemFactory, specialSkippedProperties, blockSignals);
 
 									if (subItem != nullptr) {
 										itemList.push_back(subItem);
 									}
+									subItem->setupLoadingMode(false);
 								}
 							}
 						}
@@ -169,8 +175,12 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 				if (subItemFactory->hasSubItemFactoryInstalled(type)) {
 					Aline::EditableItem* subItem = subItemFactory->createSubItem(type, ref, item);
+					if (blockSignals) {
+						subItem->setupLoadingMode(true);
+					}
 
 					extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals);
+					subItem->setupLoadingMode(false);
 
 					if (subItem != nullptr) {
 						item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(subItem));
@@ -203,6 +213,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 	}
 
 	item->blockChangeDetection(false);
+	item->setupLoadingMode(false);
 
 }
 

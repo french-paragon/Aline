@@ -61,7 +61,7 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 	_manager(parent),
 	_parentItem(nullptr),
 	_changeDetectionIsBlocked(false),
-	_hasBeenLoadedFromDisk(false)
+	_hasBeenLoadedFromDisk(true)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -78,7 +78,7 @@ EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
 	_manager(nullptr),
 	_parentItem(parent),
 	_changeDetectionIsBlocked(false),
-	_hasBeenLoadedFromDisk(false)
+	_hasBeenLoadedFromDisk(true)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 
@@ -381,6 +381,9 @@ void EditableItem::setParentItem(EditableItem* parent) {
 bool EditableItem::hasBeenLoadedFromDisk() const
 {
 	return _hasBeenLoadedFromDisk;
+}
+void EditableItem::setupLoadingMode(bool loading) {
+	_hasBeenLoadedFromDisk = !loading;
 }
 
 bool EditableItem::changeDetectionIsBlocked() const

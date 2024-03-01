@@ -190,6 +190,15 @@ public:
 	 */
 	bool hasBeenLoadedFromDisk() const;
 
+	/*!
+	 * \brief setupLoadingMode setup the object in loading mode
+	 * \param loading if the object is in loading mode
+	 *
+	 * when an object is in loading mode, it will not notify other objects if it refers them.
+	 * Other signals and notifications might be blocked.
+	 */
+	void setupLoadingMode(bool loading);
+
 	void warnRefering(QString referentItemRef);
 	void warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef);
 	void warnUnrefering(QString referentItemRef);
