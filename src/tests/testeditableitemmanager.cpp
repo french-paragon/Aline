@@ -9,6 +9,10 @@ TestEditableItemManager::TestEditableItemManager(QObject *parent):
 
 }
 
+QString TestEditableItemManager::localProjectId() const {
+	return "TestEditableItemManagerId";
+}
+
 bool TestEditableItemManager::hasDataSource() const {
 	return true;
 }

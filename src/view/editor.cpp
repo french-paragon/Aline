@@ -19,8 +19,17 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "editor.h"
 
 #include "mainwindow.h"
+#include "editorfactorymanager.h"
+
+#include "../model/editableitemmanager.h"
+
+#include <QStandardPaths>
+#include <QSettings>
+#include <QDir>
 
 namespace Aline {
+
+const char* EditorPersistentStateSaveInterface::EditorPersistentStateSaveInterfaceCode = "Aline_AppInterfaces_EditorPersistentStatesSave";
 
 Editor::Editor(QWidget *parent) :
 	QWidget(parent),
@@ -76,6 +85,185 @@ MainWindow* Editor::getEditorMainWindow() const {
 
 QList<QAction*> Editor::getContextActions() {
 	return QList<QAction*>();
+}
+
+bool Editor::isStateRestorable() const {
+	return false;
+}
+
+
+bool Editor::restoreFromState(QString const& stateRep) {
+	return false;
+}
+
+
+QString Editor::getEditorState() const {
+	return "";
+}
+
+QString Editor::getEditorNoDuplicateClue() const {
+	return "";
+}
+
+EditorPersistentStateSaveInterface::EditorPersistentStateSaveInterface(QObject *parent) :
+	QObject(parent)
+{
+
+}
+
+void EditorPersistentStateSaveInterface::saveEditorStates(MainWindow* mw) {
+
+	if (mw == nullptr) {
+		return;
+	}
+
+	EditableItemManager* manager = mw->currentProject();
+	EditorFactoryManager* editorsManager = mw->editorManager();
+
+	if (manager == nullptr) {
+		return;
+	}
+
+	if (editorsManager == nullptr) {
+		return;
+	}
+
+	QString projectId = manager->localProjectId();
+
+	if (projectId.isEmpty()) {
+		return;
+	}
+
+	QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+
+	QDir configDir(configPath);
+
+	if (!configDir.exists()) {
+		bool ok = configDir.mkpath(".");
+
+		if (!ok) {
+			return;
+		}
+	}
+
+	QSettings editorsStates(configDir.absoluteFilePath("editorsStates.ini"),QSettings::Format::IniFormat);
+
+
+	editorsStates.beginWriteArray(projectId);
+
+	int arrayIndex = 0;
+
+	for (int i = 0; i < mw->nOpenedEditors(); i++) {
+
+		Editor* editor = mw->editorAt(i);
+
+		if (editor == nullptr) {
+			continue;
+		}
+
+		if (!editor->isStateRestorable()) {
+			continue;
+		}
+
+		editorsStates.setArrayIndex(arrayIndex);
+		arrayIndex++;
+
+		QString editorType = editor->getTypeId();
+		QString stateInfos = editor->getEditorState();
+
+		editorsStates.setValue("editorType", editorType);
+		editorsStates.setValue("editorState", stateInfos);
+	}
+
+	editorsStates.endArray();
+
+}
+void EditorPersistentStateSaveInterface::restoreEditorStates(MainWindow* mw) {
+
+	if (mw == nullptr) {
+		return;
+	}
+
+	// close all active editors before restoring the states.
+	for (int i = mw->nOpenedEditors()-1; i >= 0; i--) {
+		mw->closeEditor(i);
+	}
+
+	EditableItemManager* manager = mw->currentProject();
+	EditorFactoryManager* editorsManager = mw->editorManager();
+
+	if (manager == nullptr) {
+		return;
+	}
+
+	if (editorsManager == nullptr) {
+		return;
+	}
+
+	QString projectId = manager->localProjectId();
+
+	if (projectId.isEmpty()) {
+		return;
+	}
+
+	QString configPath = QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+
+	QDir configDir(configPath);
+
+	if (!configDir.exists()) {
+		bool ok = configDir.mkpath(".");
+
+		if (!ok) {
+			return;
+		}
+	}
+
+	QSettings editorsStates(configDir.absoluteFilePath("editorsStates.ini"),QSettings::Format::IniFormat);
+
+
+	int size = editorsStates.beginReadArray(projectId);
+
+	for (int i = 0; i < size; i++) {
+		editorsStates.setArrayIndex(i);
+
+		QVariant editorType = editorsStates.value("editorType", QVariant());
+		QVariant editorState = editorsStates.value("editorState", QVariant());
+
+		if (!editorType.isValid() or !editorState.isValid()) {
+			continue;
+		}
+
+		QString type = editorType.toString();
+		QString data = editorState.toString();
+
+		if (!editorsManager->hasFactoryInstalled(type)) {
+			continue;
+		}
+
+		Editor* editor = editorsManager->createItem(type, mw);
+
+		if (editor == nullptr) {
+			continue;
+		}
+
+		if (!editor->isStateRestorable()) {
+			continue;
+		}
+
+		bool ok = editor->restoreFromState(data);
+
+		if (ok) {
+			ok = mw->addEditor(editor);
+			if (!ok) {
+				delete editor;
+			}
+		} else {
+			delete editor;
+		}
+	}
+
+	editorsStates.endArray();
+
 }
 
 } // namespace Aline

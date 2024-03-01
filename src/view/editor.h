@@ -24,6 +24,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QWidget>
 #include <QString>
 
+#include <functional>
+
 namespace Aline {
 
 class MainWindow;
@@ -76,6 +78,36 @@ public:
 	 */
 	virtual QList<QAction*> getContextActions();
 
+	/*!
+	 * \brief isStateRestorable indicate if the editor can be restored next time the project is opened
+	 * \return true if the editor state can be restored, false otherwise (default implementation does nothing).
+	 */
+	virtual bool isStateRestorable() const;
+
+	/*!
+	 * \brief restoreFromState attempt to restore the editor from a state representation
+	 * \param stateRep the state representation as a string
+	 * \return true if the state could be restored, false otherwise.
+	 */
+	virtual bool restoreFromState(QString const& stateRep);
+
+	/*!
+	 * \brief getEditorState give the editor state
+	 * \return a state which can be used to restore the editor
+	 */
+	virtual QString getEditorState() const;
+
+	/*!
+	 * \brief getEditorContentClue gives a clue about the content of the editor ot avoid opening duplicated editors
+	 * \return the clue as a string
+	 *
+	 * when trying to open an editor, if the windows find two editors with the same clue and the same type,
+	 * it will instead switch to the previously opened editor rather than adding a new one.
+	 *
+	 * default implementation return nothing, so no two editors of the same type can be open at the same time.
+	 */
+	virtual QString getEditorNoDuplicateClue() const;
+
 Q_SIGNALS:
 
 	void titleChanged(Aline::Editor* himself, QString title);
@@ -94,6 +126,33 @@ protected:
 
 	QString _title;
 	bool _saveState;
+};
+
+/*!
+ * \brief The EditorPersistentStateSaveInterface class is an app interface to restore editors states per projects
+ */
+class ALINE_EXPORT EditorPersistentStateSaveInterface : public QObject {
+	Q_OBJECT
+public:
+
+	static const char* EditorPersistentStateSaveInterfaceCode;
+
+	EditorPersistentStateSaveInterface(QObject *parent = nullptr);
+
+	/*!
+	 * \brief saveEditorStates save the state of the editors for the current project in the windows
+	 * \param mw the windows to treate
+	 */
+	void saveEditorStates(MainWindow* mw);
+
+	/*!
+	 * \brief restoreEditorStates retore the editors for the active project
+	 * \param mw the window to treate
+	 */
+	void restoreEditorStates(MainWindow* mw);
+
+protected:
+
 };
 
 } // namespace Aline

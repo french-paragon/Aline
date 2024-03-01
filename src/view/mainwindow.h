@@ -100,18 +100,23 @@ public:
 	void setEditorFactoryManager(EditorFactoryManager *editorFactoryManager);
 	EditorFactoryManager* editorManager();
 
+	/*!
+	 * \brief addEditor add an editor to the window
+	 * \param editor the editor to add.
+	 * \return true if inserted, or false if a similar editor already exist
+	 */
+	bool addEditor(Editor* editor);
+
 Q_SIGNALS:
 
-	void editorAboutToBeRemoved(Editor* editor);
-	void currentProjectChanged(EditableItemManager*);
-	void projectLoaded(EditableItemManager*);
+	void editorAboutToBeRemoved(Aline::Editor* editor);
+	void currentProjectChanged(Aline::EditableItemManager*);
+	void projectLoaded(Aline::EditableItemManager*);
 
 	void currentItemChanged(QString ref);
 	void editedItemChanged(QString ref);
 
 public Q_SLOTS:
-
-	void addEditor(Editor* editor);
 
 	void closeEditor(int index);
 	void closeEditor(Editor* editor);
@@ -135,8 +140,6 @@ protected:
 
 	EditableItemManager* _currentProject;
 	QString _currentItemUrl;
-
-	QMap<QString, Aline::Editor*> _openedEditors;
 
 	QMenu* _submenuDock;
 

@@ -60,4 +60,8 @@ QString EditableItemEditor::getEditedItemUrl() const {
 	return _editedItem->getFullRefUrl();
 }
 
+QString EditableItemEditor::getEditorNoDuplicateClue() const {
+	return getEditedItemUrl();
+}
+
 } // namespace Aline

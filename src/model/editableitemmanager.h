@@ -65,6 +65,16 @@ public:
 	explicit EditableItemManager(QObject *parent = nullptr);
 	~EditableItemManager();
 
+	/*!
+	 * \brief localProjectId give a uniq identifier for the project
+	 * \return the identifier as a string.
+	 *
+	 * the identifier needs to be unique for each project, as it can be used to store some metadata about the project (e.g. editors state) outside the project
+	 * It also need to identify the project without ambiguity (e.g. should be the same if a project file has been opened from an absolute or relative path).
+	 * It does not need to be consistent on different machines, e.g., if two computers open the project from a network drive.
+	 */
+	virtual QString localProjectId() const = 0;
+
 	virtual bool hasDataSource() const = 0;
 
 	/*!

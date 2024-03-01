@@ -34,16 +34,18 @@ class TestEditableItemManager : public EditableItemManager
 public:
 	TestEditableItemManager(QObject *parent = nullptr);
 
-	virtual bool hasDataSource() const;
+	virtual QString localProjectId() const override;
 
-	virtual bool saveStruct();
-	virtual bool saveLabels();
-	virtual bool saveSingletons();
-	virtual bool loadStruct();
+	virtual bool hasDataSource() const override;
 
-	virtual bool isNetworkShared() const;
+	virtual bool saveStruct() override;
+	virtual bool saveLabels() override;
+	virtual bool saveSingletons() override;
+	virtual bool loadStruct() override;
 
-	virtual void reset();
+	virtual bool isNetworkShared() const override;
+
+	virtual void reset() override;
 
 protected:
 

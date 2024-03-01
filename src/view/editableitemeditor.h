@@ -35,16 +35,18 @@ public:
 	 * \brief setEditedItem set the item to edit
 	 * \param item the item to edit
 	 */
-	virtual void setEditedItem(EditableItem* item);
+	virtual void setEditedItem(EditableItem* item) override;
 
-	virtual void saveAction();
+	virtual void saveAction() override;
 
 	QString getEditedItemRef() const;
 	QString getEditedItemUrl() const;
 
+	virtual QString getEditorNoDuplicateClue() const override;
+
 Q_SIGNALS:
 
-	void editedItemChanged(EditableItem* new_edited_item);
+	void editedItemChanged(Aline::EditableItem* new_edited_item);
 
 public Q_SLOTS:
 

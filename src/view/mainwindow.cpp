@@ -27,6 +27,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "model/editableitemfactory.h"
 #include "model/editableitemmanagerfactory.h"
 
+#include "control/app.h"
+
 #include <QTabWidget>
 #include <QDockWidget>
 #include <QMessageBox>
@@ -94,6 +96,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+	setCurrentProject(nullptr);
 	delete ui;
 }
 
@@ -166,11 +169,26 @@ EditableItemManager *MainWindow::currentProject() const
 
 void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 {
+
+	EditorPersistentStateSaveInterface* editorsPersistenceInterface = nullptr;
+
+	App* app = App::getAppInstance();
+
+	if (app != nullptr) {
+		QObject* tmp = app->getSpecialInterface(EditorPersistentStateSaveInterface::EditorPersistentStateSaveInterfaceCode);
+		editorsPersistenceInterface = qobject_cast<EditorPersistentStateSaveInterface*>(tmp);
+	}
+
 	if (currentProject != _currentProject) {
 
 		setCurrentItem("");
 
 		if (_currentProject != nullptr) {
+
+			if (editorsPersistenceInterface != nullptr) {
+				editorsPersistenceInterface->saveEditorStates(this);
+			}
+
 			disconnect(this, &Aline::MainWindow::editedItemChanged,
 					   _currentProject, &EditableItemManager::setActiveItem);
 
@@ -184,6 +202,10 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 				_currentProject, &EditableItemManager::setActiveItem);
 
 			_currentProject->setEditorManager(_editorFactoryManager);
+
+			if (editorsPersistenceInterface != nullptr) {
+				editorsPersistenceInterface->restoreEditorStates(this);
+			}
 		}
 
 		Q_EMIT currentProjectChanged(_currentProject);
@@ -297,12 +319,33 @@ EditorFactoryManager* MainWindow::editorManager() {
 	return _editorFactoryManager;
 }
 
-void MainWindow::addEditor(Editor* editor) {
+bool MainWindow::addEditor(Editor* editor) {
+
+	if (editor == nullptr) {
+		return false;
+	}
+
+	for (int i = 0; i < nOpenedEditors(); i++) {
+		Editor* oeiEditor = editorAt(i);
+
+		if (oeiEditor == nullptr) {
+			continue;
+		}
+
+		if (oeiEditor->getTypeId() == editor->getTypeId()) {
+			if (oeiEditor->getEditorNoDuplicateClue() == editor->getEditorNoDuplicateClue()) {
+				switchToEditor(i);
+				return false;
+			}
+		}
+	}
+
 	ui->tabWidget->addTab(editor, editor->title());
 
 	connect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 
 	switchToEditor(editor);
+	return true;
 }
 
 
@@ -318,9 +361,6 @@ void MainWindow::closeEditor(int index) {
 
 	Q_EMIT editorAboutToBeRemoved(editor);
 
-	QString key = _openedEditors.key(editor);
-	_openedEditors.remove(key);
-
 	ui->tabWidget->removeTab(index);
 }
 
@@ -329,9 +369,6 @@ void MainWindow::closeEditor(Editor* editor) {
 	disconnect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 
 	Q_EMIT editorAboutToBeRemoved(editor);
-
-	QString key = _openedEditors.key(editor);
-	_openedEditors.remove(key);
 
 	ui->tabWidget->removeTab(ui->tabWidget->indexOf(editor));
 
@@ -379,11 +416,6 @@ void MainWindow::editItem(QString const& itemUrl) {
 		return;
 	}
 
-	if (_openedEditors.contains(itemUrl)) {
-		switchToEditor(_openedEditors.value(itemUrl));
-		return;
-	}
-
 	Editor* editor = nullptr;
 
 	if (_editorFactoryManager != nullptr) {
@@ -392,7 +424,6 @@ void MainWindow::editItem(QString const& itemUrl) {
 
 	if (editor != nullptr) {
 		addEditor(editor);
-		_openedEditors.insert(itemUrl, editor);
 	}
 
 }
@@ -405,37 +436,9 @@ void MainWindow::editItemWithEditorType(QString const& editorTypeRef, QString co
 		return; //not an item
 	}
 
-
-	if (_openedEditors.contains(itemUrl)) {
-
-		Editor* itemEditor = _openedEditors.value(itemUrl);
-
-		if (itemEditor->getTypeId() == editorTypeRef) {
-			switchToEditor(itemEditor);
-			return;
-		}
-	}
-
-	QString joinRef = editorTypeRef + ":" + itemUrl;
-	QString finalRef = joinRef;
-
-	if (_openedEditors.contains(joinRef)) {
-
-		Editor* itemEditor = _openedEditors.value(joinRef);
-
-		switchToEditor(itemEditor);
-		return;
-	}
-
 	Editor* editor = nullptr;
 
 	if (_editorFactoryManager != nullptr) {
-
-		//if the editor is the default fall back on editing the item
-		if (_editorFactoryManager->factoryInstalledForItem(item->getTypeId()) == editorTypeRef) {
-			finalRef = itemUrl;
-		}
-
 		editor = _editorFactoryManager->createItem(editorTypeRef, this);
 	}
 
@@ -443,7 +446,6 @@ void MainWindow::editItemWithEditorType(QString const& editorTypeRef, QString co
 
 		editor->setEditedItem(item);
 		addEditor(editor);
-		_openedEditors.insert(finalRef, editor);
 	}
 
 }
