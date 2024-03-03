@@ -49,14 +49,14 @@ public:
 
 protected:
 
-	virtual EditableItem* effectivelyLoadItem(QString const& ref);
-	virtual EditableItem* effectivelyLoadSingleton(QString const& type);
+	virtual EditableItem* effectivelyLoadItem(QString const& ref) override;
+	virtual EditableItem* effectivelyLoadSingleton(QString const& type) override;
 
-	virtual bool clearItemData(QString itemRef);
+	virtual bool clearItemData(QString itemRef) override;
 
-	virtual bool effectivelySaveItem(QString const& ref);
+	virtual bool effectivelySaveItem(QString const& ref) override;
 
-	virtual void effectivelyLoadLabels();
+	virtual void effectivelyLoadLabels() override;
 };
 
 } // namespace Tests
