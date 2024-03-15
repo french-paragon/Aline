@@ -388,9 +388,11 @@ QString EditableItem::makeSubitemRefUniq(QString proposedRef) const {
 	do {
 		QString p = tmplt.arg(id);
 
-		if (!_usedRef.contains(proposedRef)) {
+		if (!_usedRef.contains(p)) {
 			return p;
 		}
+
+		id++;
 	} while (id != 1);
 
 	//Should not happen
