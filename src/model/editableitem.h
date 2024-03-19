@@ -141,12 +141,7 @@ public:
 	virtual EditableItem* getSubItemByRef(QString const& ref) const;
 
 	virtual QStringList getSubItemsRefsList() const;
-	/*!
-	 * \brief makeSubitemRefUniq generate a uniq ref for a subitem from a proposed ref
-	 * \param proposedRef the proposed ref
-	 * \return a uniq ref for a subitem based on the proposed ref
-	 */
-	QString makeSubitemRefUniq(QString proposedRef) const;
+	QString makeSubItemRefUniq(QString const& subItemRef) const;
 
 	/*!
 	 * \brief getFileReferencePropertiesName get the name of the properties which refer to a file.
@@ -293,7 +288,6 @@ protected:
 
 	bool _hasUnsavedChanged;
 
-	QString makeSubItemRefUniq(QString const& subItemRef) const;
 	QSet<QString> _usedRef;
 
 	/*!

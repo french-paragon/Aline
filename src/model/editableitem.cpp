@@ -376,30 +376,6 @@ QStringList EditableItem::getSubItemsRefsList() const {
 	return lst;
 }
 
-QString EditableItem::makeSubitemRefUniq(QString proposedRef) const {
-	if (!_usedRef.contains(proposedRef)) {
-		return proposedRef;
-	}
-
-	QString tmplt = proposedRef + "%1";
-
-	int id = 1;
-
-	do {
-		QString p = tmplt.arg(id);
-
-		if (!_usedRef.contains(p)) {
-			return p;
-		}
-
-		id++;
-	} while (id != 1);
-
-	//Should not happen
-	//TODO: find what to do from here
-	return "";
-}
-
 QStringList EditableItem::getFileReferencePropertiesName() const {
 	return {};
 }
