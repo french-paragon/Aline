@@ -91,6 +91,8 @@ MainWindow::MainWindow(QWidget *parent) :
 	connect(ui->tabWidget, &QTabWidget::currentChanged,
 			this, &MainWindow::onCurrentEditorChanged);
 
+	ui->tabWidget->setMovable(true);
+
 	_editableItemManagerFactory = new Aline::EditableItemManagerFactory(this);
 }
 
