@@ -52,6 +52,8 @@ public Q_SLOTS:
 
 protected:
 
+	virtual void setTitleWithObjectName(QString name);
+
 	virtual bool effectivelySetEditedItem(EditableItem* item) = 0;
 
 	EditableItem* _editedItem;

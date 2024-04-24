@@ -32,11 +32,13 @@ void EditableItemEditor::setEditedItem(EditableItem* item) {
 	if (effectivelySetEditedItem(item)) {
 
 		blockSignals(true);
-		setTitle(item->objectName());
+		setTitleWithObjectName(item->objectName());
 		blockSignals(false);
 		setHasUnsavedChanges(item->hasUnsavedChanges());
 
-		connect(item, &EditableItem::objectNameChanged, this, &EditableItemEditor::setTitle);
+		connect(item, &EditableItem::objectNameChanged, this, [this] (QString name) {
+			setTitleWithObjectName(name); //calling it like that ensure we call the virtual method
+		});
 		connect(item, &EditableItem::unsavedStateChanged, this, &EditableItemEditor::setHasUnsavedChanges);
 		connect(item, &QObject::destroyed,
 				this, &QObject::deleteLater);
@@ -45,6 +47,10 @@ void EditableItemEditor::setEditedItem(EditableItem* item) {
 		_editedItem = item;
 	}
 
+}
+
+void EditableItemEditor::setTitleWithObjectName(QString name) {
+	setTitle(name);
 }
 
 void EditableItemEditor::saveAction() {

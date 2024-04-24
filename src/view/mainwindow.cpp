@@ -498,6 +498,7 @@ void MainWindow::onCurrentEditorChanged() {
 
 	if (eie != nullptr) {
 
+		setCurrentItem(eie->getEditedItemUrl());
 		Q_EMIT editedItemChanged(eie->getEditedItemUrl());
 	}
 
