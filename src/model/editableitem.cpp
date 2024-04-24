@@ -315,6 +315,20 @@ EditableItemManager *EditableItem::getManager() const
 	return _manager;
 }
 
+EditableItem *EditableItem::getTopLevelParentItem() const {
+
+	EditableItem* parent = getParentItem();
+
+	if (parent == nullptr) {
+		return const_cast<EditableItem *>(this); //in case no parents are present, the top level item is the item
+	}
+
+	while (parent->getParentItem() != nullptr) {
+		parent = parent->getParentItem();
+	}
+
+	return parent;
+}
 EditableItem *EditableItem::getParentItem() const
 {
 	return _parentItem;

@@ -113,6 +113,7 @@ public:
 
 	virtual QString iconInternalUrl() const = 0;
 
+	EditableItem *getTopLevelParentItem() const;
 	EditableItem *getParentItem() const;
 	EditableItemManager *getManager() const;
 
