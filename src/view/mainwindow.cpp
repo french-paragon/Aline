@@ -191,6 +191,13 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 				editorsPersistenceInterface->saveEditorStates(this);
 			}
 
+			//close all editors before closing the previous project.
+			for (int i = nOpenedEditors()-1; i >= 0; i--) {
+				closeEditor(i);
+			}
+
+			_currentItemUrl = "";
+
 			disconnect(this, &Aline::MainWindow::editedItemChanged,
 					   _currentProject, &EditableItemManager::setActiveItem);
 
