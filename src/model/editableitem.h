@@ -36,6 +36,38 @@ class ALINE_EXPORT EditableItem : public QObject
 
 public:
 
+	/*!
+	 * \brief The ManagedEditableItemReference class hold and manage a reference to another EditableItem
+	 */
+	class ManagedEditableItemReference {
+	public:
+		/*!
+		 * \brief ManagedEditableItemReference constructor for an empty reference
+		 * \param item the item that holds the reference
+		 */
+		inline ManagedEditableItemReference(EditableItem* holder) :
+			_holder(holder),
+			_ref("")
+		{
+
+		}
+
+		inline bool holdReference() const {
+			return _ref.isEmpty();
+		}
+
+		inline QString referedItem() const {
+			return _ref;
+		}
+
+		bool setReference(QString url);
+		void clearReference();
+
+	protected:
+		EditableItem* _holder;
+		QString _ref;
+	};
+
 	static QString simplifyRef(QString ref);
 
 	static const std::array<int, 13> AllowedPropertiesTypeId;

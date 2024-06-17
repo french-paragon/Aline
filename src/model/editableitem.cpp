@@ -48,6 +48,63 @@ const char* EditableItem::TYPE_ID_NAME = "type_id";
 const char* EditableItem::CHILDREN_PROP_NAME = "ref_childrens";
 
 
+bool EditableItem::ManagedEditableItemReference::setReference(QString url) {
+
+	//manage the case of loading
+	if (!_holder->hasBeenLoadedFromDisk()) {
+		_ref = url;
+		return true;
+	}
+
+	EditableItemManager* manager = _holder->getManager();
+
+	if (manager == nullptr) {
+		return false;
+	}
+
+	EditableItem* newTarget = manager->loadItemByUrl(url);
+
+	if (newTarget == nullptr) {
+		return false;
+	}
+
+	if (!_ref.isEmpty()) {
+		if (manager != nullptr) {
+			EditableItem* oldTarget = manager->loadItemByUrl(_ref);
+			if (oldTarget != nullptr) {
+				oldTarget->warnUnrefering(_holder->getFullRefUrl());
+			}
+		}
+	}
+
+	_ref.clear();
+	newTarget->warnRefering(_holder->getFullRefUrl());
+	_ref = url;
+	return true;
+
+}
+
+void EditableItem::ManagedEditableItemReference::clearReference() {
+
+	//manage the case of loading
+	if (!_holder->hasBeenLoadedFromDisk()) {
+		_ref.clear();
+		return;
+	}
+
+	if (!_ref.isEmpty()) {
+		EditableItemManager* manager = _holder->getManager();
+		if (manager != nullptr) {
+			EditableItem* oldTarget = manager->loadItemByUrl(_ref);
+			if (oldTarget != nullptr) {
+				oldTarget->warnUnrefering(_holder->getFullRefUrl());
+			}
+		}
+	}
+
+	_ref.clear();
+}
+
 QString EditableItem::simplifyRef(QString ref) {
 
 	return StringUtils::simplifyRef(ref);
