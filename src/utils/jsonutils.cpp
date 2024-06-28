@@ -256,56 +256,61 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator *visitor) {
 
+	QJsonObject obj;
+
 	JsonEncodableItem* jsonEncodable = qobject_cast<JsonEncodableItem*>(item);
 
 	if (jsonEncodable != nullptr) {
-		return jsonEncodable->encodeItemToJson();
-	}
+		obj = jsonEncodable->encodeItemToJson();
 
-	//if the item is not encodable, attempt to do as best as possible based on visile properties
-	QJsonObject obj;
+	} else {
 
-	const QMetaObject* mobj = item->metaObject();
+		//if the item is not encodable, attempt to do as best as possible based on visile properties
 
-	for (int i = 0; i < mobj->propertyCount(); i++) {
+		const QMetaObject* mobj = item->metaObject();
 
-		if (!mobj->property(i).isStored(item)) {
-			continue;
-		}
+		for (int i = 0; i < mobj->propertyCount(); i++) {
 
-		const char* prop = mobj->property(i).name();
-
-		//check if the end user wanted to erase the default behavior with the visitor
-		if (visitor != nullptr) {
-			bool visitorDidIt = (*visitor)(obj, item, prop);
-
-			if (visitorDidIt) {
+			if (!mobj->property(i).isStored(item)) {
 				continue;
 			}
-		}
 
-		addPropToObject(obj, item, prop, visitor);
-	}
+			const char* prop = mobj->property(i).name();
 
-	QList<QByteArray> dynamicProperties = item->dynamicPropertyNames();
+			//check if the end user wanted to erase the default behavior with the visitor
+			if (visitor != nullptr) {
+				bool visitorDidIt = (*visitor)(obj, item, prop);
 
-	for (QByteArray const& cpropName : qAsConst(dynamicProperties)) {
-
-		//check if the end user wanted to erase the default behavior with the visitor
-		if (visitor != nullptr) {
-			bool visitorDidIt = (*visitor)(obj, item, cpropName.toStdString().c_str());
-
-			if (visitorDidIt) {
-				continue;
+				if (visitorDidIt) {
+					continue;
+				}
 			}
+
+			addPropToObject(obj, item, prop, visitor);
 		}
 
-		addPropToObject(obj, item, cpropName.toStdString().c_str(), visitor);
+		QList<QByteArray> dynamicProperties = item->dynamicPropertyNames();
 
+		for (QByteArray const& cpropName : qAsConst(dynamicProperties)) {
+
+			//check if the end user wanted to erase the default behavior with the visitor
+			if (visitor != nullptr) {
+				bool visitorDidIt = (*visitor)(obj, item, cpropName.toStdString().c_str());
+
+				if (visitorDidIt) {
+					continue;
+				}
+			}
+
+			addPropToObject(obj, item, cpropName.toStdString().c_str(), visitor);
+
+		}
 	}
+
+	QStringList referentsList = item->listReferents();
 
 	QJsonArray referents;
-	for (QString & referent : item->listReferents()) {
+	for (QString & referent : referentsList) {
 		referents.push_back(referent);
 	}
 	if (referents.size() > 0) {
