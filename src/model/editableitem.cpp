@@ -155,7 +155,7 @@ void EditableItem::suppress() {
 		EditableItem* referent = getManager()->loadItemByUrl(referentRef);
 
 		if (referent != nullptr) {
-			referent->warnReferedRemoved(_ref);
+			referent->warnReferedRemoved(getFullRefUrl());
 		}
 	}
 }
@@ -239,6 +239,7 @@ void EditableItem::changeRef(QString const& newRef) {
 
 void EditableItem::warnRefering(QString referentItemRef) {
 	_referentItems.insert(referentItemRef);
+	newUnsavedChanges();
 }
 
 void EditableItem::warnReferentRefChanges(QString referentItemOldRef, QString referentItemRef) {
@@ -248,6 +249,7 @@ void EditableItem::warnReferentRefChanges(QString referentItemOldRef, QString re
 
 void EditableItem::warnUnrefering(QString referentItemRef) {
 	_referentItems.remove(referentItemRef);
+	newUnsavedChanges();
 }
 
 QList<QString> EditableItem::listRefering() const {

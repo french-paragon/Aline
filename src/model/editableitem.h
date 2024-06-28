@@ -53,7 +53,7 @@ public:
 		}
 
 		inline bool holdReference() const {
-			return _ref.isEmpty();
+			return !_ref.isEmpty();
 		}
 
 		inline QString referedItem() const {
