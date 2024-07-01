@@ -134,6 +134,7 @@ public:
 	QString getFullRefUrl() const;
 
 	virtual bool hasUnsavedChanges() const;
+	void newUnsavedChanges();
 
 	/*!
 	 * \brief acceptChildrens indicate if the item accept childs or not.
@@ -303,7 +304,6 @@ protected:
 
 	void onVisibleStateChanged();
 
-	void newUnsavedChanges();
 	void clearHasUnsavedChanges();
 
 	/*!
