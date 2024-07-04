@@ -140,7 +140,7 @@ public:
 
 };
 
-template<class T>
+template<class T, class P = Aline::EditableItem>
 class EditableSubItemTemplateFactory : public EditableSubItemFactory {
 
 public:
@@ -150,7 +150,7 @@ public:
 	}
 
 	virtual EditableItem* createItem(QString ref, EditableItem* parent) const override {
-		return new T(ref, parent);
+		return new T(ref, qobject_cast<P*>(parent));
 	}
 
 };
