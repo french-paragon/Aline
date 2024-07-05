@@ -41,6 +41,17 @@ public:
 	 */
 	class ManagedEditableItemReference {
 	public:
+
+		/*!
+		 * \brief ManagedEditableItemReference default constructor for an invalid reference
+		 */
+		inline ManagedEditableItemReference() :
+			_holder(nullptr),
+			_ref("")
+		{
+
+		}
+
 		/*!
 		 * \brief ManagedEditableItemReference constructor for an empty reference
 		 * \param item the item that holds the reference

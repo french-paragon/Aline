@@ -50,6 +50,11 @@ const char* EditableItem::CHILDREN_PROP_NAME = "ref_childrens";
 
 bool EditableItem::ManagedEditableItemReference::setReference(QString url) {
 
+	if (_holder == nullptr) {
+		_ref = url;
+		return true;
+	}
+
 	//manage the case of loading
 	if (!_holder->hasBeenLoadedFromDisk()) {
 		_ref = url;
@@ -85,6 +90,11 @@ bool EditableItem::ManagedEditableItemReference::setReference(QString url) {
 }
 
 void EditableItem::ManagedEditableItemReference::clearReference() {
+
+	if (_holder == nullptr) {
+		_ref.clear();
+		return;
+	}
 
 	//manage the case of loading
 	if (!_holder->hasBeenLoadedFromDisk()) {
