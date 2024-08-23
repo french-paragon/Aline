@@ -110,8 +110,29 @@ public:
 Q_SIGNALS:
 
 	void editorAboutToBeRemoved(Aline::Editor* editor);
-	void currentProjectChanged(Aline::EditableItemManager*);
+	/*!
+	 * \brief projectLoaded is emmited when the project is loaded by the windows, but before it is registered as the windows project.
+	 */
 	void projectLoaded(Aline::EditableItemManager*);
+	/*!
+	 * \brief currentProjectChanged is emmited when a project is registered in the window.
+	 */
+	void currentProjectChanged(Aline::EditableItemManager*);
+
+	/*!
+	 * \brief currentProjectUnloaded is emmited when the current project in the windows in unloaded.
+	 *
+	 * The windows is deemed responsible for its current project.
+	 * When the current project is replaced, the windows will delete it.
+	 * Before deleting the project, this signal is emmited for handlers to react.
+	 *
+	 * When this signal is emmited, the project itself is unaltered, but the state of the windows
+	 * may already have been altered
+	 *
+	 * Note that if the connection is not a direct connection, the project will
+	 * be deleted when the signal is received.
+	 */
+	void currentProjectUnloaded(Aline::EditableItemManager*);
 
 	void currentItemChanged(QString ref);
 	void editedItemChanged(QString ref);
@@ -119,7 +140,7 @@ Q_SIGNALS:
 public Q_SLOTS:
 
 	void closeEditor(int index);
-	void closeEditor(Editor* editor);
+	void closeEditor(Aline::Editor* editor);
 
 	void saveCurrentEditor();
 

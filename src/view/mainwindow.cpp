@@ -201,7 +201,10 @@ void MainWindow::setCurrentProject(EditableItemManager *currentProject)
 			disconnect(this, &Aline::MainWindow::editedItemChanged,
 					   _currentProject, &EditableItemManager::setActiveItem);
 
+			Q_EMIT currentProjectUnloaded(_currentProject);
+
 			_currentProject->setEditorManager(nullptr);
+			_currentProject->deleteLater();
 		}
 
 		_currentProject = currentProject;
