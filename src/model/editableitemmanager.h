@@ -195,6 +195,13 @@ Q_SIGNALS:
 
 	void activeItemChanged();
 
+	/*!
+	 * \brief saved this signal is emmited just after the project is saved.
+	 *
+	 * This allows to execute slots and functions when the project gets saved.
+	 */
+	void saved();
+
 public Q_SLOTS:
 
 	virtual void reset() = 0;

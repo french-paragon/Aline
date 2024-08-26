@@ -594,6 +594,10 @@ bool EditableItemManager::saveAll() {
 	status = status and saveLabels();
 	status = status and saveStruct();
 
+	if (status == true) {
+		Q_EMIT saved();
+	}
+
 	return status;
 
 }
