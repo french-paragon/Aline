@@ -749,6 +749,9 @@ void EditableItemManager::cleanTreeStruct() {
 	_itemsByTypes.clear();
 
 	for (QString const& ref : _factoryManager->installedFactoriesKeys()) {
+		if (_factoryManager->itemTypeIsSingleton(ref)) {
+			continue;
+		}
 		_itemsByTypes.insert(ref, QVector<treeStruct*>());
 	}
 
