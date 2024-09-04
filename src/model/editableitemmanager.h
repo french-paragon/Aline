@@ -201,6 +201,12 @@ Q_SIGNALS:
 	 * This allows to execute slots and functions when the project gets saved.
 	 */
 	void saved();
+	/*!
+	 * \brief newUnsavedChange this signal is emmited whenever a new change is detected in the project
+	 *
+	 * This can be used for example to trigger backups.
+	 */
+	void newUnsavedChange();
 
 public Q_SLOTS:
 
@@ -216,6 +222,8 @@ protected:
 
 	QModelIndex indexFromLeaf(treeStruct* leaf) const;
 	QModelIndex indexFromType(QString typeRef) const;
+
+	void checkUnsavedChangesTrigger(bool unsaved);
 
 	/*!
 	 * \brief effectivelyLoadItem load an item without checking if it is cached before.

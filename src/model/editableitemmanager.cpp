@@ -341,6 +341,8 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 		_loadedItems.insert(item->getRef(), {node, item});
 	}
 
+	connect(item, &EditableItem::unsavedStateChanged, this, &EditableItemManager::checkUnsavedChangesTrigger);
+
 	item->onLoadingDone(); //call the handler for the loading done!
 
 	return item;
@@ -715,6 +717,13 @@ QModelIndex EditableItemManager::indexFromType(QString typeRef) const {
 	return createIndex(n, 0);
 
 
+}
+
+void EditableItemManager::checkUnsavedChangesTrigger(bool unsaved) {
+
+	if (unsaved) {
+		Q_EMIT EditableItemManager::newUnsavedChange();
+	}
 }
 
 void EditableItemManager::refreshItemDataDisplay(QString itemUrl) {
