@@ -559,6 +559,10 @@ void Aline::JsonUtils::encapsulateTreeLeafsToJson(QJsonObject & obj,
 
 	for (QString typeRef : itemsByTypes.keys()) {
 
+		if (itemsByTypes[typeRef].isEmpty()) {
+			continue; //skip empty parts
+		}
+
 		QJsonObject collection;
 		collection.insert(TREE_TYPE_ID, typeRef);
 
@@ -620,17 +624,23 @@ void Aline::JsonUtils::extractTreeLeafs(QJsonObject &obj,
 
 				QString typeId = typeV.toString();
 
-				if (!itemsByTypes.contains(typeId)) {
-					itemsByTypes.insert(typeId, QVector<EditableItemManager::treeStruct*>());
-				}
-
 				QJsonValue childrensV = o.value(TREE_CHILDRENS_ID);
 
 				if (!childrensV.isArray()) {
 					continue;
 				}
 
-				for (QJsonValue c : childrensV.toArray()) {
+				QJsonArray childrensA = childrensV.toArray();
+
+				if (childrensA.isEmpty()) {
+					continue;
+				}
+
+				if (!itemsByTypes.contains(typeId)) {
+					itemsByTypes.insert(typeId, QVector<EditableItemManager::treeStruct*>());
+				}
+
+				for (QJsonValue c : qAsConst(childrensA)) {
 
 					if (c.isObject()) {
 						QJsonObject leafO = c.toObject();
