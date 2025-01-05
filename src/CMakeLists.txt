@@ -4,6 +4,8 @@ list(APPEND LIB_SRC
             model/interfaces/jsonencodableitem.cpp
             model/editableitem.h
             model/editableitem.cpp
+            model/editableitemlist.h
+            model/editableitemlist.cpp
             model/editableitemmanager.h
             model/editableitemmanager.cpp
             model/editableitemfactory.h
@@ -70,7 +72,8 @@ list(APPEND LIB_SRC
 
 set(CMAKE_DEBUG_POSTFIX d)
 
-add_library(${PROJECT_NAME} ${LIB_SRC})
+add_library(${PROJECT_NAME} ${LIB_SRC}
+    model/editableitemlist.h model/editableitemlist.cpp)
 #set_target_properties( ${PROJECT_NAME}
 #	PROPERTIES
 #	ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"

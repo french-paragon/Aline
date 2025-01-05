@@ -3,7 +3,7 @@
 
 /*This file is part of the project Aline
 
-Copyright (C) 2022 Paragon <french.paragon@gmail.com>
+Copyright (C) 2022-2025 Paragon <french.paragon@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QSet>
 
 #include "../aline_global.h"
+
+#include <array>
 
 namespace Aline {
 
@@ -81,7 +83,7 @@ public:
 
 	static QString simplifyRef(QString ref);
 
-	static const std::array<int, 13> AllowedPropertiesTypeId;
+    static const std::array<int, 14> AllowedPropertiesTypeId;
 
 	static const char* REF_PROP_NAME;
 	static const char* TYPE_ID_NAME;
@@ -170,7 +172,7 @@ public:
 	 * For those kinds of usage it might be usefull to do a bit more of processing.
 	 * Child classes can do so by subclassing this method.
 	 *
-	 * Default implementation ensure the item has the correct parent and register the ref after making it uniq. Call it in your overhides.
+     * Default implementation ensure the item has the correct parent and register the ref after making it uniq. Call it in your overrides.
 	 */
 	virtual void insertSubItem(EditableItem* item);
 	virtual QList<EditableItem *> getSubItems() const;

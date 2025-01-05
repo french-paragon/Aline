@@ -19,6 +19,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "jsonutils.h"
 
 #include "model/editableitem.h"
+#include "model/editableitemlist.h"
 #include "model/labels/labelstree.h"
 #include "model/labels/label.h"
 #include "model/editableitemfactory.h"
@@ -163,7 +164,23 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 					}
 
-					item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(itemList));
+                    bool isPropQList = false;
+                    const QMetaObject* metaObj = item->metaObject();
+
+                    int propId = metaObj->indexOfProperty(prop.toStdString().c_str());
+
+                    if (propId >= 0 and propId < metaObj->propertyCount()) {
+                        QMetaProperty metaProp = metaObj->property(propId);
+                        if (metaProp.userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
+                            isPropQList = true;
+                        }
+                    }
+
+                    if (isPropQList) {
+                        item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(itemList));
+                    } else {
+                        item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(EditableItemList(itemList)));
+                    }
 					continue;
 				}
 
@@ -230,23 +247,39 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 		obj.insert(sprop, Aline::JsonUtils::encapsulateItemToJson(subitem, visitor));
 
-	} else if (meta->property(prop_index).userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
+    } else if (meta->property(prop_index).userType() == qMetaTypeId<QList<Aline::EditableItem*>>()) {
 
-		QList<Aline::EditableItem*> list = qvariant_cast<QList<Aline::EditableItem*>>(item->property(prop));
+        QList<Aline::EditableItem*> list = qvariant_cast<QList<Aline::EditableItem*>>(item->property(prop));
 
-		QJsonArray arr;
+        QJsonArray arr;
 
-		for (Aline::EditableItem* subitem : list) {
-			arr.push_back(Aline::JsonUtils::encapsulateItemToJson(subitem, visitor));
-		}
+        for (Aline::EditableItem* subitem : list) {
+            arr.push_back(Aline::JsonUtils::encapsulateItemToJson(subitem, visitor));
+        }
 
-		QJsonObject subCollection;
+        QJsonObject subCollection;
 
-		subCollection.insert(Aline::JsonUtils::ITEM_SUBITEM_LIST, arr);
+        subCollection.insert(Aline::JsonUtils::ITEM_SUBITEM_LIST, arr);
 
-		obj.insert(sprop, subCollection);
+        obj.insert(sprop, subCollection);
 
-	} else {
+    } else if (meta->property(prop_index).userType() == qMetaTypeId<Aline::EditableItemList>()) {
+
+        Aline::EditableItemList list = qvariant_cast<Aline::EditableItemList>(item->property(prop));
+
+        QJsonArray arr;
+
+        for (Aline::EditableItem* subitem : list) {
+            arr.push_back(Aline::JsonUtils::encapsulateItemToJson(subitem, visitor));
+        }
+
+        QJsonObject subCollection;
+
+        subCollection.insert(Aline::JsonUtils::ITEM_SUBITEM_LIST, arr);
+
+        obj.insert(sprop, subCollection);
+
+    } else {
 
 		obj.insert(sprop, Aline::JsonUtils::encodeVariantToJson(item->property(prop)) ); // insert the property.
 

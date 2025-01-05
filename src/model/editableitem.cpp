@@ -1,6 +1,6 @@
 /*This file is part of the project Aline
 
-Copyright (C) 2022 Paragon <french.paragon@gmail.com>
+Copyright (C) 2022-2025 Paragon <french.paragon@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -17,6 +17,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 */
 
 #include "model/editableitem.h"
+#include "model/editableitemlist.h"
 
 #include "model/editableitemmanager.h"
 
@@ -27,7 +28,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 namespace Aline {
 
-const std::array<int, 13> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bool,
+const std::array<int, 14> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bool,
 														  QMetaType::Int,
 														  QMetaType::UInt,
 														  QMetaType::QReal,
@@ -38,8 +39,9 @@ const std::array<int, 13> EditableItem::AllowedPropertiesTypeId = {QMetaType::Bo
 														  QMetaType::QSize,
 														  QMetaType::QSizeF,
 														  QMetaType::QColor,
-														  qMetaTypeId<Aline::EditableItem*>(),
-														  qMetaTypeId<QList<Aline::EditableItem*>>()
+                                                          qMetaTypeId<Aline::EditableItem*>(),
+                                                          qMetaTypeId<QList<Aline::EditableItem*>>(),
+                                                          qMetaTypeId<Aline::EditableItemList>()
 														 };
 
 const char* EditableItem::REF_PROP_NAME = "ref";
@@ -413,7 +415,9 @@ void EditableItem::insertSubItem(EditableItem* item) {
 
 		item->setParentItem(this);
 
-	}
+    }
+
+    item->changeRef(makeSubItemRefUniq(item->getRef()));
 
 	_usedRef.insert(item->getRef());
 
