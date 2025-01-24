@@ -514,6 +514,8 @@ void MainWindow::onCurrentEditorChanged() {
 
 	reconfigureCurrentEditorActions();
 
+    Q_EMIT currentEditorChanged();
+
 }
 
 void MainWindow::reconfigureCurrentEditorActions() {

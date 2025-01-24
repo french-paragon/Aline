@@ -137,6 +137,8 @@ Q_SIGNALS:
 	void currentItemChanged(QString ref);
 	void editedItemChanged(QString ref);
 
+    void currentEditorChanged();
+
 public Q_SLOTS:
 
 	void closeEditor(int index);
