@@ -546,7 +546,7 @@ EditableItem* EditableItemManager::loadItemByUrl(QStringList const& url) {
 
 EditableItem* EditableItemManager::loadItemByUrl(QString const& url) {
 
-	QStringList url_list = url.split(refUrlSeparator());
+	QStringList url_list = splitUrl(url);
 	return loadItemByUrl(url_list);
 }
 

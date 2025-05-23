@@ -402,12 +402,26 @@ void MainWindow::setCurrentItem(QString const& itemUrl) {
 		return;
 	}
 
-	if (!_currentProject->containItem(itemUrl) and !itemUrl.isEmpty()) { //works only for top level item, but this is expected.
+	QStringList fullUrl = _currentProject->splitUrl(itemUrl);
+
+	if (fullUrl.size() < 1 and !itemUrl.isEmpty()) {
 		return;
 	}
 
-	if (_currentItemUrl != itemUrl) {
-		_currentItemUrl = itemUrl;
+	QString parentItemUrl;
+
+	if (itemUrl.isEmpty()) {
+		parentItemUrl = itemUrl;
+	} else {
+		parentItemUrl = fullUrl.first();
+	}
+
+	if (!_currentProject->containItem(parentItemUrl) and !parentItemUrl.isEmpty()) { //works only for top level item, but this is expected.
+		return;
+	}
+
+	if (_currentItemUrl != parentItemUrl) {
+		_currentItemUrl = parentItemUrl;
 		Q_EMIT currentItemChanged(_currentItemUrl);
 
 		ui->statusbar->showMessage(tr("Current item: %1").arg(_currentItemUrl), 3000);

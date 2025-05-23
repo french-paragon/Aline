@@ -120,6 +120,13 @@ public:
 	bool clearItem(QString itemRef);
 	bool clearItems(QStringList itemRefs);
 
+	inline QString joinUrl(QStringList const& url) const {
+		return url.join(refUrlSeparator());
+	}
+	inline QStringList splitUrl(QString const& url) const {
+		return url.split(refUrlSeparator());
+	}
+
 	/*!
 	 * \brief getItemByUrl load an item (possibly a subitem) by using an url, i.e. a sequence of references.
 	 * \param url the list of references
