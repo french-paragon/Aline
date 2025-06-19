@@ -152,7 +152,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 										subItem->setupLoadingMode(true);
 									}
 
-									extractItemData(subItem, listedObj, subItemFactory, specialSkippedProperties, blockSignals);
+									extractItemData(subItem, listedObj, subItemFactory, specialSkippedProperties, blockSignals, visitor);
 
 									if (subItem != nullptr) {
 										itemList.push_back(subItem);
@@ -196,7 +196,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 						subItem->setupLoadingMode(true);
 					}
 
-					extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals);
+					extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals, visitor);
 					subItem->setupLoadingMode(false);
 
 					if (subItem != nullptr) {
