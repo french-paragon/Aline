@@ -51,6 +51,12 @@ public:
 	 */
 	static MainWindow* findWidgetMainWindow(QWidget* widget);
 
+	/*!
+	 * \brief getActiveMainWindow find the current main window of the application
+	 * \return the main windows
+	 */
+	static MainWindow* getActiveMainWindow();
+
 	static const char* MENU_FILE_NAME;
 	static const char* MENU_DISPLAY_NAME;
 
