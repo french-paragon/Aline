@@ -67,11 +67,22 @@ public:
 			}
 		}
 
+		inline ManagedEditableItemReference(ManagedEditableItemReference const& other) :
+			_holder(other._holder),
+			_ref(other._ref)
+		{
+			if (_holder != nullptr) {
+				_holder->_managedReferences.push_back(this);
+			}
+		}
+
 		inline ~ManagedEditableItemReference() {
 			if (_holder != nullptr) {
 				_holder->_managedReferences.removeAll(this);
 			}
 		}
+
+		ManagedEditableItemReference& operator=(ManagedEditableItemReference const& other);
 
 		inline bool holdReference() const {
 			return !_ref.isEmpty();

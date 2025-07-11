@@ -49,6 +49,25 @@ const char* EditableItem::TYPE_ID_NAME = "type_id";
 
 const char* EditableItem::CHILDREN_PROP_NAME = "ref_childrens";
 
+EditableItem::ManagedEditableItemReference& EditableItem::ManagedEditableItemReference::operator=(ManagedEditableItemReference const& other) {
+
+	clearReference(); //clear previous refence
+
+	if (_holder != nullptr) {
+		_holder->_managedReferences.removeAll(this);
+	}
+
+	_holder = other._holder;
+	_ref = other._ref;
+
+	//no need to warn the new item the holder is now referring it, as the previous reference still exist!
+
+	if (_holder != nullptr) {
+		_holder->_managedReferences.push_back(this);
+	}
+
+	return *this;
+}
 
 bool EditableItem::ManagedEditableItemReference::setReference(QString url) {
 
@@ -106,12 +125,29 @@ void EditableItem::ManagedEditableItemReference::clearReference() {
 		return;
 	}
 
-	if (!_ref.isEmpty()) {
-		EditableItemManager* manager = _holder->getManager();
-		if (manager != nullptr) {
-			EditableItem* oldTarget = manager->loadItemByUrl(_ref);
-			if (oldTarget != nullptr) {
-				oldTarget->warnUnrefering(_holder->getFullRefUrl());
+	if (_holder != nullptr) {
+
+		bool isSoleReference = true;
+
+		for (ManagedEditableItemReference* ref : qAsConst(_holder->_managedReferences)) {
+			if (ref == this) {
+				continue;
+			}
+
+			if (ref->referedItem() == _ref) {
+				isSoleReference = false;
+				break;
+			}
+		}
+
+		if (isSoleReference) {
+			EditableItemManager* manager = _holder->getManager();
+
+			if (manager != nullptr) {
+				EditableItem* oldTarget = manager->loadItemByUrl(_ref);
+				if (oldTarget != nullptr) {
+					oldTarget->warnUnrefering(_holder->getFullRefUrl());
+				}
 			}
 		}
 	}
