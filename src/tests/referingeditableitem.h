@@ -66,6 +66,36 @@ public:
 	virtual EditableItem* createItem(QString ref, EditableItemManager* parent) const override;
 };
 
+/*!
+ * \brief The ReferingEditableItem class represent a single reference to another editable item, based on a managed ref.
+ *
+ * This item is meant to be used for testing purposes
+ */
+class AutoReferingEditableItem : public EditableItem
+{
+	Q_OBJECT
+public:
+
+	static const char* TypeId;
+
+	explicit AutoReferingEditableItem(QString ref, EditableItemManager *parent = nullptr);
+	explicit AutoReferingEditableItem(QString ref, EditableItem *parent = nullptr);
+
+	using Factory = EditableItemTemplateFactory<AutoReferingEditableItem, false>;
+
+	virtual QString getTypeId() const override;
+	virtual QString getTypeName() const override;
+
+	virtual QString iconInternalUrl() const override;
+
+	QString referedItemRef() const;
+	void setReferedItemRef(const QString &newReferedItem);
+
+protected:
+
+	Aline::EditableItem::ManagedEditableItemReference _referedItemRef;
+};
+
 } // namespace Tests
 } // namespace Aline
 

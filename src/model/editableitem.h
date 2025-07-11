@@ -62,7 +62,15 @@ public:
 			_holder(holder),
 			_ref("")
 		{
+			if (holder != nullptr) {
+				holder->_managedReferences.push_back(this);
+			}
+		}
 
+		inline ~ManagedEditableItemReference() {
+			if (_holder != nullptr) {
+				_holder->_managedReferences.removeAll(this);
+			}
 		}
 
 		inline bool holdReference() const {
@@ -79,6 +87,8 @@ public:
 	protected:
 		EditableItem* _holder;
 		QString _ref;
+
+		friend class EditableItem;
 	};
 
 	static QString simplifyRef(QString ref);
@@ -305,6 +315,7 @@ protected:
 	 * A subclass of editable item which refer to other items needs to reimplement this function to be warned about references changes.
 	 */
 	virtual void warnReferedRefChanges(QString oldRef, QString newRef);
+	void updateDynamicReferences(QString oldRef, QString newRef);
 
 	/*!
 	 * \brief warnReferedRemoved warn an item refering another item that this other item is about to be supressed from the project.
@@ -360,6 +371,10 @@ private:
 	 * \brief _referentItems Items may refer to other item. They have to warn them that they are refered, so that refered items can forward ref changes to referent items.
 	 */
 	QSet<QString> _referentItems;
+	/*!
+	 * \brief _managedReferences are automatically registered to be updated in case the corresponding item change.
+	 */
+	QVector<ManagedEditableItemReference*> _managedReferences;
 
 };
 

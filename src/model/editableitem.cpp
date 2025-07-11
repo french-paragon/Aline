@@ -71,7 +71,7 @@ bool EditableItem::ManagedEditableItemReference::setReference(QString url) {
 
 	EditableItem* newTarget = manager->loadItemByUrl(url);
 
-	if (newTarget == nullptr) {
+	if (newTarget == nullptr and !url.isEmpty()) {
 		return false;
 	}
 
@@ -85,7 +85,9 @@ bool EditableItem::ManagedEditableItemReference::setReference(QString url) {
 	}
 
 	_ref.clear();
-	newTarget->warnRefering(_holder->getFullRefUrl());
+	if (newTarget != nullptr) {
+		newTarget->warnRefering(_holder->getFullRefUrl());
+	}
 	_ref = url;
 	return true;
 
@@ -166,8 +168,11 @@ void EditableItem::suppress() {
 	for (QString const& referentRef : qAsConst(_referentItems)) {
 		EditableItem* referent = getManager()->loadItemByUrl(referentRef);
 
+		QString oldUrl = getFullRefUrl();
+
 		if (referent != nullptr) {
-			referent->warnReferedRemoved(getFullRefUrl());
+			referent->warnReferedRemoved(oldUrl);
+			referent->updateDynamicReferences(oldUrl, "");
 		}
 	}
 }
@@ -225,6 +230,7 @@ void EditableItem::changeRef(QString const& newRef) {
 
 			if (referent != nullptr) {
 				referent->warnReferedRefChanges(oldUrl, newUrl);
+				referent->updateDynamicReferences(oldUrl, newUrl);
 			}
 		}
 
@@ -293,6 +299,13 @@ void EditableItem::warnReferedRefChanges(QString oldRef, QString newRef) {
 	Q_UNUSED(oldRef);
 	Q_UNUSED(newRef);
 	return;
+}
+void EditableItem::updateDynamicReferences(QString oldRef, QString newRef) {
+	for (ManagedEditableItemReference* ref : qAsConst(_managedReferences)) {
+		if (ref->referedItem() == oldRef) {
+			ref->_ref = newRef;
+		}
+	}
 }
 void EditableItem::warnReferedRemoved(QString ref) {
 	Q_UNUSED(ref);

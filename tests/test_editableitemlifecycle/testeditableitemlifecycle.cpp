@@ -37,6 +37,7 @@ private:
 	Aline::EditableItem* dummy2;
 
 	Aline::Tests::ReferingEditableItem* refering;
+	Aline::Tests::AutoReferingEditableItem* autorefering;
 
 	Aline::Tests::DummyEnrichedEditableItem* dummyRich1;
 	Aline::Tests::DummyEnrichedEditableItem* dummyRich2;
@@ -50,11 +51,13 @@ void TestEditableItemLifeCycle::initTestCase() {
 	factoryManager->installFactory(new Aline::Tests::DummyEditableItemFactory());
 	factoryManager->installFactory(new Aline::Tests::DummyEnrichedEditableItemFactory());
 	factoryManager->installFactory(new Aline::Tests::ReferingEditableItemFactory());
+	factoryManager->installFactory(new Aline::Tests::AutoReferingEditableItem::Factory());
 
 	bool dummy1_ok = itemManager->createItem(Aline::Tests::DummyEditableItem::TypeId, "dummy1");
 	bool dummy2_ok = itemManager->createItem(Aline::Tests::DummyEditableItem::TypeId, "dummy2");
 
 	bool refering_ok = itemManager->createItem(Aline::Tests::ReferingEditableItem::TypeId, "refering");
+	bool autorefering_ok = itemManager->createItem(Aline::Tests::AutoReferingEditableItem::TypeId, "autorefering");
 
 	bool dummyrich1_ok = itemManager->createItem(Aline::Tests::DummyEnrichedEditableItem::TypeId, "dummyRich1");
 	bool dummyrich2_ok = itemManager->createItem(Aline::Tests::DummyEnrichedEditableItem::TypeId, "dummyRich2");
@@ -63,6 +66,7 @@ void TestEditableItemLifeCycle::initTestCase() {
 	QVERIFY2(dummy2_ok, "Dummy 2 not created");
 
 	QVERIFY2(refering_ok, "Refering not created");
+	QVERIFY2(autorefering_ok, "Refering not created");
 
 	QVERIFY2(dummyrich1_ok, "Dummy rich 1 not created");
 	QVERIFY2(dummyrich2_ok, "Dummy rich 2 not created");
@@ -71,6 +75,7 @@ void TestEditableItemLifeCycle::initTestCase() {
 	dummy2 = itemManager->loadItem("dummy2");
 
 	refering = qobject_cast<Aline::Tests::ReferingEditableItem*>(itemManager->loadItem("refering"));
+	autorefering = qobject_cast<Aline::Tests::AutoReferingEditableItem*>(itemManager->loadItem("autorefering"));
 
 	dummyRich1 = qobject_cast<Aline::Tests::DummyEnrichedEditableItem*>(itemManager->loadItem("dummyRich1"));
 	dummyRich2 = qobject_cast<Aline::Tests::DummyEnrichedEditableItem*>(itemManager->loadItem("dummyRich2"));
@@ -79,30 +84,39 @@ void TestEditableItemLifeCycle::initTestCase() {
 	QVERIFY2(dummy2 != nullptr, "Dummy 2 not loaded");
 
 	QVERIFY2(refering != nullptr, "Refering not loaded");
+	QVERIFY2(autorefering != nullptr, "AutoRefering not loaded");
 
 	QVERIFY2(dummyRich1 != nullptr, "Dummy rich not loaded");
 	QVERIFY2(dummyRich2 != nullptr, "Dummy rich not loaded");
+
+	refering->setReferedItemRef("");
+	autorefering->setReferedItemRef("");
 }
 
 void TestEditableItemLifeCycle::refSet() {
 
 	refering->setReferedItemRef("");
+	autorefering->setReferedItemRef("");
 
 	QVERIFY2(dummy1->listReferents().isEmpty(), "dummy1 referent list is not empty");
 	QVERIFY2(dummy2->listReferents().isEmpty(), "dummy2 referent list is not empty");
 
 	refering->setReferedItemRef(dummy1->getRef());
+	autorefering->setReferedItemRef(dummy1->getRef());
 
 	QVERIFY2(refering->referedItemRef() == dummy1->getRef(), "Refered item could not be set");
+	QVERIFY2(autorefering->referedItemRef() == dummy1->getRef(), "Refered item could not be set");
 
-	QVERIFY2(dummy1->listReferents().size() == 1, "dummy1 referent list do not contain a single element");
-	QVERIFY2(dummy1->listReferents().first() == refering->getRef(), "dummy1 referent list do not contain the refering item");
+	QVERIFY2(dummy1->listReferents().size() == 2, "dummy1 referent list do not contain a single element");
+	QVERIFY2(dummy1->listReferents().contains(refering->getRef()), "dummy1 referent list do not contain the refering item");
+	QVERIFY2(dummy1->listReferents().contains(autorefering->getRef()), "dummy1 referent list do not contain the autorefering item");
 	QVERIFY2(dummy2->listReferents().isEmpty(), "dummy2 referent list is not empty");
 
 }
 void TestEditableItemLifeCycle::refChange() {
 
 	refering->setReferedItemRef(dummy1->getRef());
+	autorefering->setReferedItemRef(dummy1->getRef());
 
 	QString oldRef = dummy1->getRef();
 	QString tmpRef = "tmp";
@@ -111,50 +125,63 @@ void TestEditableItemLifeCycle::refChange() {
 
 	QVERIFY2(dummy1->getRef() == tmpRef, "dummy1 ref could not be changed");
 	QVERIFY2(refering->referedItemRef() == dummy1->getRef(), "Refered item ref did not change");
+	QVERIFY2(autorefering->referedItemRef() == dummy1->getRef(), "Refered item ref did not change");
 
 	dummy1->changeRef(oldRef);
 
 	QVERIFY2(dummy1->getRef() == oldRef, "dummy1 ref could not be reset");
 	QVERIFY2(refering->referedItemRef() == dummy1->getRef(), "Refered item ref did not change");
+	QVERIFY2(autorefering->referedItemRef() == dummy1->getRef(), "Refered item ref did not change");
 
 
 }
 void TestEditableItemLifeCycle::referingChange() {
 
 	refering->setReferedItemRef(dummy1->getRef());
+	autorefering->setReferedItemRef(dummy1->getRef());
 
 	QVERIFY2(refering->referedItemRef() == dummy1->getRef(), "Refered item could not be set");
+	QVERIFY2(autorefering->referedItemRef() == dummy1->getRef(), "Refered item could not be set");
 
-	QVERIFY2(dummy1->listReferents().size() == 1, "dummy1 referent list do not contain a single element");
-	QVERIFY2(dummy1->listReferents().first() == refering->getRef(), "dummy1 referent list do not contain the refering item");
+	QVERIFY2(dummy1->listReferents().size() == 2, "dummy1 referent list do not contain a single element");
+	QVERIFY2(dummy1->listReferents().contains(refering->getRef()), "dummy1 referent list do not contain the refering item");
+	QVERIFY2(dummy1->listReferents().contains(autorefering->getRef()), "dummy1 referent list do not contain the refering item");
 	QVERIFY2(dummy2->listReferents().isEmpty(), "dummy2 referent list is not empty");
 
 	refering->setReferedItemRef(dummy2->getRef());
+	autorefering->setReferedItemRef(dummy2->getRef());
 
 	QVERIFY2(refering->referedItemRef() == dummy2->getRef(), "Refered item ref did not change");
+	QVERIFY2(autorefering->referedItemRef() == dummy2->getRef(), "Refered item ref did not change");
 
-	QVERIFY2(dummy2->listReferents().size() == 1, "dummy2 referent list do not contain a single element");
-	QVERIFY2(dummy2->listReferents().first() == refering->getRef(), "dummy2 referent list do not contain the refering item");
+	QVERIFY2(dummy2->listReferents().size() == 2, "dummy2 referent list do not contain a single element");
+	QVERIFY2(dummy2->listReferents().contains(refering->getRef()), "dummy2 referent list do not contain the refering item");
+	QVERIFY2(dummy2->listReferents().contains(autorefering->getRef()), "dummy2 referent list do not contain the refering item");
 	QVERIFY2(dummy1->listReferents().isEmpty(), "dummy1 referent list is not empty");
 
 	refering->setReferedItemRef(dummy1->getRef());
+	autorefering->setReferedItemRef(dummy1->getRef());
 
 	QVERIFY2(refering->referedItemRef() == dummy1->getRef(), "Refered item could not be set");
+	QVERIFY2(autorefering->referedItemRef() == dummy1->getRef(), "Refered item could not be set");
 
-	QVERIFY2(dummy1->listReferents().size() == 1, "dummy1 referent list do not contain a single element");
-	QVERIFY2(dummy1->listReferents().first() == refering->getRef(), "dummy1 referent list do not contain the refering item");
+	QVERIFY2(dummy1->listReferents().size() == 2, "dummy1 referent list do not contain a single element");
+	QVERIFY2(dummy1->listReferents().contains(refering->getRef()), "dummy1 referent list do not contain the refering item");
+	QVERIFY2(dummy1->listReferents().contains(autorefering->getRef()), "dummy1 referent list do not contain the refering item");
 	QVERIFY2(dummy2->listReferents().isEmpty(), "dummy2 referent list is not empty");
 
 }
 void TestEditableItemLifeCycle::referedDeleted() {
 
 	refering->setReferedItemRef(dummy2->getRef());
+	autorefering->setReferedItemRef(dummy2->getRef());
 
 	itemManager->clearItem(dummy2->getRef());
 	dummy2 = nullptr;
 
 
 	QVERIFY2(refering->referedItemRef().isEmpty(), "Refered item ref did not reset");
+	QVERIFY2(autorefering->referedItemRef().isEmpty(), "Refered item ref did not reset");
 
 }
 

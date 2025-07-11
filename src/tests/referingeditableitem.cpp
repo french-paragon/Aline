@@ -24,6 +24,7 @@ namespace Aline {
 namespace Tests {
 
 const char* ReferingEditableItem::TypeId = "ReferingEditableItem";
+const char* AutoReferingEditableItem::TypeId = "AutoReferingEditableItem";
 
 ReferingEditableItem::ReferingEditableItem(QString ref, EditableItemManager *parent) :
 	EditableItem(ref, parent),
@@ -107,6 +108,38 @@ ReferingEditableItemFactory::ReferingEditableItemFactory(QObject *parent) :
 EditableItem* ReferingEditableItemFactory::createItem(QString ref, EditableItemManager* parent) const {
 	return new ReferingEditableItem(ref, parent);
 }
+
+AutoReferingEditableItem::AutoReferingEditableItem(QString ref, EditableItemManager *parent) :
+	EditableItem(ref, parent),
+	_referedItemRef(this)
+{
+
+}
+AutoReferingEditableItem::AutoReferingEditableItem(QString ref, EditableItem *parent) :
+	EditableItem(ref, parent),
+	_referedItemRef(this)
+{
+
+}
+
+QString AutoReferingEditableItem::getTypeId() const {
+	return AutoReferingEditableItem::TypeId;
+}
+QString AutoReferingEditableItem::getTypeName() const {
+	return tr("AutoReferingEditableItem");
+}
+
+QString AutoReferingEditableItem::iconInternalUrl() const {
+	return "";
+}
+
+QString  AutoReferingEditableItem::referedItemRef() const {
+	return _referedItemRef.referedItem();
+}
+void AutoReferingEditableItem::setReferedItemRef(const QString &newReferedItem) {
+	_referedItemRef.setReference(newReferedItem);
+}
+
 
 } // namespace Tests
 } // namespace Aline
