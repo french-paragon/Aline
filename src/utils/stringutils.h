@@ -28,6 +28,7 @@ namespace Aline {
 namespace StringUtils {
 
 ALINE_EXPORT QString simplifyRef(QString const& model);
+ALINE_EXPORT QString removeAccents(QString s);
 
 } //namespace StringUtils
 

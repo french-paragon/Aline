@@ -21,7 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QRegExp>
 #include <QStringList>
 
-QString removeAccents(QString s) {
+QString Aline::StringUtils::removeAccents(QString s) {
 
 	static QString diacriticLetters_;
 	static QStringList noDiacriticLetters_;
