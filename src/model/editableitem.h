@@ -21,6 +21,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <QObject>
 #include <QSet>
+#include <QVector>
 
 #include "../aline_global.h"
 
