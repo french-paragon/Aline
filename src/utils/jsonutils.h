@@ -81,7 +81,7 @@ protected:
 };
 
 //! \brief JsonPropEncapsulator represent an encapsulator that can be provided to the automatic json encoding function to modify its functionning.
-using JsonPropEncapsulator = std::function<bool(QJsonObject &, Aline::EditableItem*, const char*)>;
+using JsonPropEncapsulator = std::function<bool(QJsonObject &, Aline::EditableItem const *, const char*)>;
 //! \brief JsonPropEncapsulator represent an encapsulator that can be provided to the automatic json extracting function to modify its functionning.
 using JsonPropExtractor = std::function<bool(QJsonObject const&, Aline::EditableItem*, const char*)>;
 
@@ -91,7 +91,7 @@ ALINE_EXPORT void extractItemData(Aline::EditableItem* item,
 								  QStringList const& specialSkippedProperties = {},
 								  bool blockSignals = true,
 								  const JsonPropExtractor* visitor = nullptr);
-ALINE_EXPORT QJsonObject encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator* visitor = nullptr);
+ALINE_EXPORT QJsonObject encapsulateItemToJson(Aline::EditableItem const* item, const JsonPropEncapsulator* visitor = nullptr);
 
 ALINE_EXPORT QJsonValue encodeVariantToJson(QVariant var);
 ALINE_EXPORT QVariant decodeVariantFromJson(QJsonValue val, int type);

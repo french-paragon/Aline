@@ -234,7 +234,7 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 
 }
 
-void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* prop, const Aline::JsonUtils::JsonPropEncapsulator *visitor) {
+void addPropToObject(QJsonObject & obj, Aline::EditableItem const* item, const char* prop, const Aline::JsonUtils::JsonPropEncapsulator *visitor) {
 
 	QString sprop(prop);
 
@@ -287,7 +287,7 @@ void addPropToObject(QJsonObject & obj, Aline::EditableItem* item, const char* p
 
 }
 
-QJsonObject Aline::JsonUtils::encapsulateItemToJson(Aline::EditableItem* item, const JsonPropEncapsulator *visitor) {
+QJsonObject Aline::JsonUtils::encapsulateItemToJson(const EditableItem *item, const JsonPropEncapsulator *visitor) {
 
 	QJsonObject obj;
 
