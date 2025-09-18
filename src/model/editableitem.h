@@ -41,6 +41,10 @@ public:
 
 	/*!
 	 * \brief The ManagedEditableItemReference class hold and manage a reference to another EditableItem
+     *
+     * This class is the prefered way to managed external references, as it ensure that a lot of
+     * processes related to references maintenance are done correctly.
+     *
 	 */
 	class ManagedEditableItemReference {
 	public:
@@ -283,9 +287,10 @@ public:
 	 * \brief listRefering list the items the current item is refering
 	 * \return the list of urls
 	 *
-	 * By default this function return nothing and needs to be reimplemented in classes which refer other classes.
+     * By default this function only return the references stored using ManagedEditableItemReferences.
+     * If you are manually managing references to some items, you need to override this function.
 	 *
-	 * !If you forget to override this function while refering some items, the changeref function will fail!.
+     * !If you forget to override this function while manually managing referes to some items, the changeref function will fail!.
 	 */
 	virtual QList<QString> listRefering() const;
 
@@ -350,6 +355,20 @@ protected:
 	 * It is recommended to not try to load other items in this handler, to avoid complicated inter-dependancies in the loading chain.
 	 */
 	virtual void onLoadingDone();
+
+    /*!
+     * \brief setReferentItemList set the list of referent items (under proper conditions)
+     * \param referentItems the item list to set
+     *
+     * This function allow to manually set the list of referent items. It is usefull for example when
+     * copying the data from one class to a different one (to change the class of an item without changing
+     * the relation structures in the project).
+     *
+     * Note that this function works only in loading mode. You need to ensure that
+     * the reference of the new object will match the reference of the old object so that external refering
+     * items are not left in an invalid state.
+     */
+    void setReferentItemList(QList<QString> const& referentItems);
 
 	QString _ref;
 

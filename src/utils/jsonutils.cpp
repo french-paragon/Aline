@@ -196,10 +196,9 @@ void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 						subItem->setupLoadingMode(true);
 					}
 
-					extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals, visitor);
-					subItem->setupLoadingMode(false);
-
 					if (subItem != nullptr) {
+                        extractItemData(subItem, subObj, subItemFactory, specialSkippedProperties, blockSignals, visitor);
+                        subItem->setupLoadingMode(false);
 						item->setProperty(prop.toStdString().c_str(), QVariant::fromValue(subItem));
 						continue;
 					}

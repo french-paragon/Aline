@@ -307,7 +307,14 @@ void EditableItem::warnUnrefering(QString referentItemRef) {
 }
 
 QList<QString> EditableItem::listRefering() const {
-	return QList<QString>();
+
+    QList<QString> ret;
+
+    for (ManagedEditableItemReference* ref : _managedReferences) {
+        ret.push_back(ref->referedItem());
+    }
+
+    return ret;
 }
 
 void EditableItem::treatParentRefChange(QString oldParentUrl, QString newParentUrl) {
@@ -395,6 +402,11 @@ void EditableItem::clearHasUnsavedChanges() {
 
 void EditableItem::onLoadingDone() {
 
+}
+void EditableItem::setReferentItemList(QList<QString> const& referentItems) {
+    if (!hasBeenLoadedFromDisk()) {
+        _referentItems = QSet<QString>::fromList(referentItems);
+    }
 }
 
 QString EditableItem::makeSubItemRefUniq(QString const& subItemRef) const {
