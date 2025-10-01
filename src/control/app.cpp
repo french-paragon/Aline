@@ -57,6 +57,15 @@ App::~App() {
 
 bool App::start(QString appCode) {
 	_appCode = appCode;
+	Q_EMIT startupStarted();
+	bool code = start_actions();
+	if (code) {
+		Q_EMIT startupFinished();
+	}
+	return code;
+}
+
+bool App::start_actions() {
 	return true;
 }
 

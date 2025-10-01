@@ -41,7 +41,7 @@ public:
 	App(int &argc, char** argv);
 	~App();
 
-	virtual bool start(QString appCode = "default");
+	bool start(QString appCode = "default");
 
 	/*!
 	 * \brief hasActionManager indicate if a dedicated action manager is installed for a type
@@ -125,7 +125,20 @@ public:
 	 */
 	QString getAppTempDirectory() const;
 
+Q_SIGNALS:
+
+	/*!
+	 * \brief startupStarted signal should is emmited when app startup being
+	 */
+	void startupStarted();
+	/*!
+	 * \brief startupFinished signal should is emmited when app startup is over
+	 */
+	void startupFinished();
+
 protected:
+
+	virtual bool start_actions();
 
 	QString _appCode;
 
