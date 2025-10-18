@@ -688,7 +688,18 @@ void EditableItemManager::setActiveItem(QString url) {
 
 		EditableItem* potential = qobject_cast<EditableItem*>(loadItemByUrl(url));
 
+        if (_activeItem != nullptr) {
+            disconnect(_activeItem, &QObject::destroyed, this, nullptr);
+        }
+
 		_activeItem = potential;
+        connect(potential, &QObject::destroyed, this, [this, potential] () {
+            if (_activeItem == potential) {
+                _activeItem = nullptr;
+                Q_EMIT activeItemChanged();
+            }
+        });
+
 		Q_EMIT activeItemChanged();
 
 	}

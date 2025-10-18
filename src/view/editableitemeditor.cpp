@@ -29,7 +29,15 @@ EditableItemEditor::EditableItemEditor(QWidget *parent) : Editor(parent)
 
 void EditableItemEditor::setEditedItem(EditableItem* item) {
 
-	if (effectivelySetEditedItem(item)) {
+    if (effectivelySetEditedItem(item)) {
+
+        connect(item, &QObject::destroyed, this, [this, item] () {
+            if (_editedItem == item) {
+                effectivelySetEditedItem(nullptr); //ensure the current item is nullptr
+                _editedItem = nullptr;
+                deleteLater(); //close the editor
+            }
+        });
 
 		blockSignals(true);
 		setTitleWithObjectName(item->objectName());
@@ -38,7 +46,7 @@ void EditableItemEditor::setEditedItem(EditableItem* item) {
 
 		connect(item, &EditableItem::objectNameChanged, this, [this] (QString name) {
 			setTitleWithObjectName(name); //calling it like that ensure we call the virtual method
-		});
+        });
 		connect(item, &EditableItem::unsavedStateChanged, this, &EditableItemEditor::setHasUnsavedChanges);
 		connect(item, &QObject::destroyed,
 				this, &QObject::deleteLater);
@@ -60,9 +68,15 @@ void EditableItemEditor::saveAction() {
 }
 
 QString EditableItemEditor::getEditedItemRef() const {
+    if (_editedItem == nullptr) {
+        return "";
+    }
 	return _editedItem->getRef();
 }
 QString EditableItemEditor::getEditedItemUrl() const {
+    if (_editedItem == nullptr) {
+        return "";
+    }
 	return _editedItem->getFullRefUrl();
 }
 
