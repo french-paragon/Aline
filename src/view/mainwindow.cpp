@@ -386,9 +386,10 @@ void MainWindow::closeEditor(int index) {
 		disconnect(editor, &Editor::titleChanged, this, &MainWindow::updateTitle);
 	}
 
-	Q_EMIT editorAboutToBeRemoved(editor);
+    Q_EMIT editorAboutToBeRemoved(editor);
 
 	ui->tabWidget->removeTab(index);
+    delete editor;
 }
 
 void MainWindow::closeEditor(Editor* editor) {

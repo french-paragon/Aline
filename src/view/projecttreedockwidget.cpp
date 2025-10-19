@@ -116,8 +116,7 @@ void ProjectTreeDockWidget::projectChanged(Aline::EditableItemManager* project) 
 	}
 
 	if (project == nullptr) {
-		setEnabled(false);
-		return;
+        setEnabled(false);
 	} else {
 		setEnabled(true);
 	}
