@@ -357,6 +357,10 @@ void EditableItem::warnReferedRemoved(QString ref) {
 
 void EditableItem::onVisibleStateChanged() {
 
+	if (!_hasBeenLoadedFromDisk) {
+		return; //do not send aggressive notification while the item is loading.
+	}
+
 	EditableItemManager* manager = getManager();
 
 	if (manager != nullptr) {
