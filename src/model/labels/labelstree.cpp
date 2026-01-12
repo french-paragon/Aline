@@ -21,6 +21,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "label.h"
 #include "model/editableitemmanager.h"
 
+#include "control/app.h"
+
+#include "./autolabelappinterface.h"
+
 #include <QIcon>
 #include <QMimeData>
 
@@ -34,6 +38,17 @@ LabelsTree::LabelsTree(EditableItemManager *parent) :
 	_activeLabel(nullptr)
 {
 
+	App* app = App::getAppInstance();
+
+	if (app != nullptr) {
+		AutoLabelAppInterface* autoLabelInterface =
+		app->castedSpecialInterface<AutoLabelAppInterface>(AutoLabelAppInterface::AutoLabelAppInterfaceCode);
+
+		if (autoLabelInterface != nullptr) {
+			autoLabelInterface->setupAutoLabelsInTree(this, parent);
+		}
+	}
+
 }
 
 QModelIndex LabelsTree::index(int row, int column, const QModelIndex &parent) const {
@@ -41,6 +56,8 @@ QModelIndex LabelsTree::index(int row, int column, const QModelIndex &parent) co
 	if (parent == QModelIndex()) {
 		if (column == 0 && row < _labels.size()) {
 			return createIndex(row, column, _labels.at(row));
+		} else if (column == 0 && row-_labels.size() < _auto_labels.size()) {
+			return createIndex(row, column, _auto_labels.at(row-_labels.size()));
 		}
 	} else {
 		Label* parentLabel = (Label*) parent.internalPointer();
@@ -75,6 +92,9 @@ QModelIndex LabelsTree::parent(const QModelIndex &index) const {
 
 	if (parentParent == nullptr) {
 		row = _labels.indexOf(parentLabel);
+		if (row < 0) {
+			row = _auto_labels.indexOf(parentLabel) + _labels.size();
+		}
 	} else {
 		row = parentParent->children().indexOf(parentLabel);
 	}
@@ -90,7 +110,7 @@ QModelIndex LabelsTree::parent(const QModelIndex &index) const {
 int LabelsTree::rowCount(const QModelIndex &parent) const {
 
 	if (parent == QModelIndex()) {
-		return _labels.size();
+		return _labels.size() + _auto_labels.size();
 	}
 
 	Label* label = (Label*) parent.internalPointer();
@@ -110,10 +130,26 @@ int LabelsTree::columnCount(const QModelIndex &parent) const {
 	return 1;
 }
 
+Label* LabelsTree::labelFromIndex(QModelIndex const& idx) {
+	if (!idx.isValid()) {
+		return nullptr;
+	}
+
+	return (Label*) idx.internalPointer();
+}
+
 Qt::ItemFlags LabelsTree::flags(const QModelIndex &index) const {
 
 	if (index != QModelIndex()) {
-		return Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled | QAbstractItemModel::flags(index);
+
+		Label* label = (Label*) index.internalPointer();
+		Qt::ItemFlags flags = QAbstractItemModel::flags(index);
+
+		if (!label->isAutoLabel()) {
+			flags = Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled |  flags;
+		}
+
+		return flags;
 	}
 
 	return QAbstractItemModel::flags(index);
@@ -148,15 +184,22 @@ QVariant LabelsTree::data(const QModelIndex &index, int role) const {
 
 		return label->getRef();
 
-	case LabelItemsRefsRole :
+	case LabelItemsRefsRole : {
 
-		if (label->itemsRefs().empty()) {
+		QVector<QString> refs = label->itemsRefs();
+
+		if (refs.empty()) {
 			return QVariant();
 		}
 
-		return QVariant(QStringList::fromVector(label->itemsRefs()));
+		return QVariant(QStringList::fromVector(refs));
+	}
 
 	case Qt::DecorationRole : //icon
+
+		if (label->isAutoLabel()) {
+			return QIcon(":/icons/icons/label_auto.svg");
+		}
 
 		return QIcon(":/icons/icons/label_simple.svg");
 
@@ -342,7 +385,9 @@ Qt::DropActions LabelsTree::supportedDropActions() const {
 	return Qt::LinkAction | Qt::CopyAction;
 }
 
-bool LabelsTree::insertRows(int row, int count, const QModelIndex &parent) {
+bool LabelsTree::insertRows(int prow, int count, const QModelIndex &parent) {
+
+	int row = std::max(prow, _labels.size());
 
 	beginInsertRows(parent, row, row+count-1);
 
@@ -374,7 +419,9 @@ bool LabelsTree::insertRows(int row, int count, const QModelIndex &parent) {
 
 }
 
-bool LabelsTree::insertRows(int row, QVector<Label*> const& labels, const QModelIndex &parent) {
+bool LabelsTree::insertRows(int prow, QVector<Label*> const& labels, const QModelIndex &parent) {
+
+	int row = std::max(prow, _labels.size());
 
 	QStringList insertedRefs;
 
@@ -425,6 +472,10 @@ bool LabelsTree::insertRows(int row, QVector<Label*> const& labels, const QModel
 }
 
 bool LabelsTree::removeRows(int row, int count, const QModelIndex &parent) {
+
+	if (row > _labels.size()) {
+		return false;
+	}
 
 	beginRemoveRows(parent, row, row+count-1);
 
@@ -522,7 +573,11 @@ int LabelsTree::getRowFromLabel(Label* label) {
 	}
 
 	if (label->parentLabel() == nullptr) {
-		return _labels.indexOf(label);
+		int row = _labels.indexOf(label);
+		if (row < 0) {
+			row = _auto_labels.indexOf(label) + _labels.size();
+		}
+		return row;
 	}
 
 	return label->parentLabel()->subLabels().indexOf(label);
@@ -629,7 +684,7 @@ Label* LabelsTree::findLabelByRef(QString const& ref, Label *parentLabel) {
 		searchSpace = &parentLabel->subLabels();
 	}
 
-	for (Label* l : *searchSpace) {
+	for (Label* l : qAsConst(*searchSpace)) {
 		if (l->getRef() == ref) {
 			return l;
 		}
@@ -638,6 +693,20 @@ Label* LabelsTree::findLabelByRef(QString const& ref, Label *parentLabel) {
 
 		if (located != nullptr) {
 			return located;
+		}
+	}
+
+	if (parentLabel == nullptr) {
+		for (Label* l : qAsConst(_auto_labels)) {
+			if (l->getRef() == ref) {
+				return l;
+			}
+
+			Label* located = findLabelByRef(ref, l);
+
+			if (located != nullptr) {
+				return located;
+			}
 		}
 	}
 

@@ -1,6 +1,7 @@
 <RCC>
     <qresource prefix="/icons">
-        <file>icons/label_simple.svg</file>
+	<file>icons/label_simple.svg</file>
+	<file>icons/label_auto.svg</file>
         <file>icons/add_simple.svg</file>
         <file>icons/bold.svg</file>
         <file>icons/delete_simple.svg</file>

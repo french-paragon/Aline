@@ -18,6 +18,8 @@ list(APPEND LIB_SRC
             model/labels/labelselectionforitemproxymodel.cpp
             model/labels/labelstree.h
             model/labels/labelstree.cpp
+			model/labels/autolabelappinterface.h
+			model/labels/autolabelappinterface.cpp
             model/labels/projectfilterbylabelproxymodel.h
             model/labels/projectfilterbylabelproxymodel.cpp
             model/exceptions/itemioexception.h

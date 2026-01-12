@@ -49,6 +49,7 @@ public:
 	virtual QModelIndex parent(const QModelIndex &index) const;
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+	Label* labelFromIndex(QModelIndex const& idx);
 
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
@@ -96,12 +97,15 @@ protected:
 	Label* findLabelByRef(QString const& ref, Label* parentLabel = nullptr);
 
 	QVector<Label*> _labels;
+	QVector<Label*> _auto_labels;
 
 	QSet<QString> _labelsRefs;
 
 	EditableItemManager* _parentManager;
 
 	Label* _activeLabel;
+
+	friend class AutoLabelAppInterface;
 
 };
 

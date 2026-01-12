@@ -48,6 +48,10 @@ Label::Label(LabelsTree *parent) : QObject(parent),
 	connect(this, &QObject::objectNameChanged, this, &Label::hasBeenNamed);
 }
 
+void Label::configureAutoFunctor(AutoLabelFunctor const& functor) {
+	_auto_functor = functor;
+}
+
 QString Label::getRef() const {
 	return _ref;
 }
@@ -268,7 +272,12 @@ bool Label::unmarkItem(QString const& itemRef) {
 
 }
 
-const QVector<QString> &Label::itemsRefs() const {
+QVector<QString> Label::itemsRefs() const {
+
+	if (_auto_functor) {
+		return _auto_functor();
+	}
+
 	return _itemsRefs;
 }
 

@@ -3,7 +3,7 @@
 
 /*This file is part of the project Aline
 
-Copyright (C) 2022 Paragon <french.paragon@gmail.com>
+Copyright (C) 2022-2025 Paragon <french.paragon@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <QObject>
 #include <QVector>
+#include <functional>
 
 namespace Aline {
 	class EditableItem;
@@ -36,10 +37,21 @@ public:
 
 	static const char* PROP_LABELS;
 
+	using AutoLabelFunctor = std::function<QVector<QString>()>;
+
 	explicit Label(Label *parent = nullptr);
 	explicit Label(LabelsTree *parent = nullptr);
 
 	Q_PROPERTY(QString ref READ getRef WRITE setRef NOTIFY refChanged)
+
+	/*!
+	 * \brief isAutoLabel auto labels are managed by a specific function, instead of being a fixed list of items
+	 * \return true if the label is an auto label
+	 */
+	inline bool isAutoLabel() const {
+		return static_cast<bool>(_auto_functor);
+	}
+	void configureAutoFunctor(AutoLabelFunctor const& functor);
 
 	QString getRef() const;
 	void setRef(QString ref);
@@ -59,7 +71,7 @@ public:
 	bool markItem(QString const& itemRef);
 	bool unmarkItem(QString const& itemRef);
 
-	QVector<QString> const& itemsRefs() const;
+	QVector<QString> itemsRefs() const;
 
 	Label* parentLabel() const;
 	LabelsTree* parentTree() const;
@@ -91,6 +103,8 @@ protected:
 
 	void hasBeenNamed(const QString &name);
 	bool _hasBeenNamed;
+
+	AutoLabelFunctor _auto_functor;
 
 };
 
