@@ -459,9 +459,28 @@ QVariant Aline::JsonUtils::decodeVariantFromJson(QJsonValue val, int type) {
 
 		return QVariant(col);
 
-	} else if (metaType.flags() & QMetaType::IsEnumeration) {
-		return val.toVariant(); //conversion from string to enum should be managed by QVariant.
-	}
+    } else if (metaType.flags() == QMetaType::QStringList) {
+        QStringList lst;
+
+        if (val.isArray()) {
+
+            QJsonArray arr = val.toArray();
+
+            lst.reserve(arr.size());
+
+            for (QJsonValue const& val : arr) {
+                lst << val.toString();
+            }
+
+        } else if (val.isString()) {
+            lst << val.toString();
+        }
+
+        return lst;
+
+    } else if (metaType.flags() & QMetaType::IsEnumeration) {
+        return val.toVariant(); //conversion from string to enum should be managed by QVariant.
+    }
 
 	return val.toVariant();
 
