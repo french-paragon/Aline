@@ -387,7 +387,21 @@ Qt::DropActions LabelsTree::supportedDropActions() const {
 
 bool LabelsTree::insertRows(int prow, int count, const QModelIndex &parent) {
 
-	int row = std::max(prow, _labels.size());
+	if (parent != QModelIndex()) {
+
+		Label* pLabel = (Label*) parent.internalPointer();
+
+		if (pLabel->isAutoLabel()) { // do not insert sublabels for an auto label
+			return false;
+		}
+
+	}
+
+	int row = std::min(prow, _labels.size());
+
+	if (row < 0) {
+		return false;
+	}
 
 	beginInsertRows(parent, row, row+count-1);
 
