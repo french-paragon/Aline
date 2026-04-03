@@ -1,2 +1,3 @@
 add_subdirectory(test_indexrebasedproxymodel)
 add_subdirectory(test_editableitemlifecycle)
+add_subdirectory(test_stringutils)
