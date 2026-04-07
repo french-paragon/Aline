@@ -1,6 +1,6 @@
 #include <QTest>
 
-#include "Aline/utils/stringutils.h"
+#include "../../src/utils/stringutils.h"
 
 
 class TestStringUtils : public QObject {
