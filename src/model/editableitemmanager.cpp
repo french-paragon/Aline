@@ -31,6 +31,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include <QSet>
 #include <QIcon>
 #include <QMimeData>
+#include <QStandardItemModel>
 
 namespace Aline {
 
@@ -61,6 +62,31 @@ EditableItemManager::~EditableItemManager() {
 	for (treeStruct* leaf : _treeIndex) {
 		delete leaf;
 	}
+
+}
+
+QAbstractItemModel* EditableItemManager::itemListToStandardModel(QStringList const& objRefs,
+                                                                 QObject* modelParent,
+                                                                 Aline::EditableItemManager* sourceManager) {
+
+    QStandardItemModel* model = new QStandardItemModel(modelParent);
+
+    for (QString const& ref : qAsConst(objRefs)) {
+        Aline::EditableItem* item = sourceManager->loadItemByUrl(ref);
+
+        if (item == nullptr) {
+            continue;
+        }
+
+        QStandardItem* modelItem = new QStandardItem(item->objectName());
+        modelItem->setData(QIcon(item->iconInternalUrl()), Qt::DecorationRole);
+        modelItem->setData(ref, ItemRefRole);
+        modelItem->setEditable(false);
+
+        model->appendRow(modelItem);
+    }
+
+    return model;
 
 }
 

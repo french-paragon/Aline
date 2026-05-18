@@ -64,6 +64,22 @@ public:
 
 	explicit EditableItemManager(QObject *parent = nullptr);
 	~EditableItemManager();
+    /*!
+     * \brief itemListToStandardModel build a standard model containing the informations about the items in a list of references
+     * \param modelParent the parent of the model that is built (no manager will take ownership of the built model)
+     * \param sourceManager the manager the objects should be sourced from
+     * \return a pointer to an item model
+     *
+     * The produced model should contain the name of the objects, as well as their type icon. Accessible through the item ref role, the initial reference should also be available.
+     * The model will not be editable
+     */
+    static QAbstractItemModel* itemListToStandardModel(QStringList const& objRefs,
+                                                       QObject* modelParent,
+                                                       Aline::EditableItemManager* sourceManager);
+    inline QAbstractItemModel* itemListToStandardModel(QStringList const& objRefs,
+                                                       QObject* modelParent) {
+        return itemListToStandardModel(objRefs, modelParent, this);
+    }
 
 	/*!
 	 * \brief localProjectId give a uniq identifier for the project
