@@ -79,6 +79,15 @@ QString EditableItemEditor::getEditedItemUrl() const {
     }
 	return _editedItem->getFullRefUrl();
 }
+EditableItem* EditableItemEditor::getEditedItem() const {
+    return _editedItem;
+}
+EditableItemManager* EditableItemEditor::getEditedItemManager() const {
+    if (_editedItem == nullptr) {
+        return nullptr;
+    }
+    return _editedItem->getManager();
+}
 
 QString EditableItemEditor::getEditorNoDuplicateClue() const {
 	return getEditedItemUrl();

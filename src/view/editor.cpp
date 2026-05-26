@@ -1,6 +1,6 @@
 /*This file is part of the project Aline
 
-Copyright (C) 2022 Paragon <french.paragon@gmail.com>
+Copyright (C) 2022-2026 Paragon <french.paragon@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -264,6 +264,34 @@ void EditorPersistentStateSaveInterface::restoreEditorStates(MainWindow* mw) {
 
 	editorsStates.endArray();
 
+}
+
+const char* EditorAdditionalActionFactoryRegister::InterfaceCode = "AlineEditorAdditionalActionFactoryRegister";
+
+EditorAdditionalActionFactoryRegister::EditorAdditionalActionFactoryRegister(QObject* parent) :
+    QObject(parent)
+{
+
+}
+
+void EditorAdditionalActionFactoryRegister::registerFactory(QString const& editorType, Factory const& factory) {
+    _factories[editorType].push_back(factory);
+}
+QList<QAction*> EditorAdditionalActionFactoryRegister::factorizeAllExtraActions(Aline::Editor* editor) const {
+    QString editorTypeId = editor->getTypeId();
+
+    if (!_factories.contains(editorTypeId)) {
+        return QList<QAction*>{};
+    }
+
+    QVector<Factory> const& factories = _factories[editorTypeId];
+    QList<QAction*> ret;
+
+    for (Factory const& factory : factories) {
+        ret << factory(editor);
+    }
+
+    return ret;
 }
 
 } // namespace Aline

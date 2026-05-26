@@ -3,7 +3,7 @@
 
 /*This file is part of the project Aline
 
-Copyright (C) 2022 Paragon <french.paragon@gmail.com>
+Copyright (C) 2022-2026 Paragon <french.paragon@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -23,6 +23,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <QWidget>
 #include <QString>
+#include <QMap>
+#include <QVector>
 
 #include <functional>
 
@@ -153,6 +155,30 @@ public:
 
 protected:
 
+};
+
+/*!
+ * \brief The EditorAdditionalActionFactoryRegister class represent a generic interface to register additional actions factories for editors
+ *
+ * This interface is automatically registered by Aline
+ */
+class EditorAdditionalActionFactoryRegister : public QObject {
+    Q_OBJECT
+public:
+
+    static const char* InterfaceCode;
+
+
+    using Factory = std::function<QList<QAction*>(Aline::Editor* editor)>;
+
+    EditorAdditionalActionFactoryRegister(QObject* parent);
+
+    void registerFactory(QString const& editorType, Factory const& factory);
+    QList<QAction*> factorizeAllExtraActions(Aline::Editor* editor) const;
+
+protected:
+
+    QMap<QString,QVector<Factory>> _factories;
 };
 
 } // namespace Aline

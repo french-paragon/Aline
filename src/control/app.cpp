@@ -21,6 +21,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 #include "editableitemactionsmanager.h"
 #include "model/editableitemfactory.h"
 
+#include "view/editor.h"
+
 #include <QTemporaryDir>
 
 namespace Aline {
@@ -58,6 +60,7 @@ App::~App() {
 bool App::start(QString appCode) {
 	_appCode = appCode;
 	Q_EMIT startupStarted();
+    registerDefaultInterfaces();
 	bool code = start_actions();
 	if (code) {
 		Q_EMIT startupFinished();
@@ -67,6 +70,10 @@ bool App::start(QString appCode) {
 
 bool App::start_actions() {
 	return true;
+}
+
+void App::registerDefaultInterfaces() {
+    installSpecialInterface(EditorAdditionalActionFactoryRegister::InterfaceCode, new EditorAdditionalActionFactoryRegister(this));
 }
 
 bool App::hasActionManager(QString const& typeRef) const {

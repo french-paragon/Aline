@@ -1,6 +1,6 @@
 /*This file is part of the project Aline
 
-Copyright (C) 2022 Paragon <french.paragon@gmail.com>
+Copyright (C) 2022-2026 Paragon <french.paragon@gmail.com>
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU Lesser General Public
@@ -557,6 +557,17 @@ void MainWindow::reconfigureCurrentEditorActions() {
 	}
 
 	QList<QAction*> contextActions = current->getContextActions();
+
+    EditorAdditionalActionFactoryRegister* addtionalActionsRegister = nullptr;
+    App* app = App::getAppInstance();
+
+    if (app != nullptr) {
+        addtionalActionsRegister = app->castedSpecialInterface<EditorAdditionalActionFactoryRegister>(EditorAdditionalActionFactoryRegister::InterfaceCode);
+    }
+
+    if (addtionalActionsRegister != nullptr) {
+        contextActions << addtionalActionsRegister->factorizeAllExtraActions(current);
+    }
 
 	if (!contextActions.empty()) {
 

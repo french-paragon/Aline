@@ -139,6 +139,7 @@ Q_SIGNALS:
 protected:
 
 	virtual bool start_actions();
+    void registerDefaultInterfaces();
 
 	QString _appCode;
 

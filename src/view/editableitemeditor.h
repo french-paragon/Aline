@@ -24,6 +24,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 namespace Aline {
 
 class EditableItem;
+class EditableItemManager;
 
 class ALINE_EXPORT EditableItemEditor : public Editor
 {
@@ -40,7 +41,9 @@ public:
 	virtual void saveAction() override;
 
 	QString getEditedItemRef() const;
-	QString getEditedItemUrl() const;
+    QString getEditedItemUrl() const;
+    EditableItem* getEditedItem() const;
+    EditableItemManager* getEditedItemManager() const;
 
 	virtual QString getEditorNoDuplicateClue() const override;
 
