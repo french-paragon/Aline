@@ -39,9 +39,19 @@ public:
 	static EditableItemFactoryManager* getAppEditableItemFactoryManager();
 
 	App(int &argc, char** argv);
-	~App();
+    ~App();
 
 	bool start(QString appCode = "default");
+
+    /*!
+     * \brief cachedArgv return a cached version of the command line arguments, including argv[0] (the initial command)
+     * \return the list of arguments
+     *
+     * Calling arguments from QCoreApplication is slow, so the App class will cache it.
+     */
+    inline QStringList cachedArgv() const {
+        return _argv_cache;
+    }
 
 	/*!
 	 * \brief hasActionManager indicate if a dedicated action manager is installed for a type
@@ -141,7 +151,9 @@ protected:
 	virtual bool start_actions();
     void registerDefaultInterfaces();
 
-	QString _appCode;
+    QString _appCode;
+
+    QStringList _argv_cache;
 
 	EditableItemActionsManager* _defaultActionManager;
 	QMap<QString, EditableItemActionsManager*> _installedActionManager;

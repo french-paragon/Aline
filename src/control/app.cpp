@@ -48,6 +48,9 @@ App::App(int & argc, char **argv) :
 	_tmp_dir(nullptr)
 {
 	_defaultActionManager = new EditableItemActionsManager(this); //default action manager
+
+    //cache arguments
+    _argv_cache = arguments();
 }
 
 App::~App() {
