@@ -100,8 +100,8 @@ public:
 	void installSubItemFactory(EditableSubItemFactory* factory, bool takeOwnership = true);
 
 	bool hasFactoryInstalled(QString type_id) const;
-	bool hasSubItemFactoryInstalled(QString type_id) const;
-	EditableItem* createItem(QString type_id, QString item_id, EditableItemManager* parent) const;
+    bool hasSubItemFactoryInstalled(QString type_id) const;
+    EditableItem* createItem(QString type_id, QString item_id, EditableItemManager* parent) const;
 	EditableItem* createSubItem(QString type_id, QString item_id, EditableItem* parent) const;
 
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;

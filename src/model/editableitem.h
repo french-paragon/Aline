@@ -120,6 +120,9 @@ public:
 	 * \brief EditableItem constructor for item that belongs to a project.
 	 * \param ref The ref of the item.
 	 * \param parent The parent manager of the item.
+     *
+     * Parent will be used as QObject parent, unless the editable item is created in a different thread, in which case the qobject parent will be set to nullptr.
+     * The object can then be moved to the parent thread, if needed, by the code creating it.
 	 *
 	 * EditableItems can be root items in a project or subitems for another item. This constructor is for the root items.
 	 *
@@ -131,7 +134,10 @@ public:
 	/*!
 	 * \brief EditableItem constructor for item that is a subitem for another item.
 	 * \param ref The ref of the item.
-	 * \param parent The parent item of the item.
+     * \param parent The parent item of the item.
+     *
+     * Parent will be used as QObject parent, unless the editable item is created in a different thread, in which case the qobject parent will be set to nullptr.
+     * The object can then be moved to the parent thread, if needed, by the code creating it.
 	 *
 	 * EditableItems can be root items in a project or subitems for another item. This constructor is for the subitems.
 	 *

@@ -25,6 +25,7 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include <QMetaObject>
 #include <QEvent>
+#include <QThread>
 
 namespace Aline {
 
@@ -161,8 +162,15 @@ QString EditableItem::simplifyRef(QString ref) {
 
 }
 
+QThread*  getThread(QObject* obj) {
+    if (obj == nullptr) {
+        return nullptr;
+    }
+    return obj->thread();
+}
+
 EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
-	QObject(parent),
+    QObject(getThread(parent) == QThread::currentThread() ? parent : nullptr),
 	_ref(ref),
 	_hasUnsavedChanged(false),
 	_manager(parent),
@@ -179,7 +187,7 @@ EditableItem::EditableItem(QString ref, Aline::EditableItemManager *parent) :
 }
 
 EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
-	QObject(parent),
+    QObject(getThread(parent) == QThread::currentThread() ? parent : nullptr),
 	_ref(ref),
 	_hasUnsavedChanged(false),
 	_manager(nullptr),

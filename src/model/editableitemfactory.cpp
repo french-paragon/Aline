@@ -20,6 +20,10 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "editableitem.h"
 
+#include "./editableitemmanager.h"
+
+#include <QThread>
+
 namespace Aline {
 
 EditableItemFactory::EditableItemFactory(QObject *parent) :
@@ -191,8 +195,17 @@ EditableItem* EditableItemFactoryManager::createItem(QString type_id, QString it
 
 	const EditableItemFactory* f = _installedItemFactories.value(type_id, nullptr);
 
-	if (f != nullptr) {
-		return f->createItem(item_id, parent);
+    if (f != nullptr) {
+        EditableItem* item = f->createItem(item_id, parent);
+        //fix funny thread business with Qt
+        if (item->thread() != parent->thread()) {
+            if (item->parent() != nullptr) {
+                item->setParent(nullptr);
+            }
+            item->moveToThread(parent->thread());
+            item->setParent(parent);
+        }
+        return item;
 	}
 
 	return nullptr;
@@ -204,7 +217,16 @@ EditableItem* EditableItemFactoryManager::createSubItem(QString type_id, QString
 	const EditableSubItemFactory* f = _installedSubItemFactories.value(type_id, nullptr);
 
 	if (f != nullptr) {
-		return f->createItem(item_id, parent);
+        EditableItem* item = f->createItem(item_id, parent);
+        //fix funny thread business with Qt
+        if (item->thread() != parent->thread()) {
+            if (item->parent() != nullptr) {
+                item->setParent(nullptr);
+            }
+            item->moveToThread(parent->thread());
+            item->setParent(parent);
+        }
+        return item;
 	}
 
 	return nullptr;
