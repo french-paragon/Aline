@@ -40,23 +40,23 @@ class EditableItemFactoryManager;
 
 namespace JsonUtils {
 
-extern const QString LABEL_REF;
+constexpr const char LABEL_REF[] = "labels";
 
-extern const QString LABEL_REF_ID;
-extern const QString LABEL_NAME_ID;
-extern const QString LABEL_ITEMS_REFS_ID;
-extern const QString LABEL_SUBLABELS_ID;
+constexpr const char LABEL_REF_ID[] = "reference";
+constexpr const char LABEL_NAME_ID[] = "name";
+constexpr const char LABEL_ITEMS_REFS_ID[] = "marked_items";
+constexpr const char LABEL_SUBLABELS_ID[] = "sublabels";
 
-extern const QString ITEM_SUBITEM_ID;
-extern const QString ITEM_SUBITEM_LIST;
+constexpr const char ITEM_SUBITEM_ID[] = "item_internalsubitems";
+constexpr const char ITEM_SUBITEM_LIST[] = "subitemslist";
 
-extern const QString ITEM_REFERENT_LIST;
+constexpr const char ITEM_REFERENT_LIST[] = "item_referentslist";
 
-extern const QString TREE_REF_ID;
-extern const QString TREE_TYPE_ID;
-extern const QString TREE_NAME_ID;
-extern const QString TREE_CHILDRENS_ID;
-extern const QString TREE_ACCEPT_CHILDRENS_ID;
+constexpr const char TREE_REF_ID[] = "reference";
+constexpr const char TREE_TYPE_ID[] = "type";
+constexpr const char TREE_NAME_ID[] = "name";
+constexpr const char TREE_CHILDRENS_ID[] = "childrens";
+constexpr const char TREE_ACCEPT_CHILDRENS_ID[] = "accept_childrens";
 
 class ALINE_EXPORT JsonUtilsException : public QException
 {

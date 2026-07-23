@@ -33,25 +33,6 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "model/interfaces/jsonencodableitem.h"
 
-
-const QString Aline::JsonUtils::LABEL_REF = "labels";
-
-const QString Aline::JsonUtils::LABEL_REF_ID = "reference";
-const QString Aline::JsonUtils::LABEL_NAME_ID = "name";
-const QString Aline::JsonUtils::LABEL_ITEMS_REFS_ID = "marked_items";
-const QString Aline::JsonUtils::LABEL_SUBLABELS_ID = "sublabels";
-
-const QString Aline::JsonUtils::ITEM_SUBITEM_ID = "item_internalsubitems";
-const QString Aline::JsonUtils::ITEM_SUBITEM_LIST = "subitemslist";
-
-const QString Aline::JsonUtils::ITEM_REFERENT_LIST = "item_referentslist";
-
-const QString Aline::JsonUtils::TREE_REF_ID = "reference";
-const QString Aline::JsonUtils::TREE_TYPE_ID = "type";
-const QString Aline::JsonUtils::TREE_NAME_ID = "name";
-const QString Aline::JsonUtils::TREE_CHILDRENS_ID = "childrens";
-const QString Aline::JsonUtils::TREE_ACCEPT_CHILDRENS_ID = "accept_childrens";
-
 void Aline::JsonUtils::extractItemData(Aline::EditableItem* item,
 									   QJsonObject const& obj,
 									   EditableItemFactoryManager* subItemFactory,
