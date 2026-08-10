@@ -126,6 +126,11 @@ public:
 	bool isItemLoaded(const QString &ref) const;
 	bool containItem(const QString & ref) const;
 
+    /*!
+     * \brief loadSingleton load a singleton (create it if it is not part of the project yet).
+     * \param type the singleton type id
+     * \return a pointer to the item
+     */
 	EditableItem* loadSingleton(QString const& type);
 	QStringList loadedSingletons() const;
 	bool isSingletonLoaded(const QString &type) const;
