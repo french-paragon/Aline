@@ -230,7 +230,7 @@ bool LabelsTree::setData(const QModelIndex &index, const QVariant &value, int ro
 	{
 		QString itemRef = value.toString();
 
-		Aline::EditableItem* item = _parentManager->loadItem(itemRef);
+        Aline::EditableItem* item = _parentManager->loadItemByUrl(itemRef);
 
 		if (item != nullptr) {
 			label->markItem(item);
@@ -247,7 +247,7 @@ bool LabelsTree::setData(const QModelIndex &index, const QVariant &value, int ro
 	{
 		QString itemRef = value.toString();
 
-		Aline::EditableItem* item = _parentManager->loadItem(itemRef);
+        Aline::EditableItem* item = _parentManager->loadItemByUrl(itemRef);
 
 		if (item != nullptr) {
 			label->unmarkItem(item);

@@ -86,7 +86,7 @@ bool LabelSelectionForItemProxyModel::setData(const QModelIndex &index, const QV
 
 		if (item != nullptr) {
 
-			QString ref = item->getRef();
+            QString ref = item->getFullRefUrl();
 
 			if (value.toUInt() == Qt::Checked) {
 				return QIdentityProxyModel::setData(index, ref, LabelsTree::MarkLabelForItem);
