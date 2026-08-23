@@ -77,6 +77,9 @@ QString EditableItemEditor::getEditedItemUrl() const {
     if (_editedItem == nullptr) {
         return "";
     }
+    if (_editedItem->isSingleton()) {
+        return "";
+    }
 	return _editedItem->getFullRefUrl();
 }
 EditableItem* EditableItemEditor::getEditedItem() const {

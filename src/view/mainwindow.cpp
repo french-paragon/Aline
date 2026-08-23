@@ -491,6 +491,50 @@ void MainWindow::editItemWithEditorType(QString const& editorTypeRef, QString co
 	}
 
 }
+void MainWindow::editSingleton(QString const& itemType) {
+
+    EditableItem* item = _currentProject->loadSingleton(itemType);
+
+    if (item == nullptr) {
+        return; //not an item
+    }
+
+    if (_editorFactoryManager->hasSpecialEditFunctionInstalled(item->editAsTypeId())) {
+        _editorFactoryManager->specialEditFunction(item->editAsTypeId())(this, item);
+        return;
+    }
+
+    Editor* editor = nullptr;
+
+    if (_editorFactoryManager != nullptr) {
+        editor = _editorFactoryManager->createItemForEditableItem(item, this);
+    }
+
+    if (editor != nullptr) {
+        addEditor(editor);
+    }
+
+}
+void MainWindow::editSingletonWithEditorType(QString const& editorTypeRef, QString const& itemType) {
+
+    EditableItem* item = _currentProject->loadSingleton(itemType);
+
+    if (item == nullptr) {
+        return; //not an item
+    }
+
+    Editor* editor = nullptr;
+
+    if (_editorFactoryManager != nullptr) {
+        editor = _editorFactoryManager->createItem(editorTypeRef, this);
+    }
+
+    if (editor != nullptr) {
+
+        editor->setEditedItem(item);
+        addEditor(editor);
+    }
+}
 
 void MainWindow::saveAll() {
 

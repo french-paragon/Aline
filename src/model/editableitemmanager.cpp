@@ -447,6 +447,7 @@ EditableItem* EditableItemManager::loadSingleton(QString const& type) {
 		item = _factoryManager->createItem(type, type, this);
 
 		if (item != nullptr) {
+            item->_isSingleton = true; //mark the item as singleton
 			_singletons.insert(type, item);
 		} else {
 			return nullptr;

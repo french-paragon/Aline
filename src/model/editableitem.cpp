@@ -193,7 +193,8 @@ EditableItem::EditableItem(QString ref, Aline::EditableItem *parent) :
 	_manager(nullptr),
 	_parentItem(parent),
 	_changeDetectionIsBlocked(false),
-	_hasBeenLoadedFromDisk(true)
+    _hasBeenLoadedFromDisk(true),
+    _isSingleton(false)
 {
 	qRegisterMetaType<Aline::EditableItem*>();
 

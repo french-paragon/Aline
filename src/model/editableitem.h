@@ -179,7 +179,10 @@ public:
 	QString getFullRefUrl() const;
 
 	virtual bool hasUnsavedChanges() const;
-	void newUnsavedChanges();
+    void newUnsavedChanges();
+    inline bool isSingleton() const {
+        return _isSingleton;
+    }
 
 	/*!
 	 * \brief acceptChildrens indicate if the item accept childs or not.
@@ -412,6 +415,8 @@ private:
 	 * \brief _managedReferences are automatically registered to be updated in case the corresponding item change.
 	 */
 	QVector<ManagedEditableItemReference*> _managedReferences;
+
+    bool _isSingleton;
 
 };
 
