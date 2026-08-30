@@ -134,6 +134,9 @@ EditableItemListModel::EditableItemListModel(EditableItemList const& list,
 }
 
 int EditableItemListModel::rowCount(const QModelIndex &parent) const {
+    if (parent != QModelIndex()) {
+        return 0;
+    }
     return _list.size();
 }
 QVariant EditableItemListModel::data(const QModelIndex & index, int role) const {
