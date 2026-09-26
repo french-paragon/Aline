@@ -357,6 +357,10 @@ EditableItem* EditableItemManager::loadItem(QString const& ref) {
 
 	EditableItem* item = effectivelyLoadItem(ref);
 
+    if (item == nullptr) {
+        return nullptr;
+    }
+
 	item->_hasBeenLoadedFromDisk = true;
 
 	treeStruct* node = _treeIndex.value(ref, nullptr);
