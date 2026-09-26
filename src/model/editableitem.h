@@ -303,6 +303,38 @@ public:
 	 */
 	virtual QList<QString> listRefering() const;
 
+    /*!
+     * \brief substituteReferedItem substitute an old item in any item refering it by a new item
+     * \param newItemRef the item to point to
+     * \param oldItemRef the old item
+     *
+     * this function is meant to be used when an item needs to be replaced in a project by a different item,
+     * e.g. when recreating an item with a different class
+     *
+     * Note: this function will not replace the references of any item pointing to a subitem of the old
+     * item. Any action implementing the substitution needs to recursively change the references if
+     * required.
+     *
+     * If a substitution cannot be done, then the behavior is undefined. The user is advised to
+     * call canReferedItemBeSubstituted to check if the substitution can be done beforehand.
+     *
+     * default implementation will just warn the old item that the item is not referencing it any more,
+     * will call warnReferedRefChanges and update the dynamic references to substitute the url and
+     * will warn the new item that it is being refered.
+     *
+     * \see canReferedItemBeSubstituted
+     */
+    virtual void substituteReferedItem(QString const& newItemRef, QString const& oldItemRef);
+    /*!
+     * \brief canReferedItemBeSubstituted check if a refered item can be swapped with a different one.
+     * \param newItemRef the reference of the new item
+     * \param oldItemRef the reference of the old item
+     * \return true if substitution is deemed acceptable, false otherwise.
+     *
+     * Default implementation return true if newItemRef and oldItemRef have the same type
+     */
+    virtual bool canReferedItemBeSubstituted(QString const& newItemRef, QString const& oldItemRef);
+
 Q_SIGNALS:
 
 	void parentChanged(QString newRef);

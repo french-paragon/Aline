@@ -326,6 +326,55 @@ QList<QString> EditableItem::listRefering() const {
     return ret;
 }
 
+void EditableItem::substituteReferedItem(QString const& newItemRef, QString const& oldItemRef) {
+
+    if (oldItemRef == newItemRef) {
+        return;
+    }
+
+    EditableItemManager* manager = getManager();
+
+    EditableItem* oldItem = nullptr;
+    EditableItem* newItem = nullptr;
+
+    if (manager != nullptr) {
+        oldItem = manager->loadItemByUrl(oldItemRef);
+        newItem = manager->loadItemByUrl(newItemRef);
+    }
+
+    QString url = getFullRefUrl();
+
+    if (oldItem != nullptr) {
+        oldItem->warnUnrefering(url);
+    }
+
+
+    warnReferedRefChanges(oldItemRef, newItemRef);
+    updateDynamicReferences(oldItemRef, newItemRef);
+
+    if (newItem != nullptr) {
+        newItem->warnUnrefering(url);
+    }
+
+}
+
+bool EditableItem::canReferedItemBeSubstituted(QString const& newItemRef, QString const& oldItemRef) {
+    EditableItemManager* manager = getManager();
+
+    if (manager == nullptr) {
+        return false;
+    }
+
+    EditableItem* oldItem = manager->loadItemByUrl(oldItemRef);
+    EditableItem* newItem = manager->loadItemByUrl(newItemRef);
+
+    if (newItem == nullptr or oldItem == nullptr) {
+        return false;
+    }
+
+    return newItem->getTypeId() == newItem->getTypeId();
+}
+
 void EditableItem::treatParentRefChange(QString oldParentUrl, QString newParentUrl) {
 
 	QString oldUrl = oldParentUrl + getManager()->refUrlSeparator() + getRef();
