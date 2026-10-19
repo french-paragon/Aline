@@ -113,6 +113,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 MainWindow::~MainWindow()
 {
+    //block a lot of signals before they mess up the closing of the window.
+    disconnect(ui->tabWidget, nullptr, this, nullptr);
 	setCurrentProject(nullptr);
 	delete ui;
 }
