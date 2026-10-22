@@ -52,6 +52,7 @@ private:
 	void projectChanged(Aline::EditableItemManager* project);
 
 	void receiveDoubleClick(const QModelIndex &index);
+    void contextMenuRequested(QPoint const& target);
 
 	MainWindow * _mw_parent;
 

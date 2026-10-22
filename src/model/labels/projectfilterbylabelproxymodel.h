@@ -42,6 +42,10 @@ public:
 
 	void connectLabelTree(LabelsTree * labelTree);
 
+    inline LabelsTree * attachedLabelTree() const {
+        return _attachedLabelTree;
+    }
+
 Q_SIGNALS:
 
 public Q_SLOTS:
@@ -53,6 +57,8 @@ protected:
 	virtual void removeRefsInLabel(QString const& oldRef);
 
 	void resetFilter();
+
+    LabelsTree * _attachedLabelTree;
 
 	QStringList _refsInLabel;
 	EditableItemManager* _sourceProject;

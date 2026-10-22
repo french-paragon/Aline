@@ -262,7 +262,7 @@ bool Label::unmarkItem(QString const& itemRef) {
 
 	int index = _itemsRefs.indexOf(itemRef);
 
-	if (index >= 0) {
+    if (index < 0) {
 		return false; //try to unmark item that is not present.
 	}
 

@@ -28,7 +28,8 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 namespace Aline {
 
 ProjectFilterByLabelProxyModel::ProjectFilterByLabelProxyModel(QObject *parent) :
-	QAbstractListModel(parent)
+    QAbstractListModel(parent),
+    _attachedLabelTree(nullptr)
 {
 
 }
@@ -140,6 +141,8 @@ void ProjectFilterByLabelProxyModel::connectLabelTree(LabelsTree * labelTree) {
 	if (_connectionRemove) {
 		disconnect(_connectionRemove);
 	}
+
+    _attachedLabelTree = labelTree;
 
 	if (labelTree == nullptr) {
 

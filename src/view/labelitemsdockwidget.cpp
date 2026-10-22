@@ -21,7 +21,12 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 #include "view/mainwindow.h"
 #include "../model/labels/projectfilterbylabelproxymodel.h"
+#include "../model/labels/label.h"
+#include "../model/labels/labelstree.h"
 #include "model/editableitemmanager.h"
+
+#include <QMenu>
+#include <QAction>
 
 namespace Aline {
 
@@ -55,6 +60,9 @@ LabelItemsDockWidget::LabelItemsDockWidget(MainWindow *parent) :
 			this, &LabelItemsDockWidget::selectionChanged);
 
 	ui->treeView->setHeaderHidden(true);
+
+    ui->treeView->setContextMenuPolicy(Qt::CustomContextMenu);
+    connect(ui->treeView, &QTreeView::customContextMenuRequested, this, &LabelItemsDockWidget::contextMenuRequested);
 
 }
 
@@ -106,6 +114,49 @@ void LabelItemsDockWidget::receiveDoubleClick(const QModelIndex &index) {
 
 	}
 
+}
+
+void LabelItemsDockWidget::contextMenuRequested(QPoint const& target) {
+
+    if (_currentProject == nullptr) {
+        return;
+    }
+
+    LabelsTree * currentLabelTree = _proxy->attachedLabelTree();
+
+    if (currentLabelTree == nullptr) {
+        return;
+    }
+
+    Label* currentLabel = currentLabelTree->activeLabel();
+
+    if (currentLabel == nullptr) {
+        return;
+    }
+
+    QModelIndex idx = ui->treeView->indexAt(target);
+
+    if (!idx.isValid()) {
+        return;
+    }
+
+    QString editableItemRef = idx.data(EditableItemManager::ItemRefRole).toString();
+
+    EditableItem* item = _currentProject->loadItemByUrl(editableItemRef);
+
+    if (item == nullptr) {
+        return;
+    }
+
+    QMenu menu;
+
+    QAction* action = menu.addAction(tr("Remove item from label"));
+
+    connect(action, &QAction::triggered, currentLabel, [currentLabel, editableItemRef] () {
+        currentLabel->unmarkItem(editableItemRef);
+    });
+
+    menu.exec(ui->treeView->mapToGlobal(target));
 }
 
 } // namespace Sabrina
